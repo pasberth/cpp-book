@@ -1,0 +1,1098 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>クラス（Classes） &mdash; C++11: Syntax and Feature</title>
+    
+    <link rel="stylesheet" href="_static/cpp-book.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="C++11: Syntax and Feature" href="index.html" />
+    <link rel="next" title="派生クラス（Derived classes）" href="class.derived.html" />
+    <link rel="prev" title="宣言子（Declarators）" href="dcl.decl.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="class.derived.html" title="派生クラス（Derived classes）"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dcl.decl.html" title="宣言子（Declarators）"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="classes">
+<h1>クラス（Classes）<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="trivially-copyable-class">
+<h2>トリビアルにコピー可能なクラス（trivially copyable class）<a class="headerlink" href="#trivially-copyable-class" title="Permalink to this headline">¶</a></h2>
+<p>トリビアルにコピー可能なクラス（trivially copyable class）とは、クラスのオブジェクトを構成するバイト列の値を、そのままコピーできるクラスのことである。詳しくは、&lt;a href=&#8221;#basic.types&#8221;&gt;型&lt;/a&gt;を参照。</p>
+<p>あるクラスがtrivially copyable classとなるには、以下の条件をすべて満たさなければならない。</p>
+<p>非trivialな、コピーコンストラクター、ムーブコンストラクター、コピー代入演算子、ムーブ代入演算子を持たないこと。trivialなデストラクターを持っていること。</p>
+<p>つまり、これらの特別なメンバー関数を、ユーザー定義してはならない。また、virtual関数やvirtual基本クラスも持つことはできない。trivialの詳しい定義については、&lt;a href=&#8221;#class.copy&#8221;&gt;クラスオブジェクトのコピーとムーブ&lt;/a&gt;を参照。</p>
+<p>ここで、「持たない」ということは、delete定義によって削除しても構わないということである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="n">A</span><span class="p">(</span> <span class="n">A</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="o">=</span><span class="k">delete</span> <span class="p">;</span>
+    <span class="n">A</span><span class="p">(</span> <span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="o">=</span> <span class="k">delete</span> <span class="p">;</span>
+    <span class="n">A</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span> <span class="n">A</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="o">=</span> <span class="k">delete</span> <span class="p">;</span>
+    <span class="n">A</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span> <span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="o">=</span> <span class="k">delete</span> <span class="p">;</span>
+
+    <span class="c1">// trivialなデストラクターは、「持って」いなければならない</span>
+
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>また、アクセス指定子が異なるメンバーを持っていても構わない。</p>
+<p>上記のクラスAは、コピーもムーブもできないクラスであるが、trivially copyable classである。</p>
+</div>
+<div class="section" id="trivial-class">
+<h2>トリビアルクラス（trivial class）<a class="headerlink" href="#trivial-class" title="Permalink to this headline">¶</a></h2>
+<p>トリビアるクラス（trivial class）とは、trivially copyable classの条件に加えて、trivialなデストラクターを持っているクラスである。</p>
+</div>
+<div class="section" id="standard-layout-class">
+<h2>標準レイアウトクラス（standard-layout class）<a class="headerlink" href="#standard-layout-class" title="Permalink to this headline">¶</a></h2>
+<p>標準レイアウトクラス（standard-layout class）の詳しい説明については、&lt;a href=&#8221;#class.mem&#8221;&gt;クラスのメンバー&lt;/a&gt;を参照。</p>
+<p>あるクラスが標準レイアウトクラスとなるためには、以下の条件をすべて満たさなければならない。</p>
+<p>標準レイアウトクラスではない非staticメンバーをもたない。また、そのようなクラスへの配列やリファレンスも持たない。</p>
+<p>virtual関数とvirtual基本クラスを持たない。</p>
+<p>非staticデータメンバーは、すべて同じアクセス指定子である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 標準レイアウトクラス</span>
+<span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+<span class="c1">// すべて同じアクセス指定子</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">z</span> <span class="p">;</span>
+
+<span class="c1">// staticデータメンバーは、別のアクセス指定子でもよい</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="kt">int</span> <span class="n">data</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="n">S</span><span class="o">:</span><span class="n">data</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>標準レイアウトクラスではないクラスを基本クラスに持たない。</p>
+<p>基本クラスに非staticデータメンバーがある場合は、クラスは非staticデータメンバーを持たない。クラスが非staticデータメンバーを持つ場合は、基本クラスは非staticデータメンバーを持たない。つまり、クラスとその基本クラス（複数可）の集合の中で、どれかひとつのクラスだけが、非staticなデータメンバーを持つことが許される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Empty</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Non_empty</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 以下は標準レイアウトクラス</span>
+<span class="k">struct</span> <span class="n">A</span>
+<span class="c1">// 基本クラスに非staticデータメンバーがある場合</span>
+    <span class="o">:</span> <span class="n">Non_empty</span>
+<span class="p">{</span>
+<span class="c1">// 非staticデータメンバーを持たない</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span>
+<span class="c1">// 基本クラスは非staticデータメンバーを持たない</span>
+    <span class="o">:</span> <span class="n">Empty</span>
+<span class="p">{</span>
+<span class="c1">// 非staticデータメンバーを持つ場合</span>
+    <span class="kt">int</span> <span class="n">data</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 以下は標準レイアウトクラスではない</span>
+<span class="c1">// 基本クラスもクラスCも非staticデータメンバーを持っている</span>
+<span class="k">struct</span> <span class="n">C</span>
+    <span class="o">:</span> <span class="n">Non_empty</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">data</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>最初の非staticデータメンバーと、基本クラスとで、同じ型を使わない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 標準レイアウトクラスではない例</span>
+<span class="k">struct</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">B</span>
+<span class="c1">// 基本クラス</span>
+    <span class="o">:</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="n">A</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// 最初の非staticデータメンバー</span>
+    <span class="kt">int</span> <span class="n">data</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 最初の非staticデータメンバーでなければよい</span>
+<span class="k">struct</span> <span class="n">C</span> <span class="o">:</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">data</span> <span class="p">;</span>
+    <span class="n">A</span> <span class="n">a</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この制限は、基本クラスとデータメンバーとの間で、アドレスが重複するのを防ぐためである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">B</span> <span class="o">:</span> <span class="n">A</span> <span class="p">{</span> <span class="n">A</span> <span class="n">a</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="n">B</span> <span class="n">obj</span> <span class="p">;</span>
+
+<span class="n">A</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">obj</span> <span class="p">;</span> <span class="c1">// 基本クラスのサブオブジェクトへのアドレス</span>
+<span class="n">A</span> <span class="o">*</span> <span class="n">p2</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">obj</span><span class="p">.</span><span class="n">a</span> <span class="p">;</span> <span class="c1">// データメンバーへのアドレス</span>
+
+<span class="c1">// p1 != p2が保証される</span>
+</pre></div>
+</div>
+<p>このような場合、もし、クラスBが標準レイアウトクラスであれば、基本クラスのサブオブジェクトへのアドレスと、データメンバーのサブオブジェクトへのアドレスが重複してしまう。つまり、p1とp2が同じ値になってしまう。異なるアドレスを得られるためには、このようなクラスを標準レイアウトクラスにすることはできない。</p>
+<p>標準レイアウトクラスのうち、structとclassのキーワードで定義されるクラスを、特に標準レイアウトstructと言う。unionキーワードで定義されるクラスを、特に標準レイアウトunionという。</p>
+</div>
+<div class="section" id="pod-pod-struct">
+<h2>POD構造体（POD struct）<a class="headerlink" href="#pod-pod-struct" title="Permalink to this headline">¶</a></h2>
+<p>PODとは、Plain Old Dataの略である。これは、C言語の構造体に相当するクラスである。C++11では、クラスがPODの条件を満たした際に保証される動作を、trivially copyable classと、標準レイアウトクラスの二つの動作に細分化した。そのため、C++11では、特にPODにこだわる必要はない。</p>
+<p>クラスがPODとなるためには、trivial classと標準レイアウトクラスの条件を満たし、さらに、PODではないクラスを非staticデータメンバーに持たないという条件が必要になる。</p>
+</div>
+<div class="section" id="class-names">
+<h2>クラス名（Class names）<a class="headerlink" href="#class-names" title="Permalink to this headline">¶</a></h2>
+<p>TODO:あまり深く解説しなくてもいい気がする。</p>
+</div>
+<div class="section" id="class-members">
+<h2>クラスのメンバー（Class members）<a class="headerlink" href="#class-members" title="Permalink to this headline">¶</a></h2>
+<p>クラスのメンバー指定には、宣言文、関数の定義、using宣言、static_assert宣言、テンプレート宣言、エイリアス宣言を書くことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">S</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">data_member</span> <span class="p">;</span> <span class="c1">// 宣言文</span>
+    <span class="kt">void</span> <span class="nf">member_function</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 関数の定義</span>
+    <span class="k">using</span> <span class="n">Base</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// using宣言</span>
+    <span class="n">static_assert</span><span class="p">(</span> <span class="nb">true</span><span class="p">,</span> <span class="s">&quot;this must not be an error.&quot;</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// static_assert宣言</span>
+    <span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span> <span class="k">struct</span> <span class="n">Inner</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// テンプレート宣言</span>
+    <span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">;</span> <span class="c1">// エイリアス宣言</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>このうち、クラスのメンバーとなるのは、データメンバーとメンバー関数、ネストされた型名、列挙子である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// データメンバー</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// メンバー関数</span>
+    <span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">;</span> <span class="c1">// ネストされた型名</span>
+    <span class="k">enum</span> <span class="p">{</span> <span class="n">id</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// 列挙子</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>データメンバーは、俗にメンバー変数とも呼ばれている。クラス定義内で、変数の宣言文を書くと、データメンバーとなる。</p>
+<p>クラスのメンバーを、クラスの定義内で複数回宣言することはできない。ただし、クラス内のクラスとenumに関しては、前方宣言することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Outer</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// エラー、複数回の宣言</span>
+
+    <span class="k">class</span> <span class="nc">Inner</span> <span class="p">;</span> <span class="c1">// クラス内クラスの宣言</span>
+    <span class="k">class</span> <span class="nc">Inner</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// OK、クラス内クラスの定義</span>
+
+    <span class="k">enum</span> <span class="k">struct</span> <span class="n">E</span> <span class="o">:</span> <span class="kt">int</span> <span class="p">;</span> <span class="c1">// クラス内enumの宣言</span>
+    <span class="k">enum</span> <span class="k">struct</span> <span class="n">E</span> <span class="o">:</span> <span class="kt">int</span> <span class="p">{</span> <span class="n">id</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// OK、クラス内enumの定義</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>クラスは、}で閉じた所をもって、完全に定義されたとみなされる。たとえ、メンバー関数が定義されていなくても、クラス自体は完全に定義された型となる。</p>
+<p>&lt;p class=&#8221;editorial-note&#8221;&gt;
+TODO: クラス定義内で完全型になる例外も書くべきか？</p>
+<p>メンバーはコンストラクターで初期化できる。詳しくは&lt;a href=&#8221;#class.ctor&#8221;&gt;コンストラクター&lt;/a&gt;を参照。メンバーは初期化子で初期化できる。詳しくは、&lt;a href=&#8221;#class.static.data&#8221;&gt;staticデータメンバー&lt;/a&gt;と、&lt;a href=&#8221;#class.base.init&#8221;&gt;基本クラスとデータメンバーの初期化&lt;/a&gt;を参照。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="n">S</span><span class="p">()</span> <span class="o">:</span> <span class="n">x</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// コンストラクター</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 初期化子</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">data</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="n">S</span><span class="o">::</span><span class="n">data</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 初期化子</span>
+</pre></div>
+</div>
+<p>メンバーは、externやregister指定子と共に宣言することはできない。メンバーをthread_local指定子と共に宣言する場合は、static指定子も指定しなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="k">extern</span> <span class="kt">int</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// エラー</span>
+    <span class="k">register</span> <span class="kt">int</span> <span class="n">b</span> <span class="p">;</span> <span class="c1">// エラー</span>
+    <span class="n">thread_local</span> <span class="kt">int</span> <span class="n">c</span> <span class="p">;</span> <span class="c1">// エラー</span>
+
+    <span class="c1">// OK、staticと共に宣言している</span>
+    <span class="k">static</span> <span class="n">thread_local</span> <span class="kt">int</span> <span class="n">d</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">thread_local</span> <span class="kt">int</span> <span class="n">S</span><span class="o">::</span><span class="n">d</span> <span class="p">;</span> <span class="c1">// 定義</span>
+</pre></div>
+</div>
+<p>基本的に、クラス名と同じ名前のメンバーを持つことはできない。これには、一部の例外が存在するが、本書では解説しない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">name</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">name</span> <span class="p">;</span>       <span class="c1">// エラー</span>
+    <span class="kt">void</span> <span class="nf">name</span><span class="p">()</span> <span class="p">;</span>           <span class="c1">// エラー</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">name</span><span class="p">()</span> <span class="p">;</span>    <span class="c1">// エラー</span>
+    <span class="k">using</span> <span class="n">name</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">;</span>      <span class="c1">// エラー</span>
+    <span class="k">enum</span> <span class="p">{</span> <span class="n">name</span> <span class="p">}</span> <span class="p">;</span>         <span class="c1">// エラー</span>
+    <span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">name</span> <span class="p">}</span> <span class="p">;</span>    <span class="c1">// エラー</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>unionではないクラスにおいて、同じアクセス指定下にある非staticデータメンバーは、クラスのオブジェクト上で、宣言された順番に確保される。つまり、先に宣言されたデータメンバーは、後に宣言されたデータメンバーよりも、上位のアドレスに配置される。ただし、実装は必要なパディングを差し挟むかもしれないので、後のデータメンバーが、先のデータメンバーの直後に配置されるという保証はない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+<span class="c1">// 同じアクセス指定下にある非staticデータメンバー</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">S</span> <span class="n">s</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">.</span><span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="o">*</span> <span class="n">p2</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">.</span><span class="n">y</span> <span class="p">;</span>
+
+    <span class="c1">// この式は、必ずtrueとなる</span>
+    <span class="n">p1</span> <span class="o">&lt;</span> <span class="n">p2</span> <span class="p">;</span>
+    <span class="c1">// この式がtrueとなる保証はない</span>
+    <span class="n">p1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="n">p2</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>アクセス指定子が異なる非staticデータメンバーの配置に関しては、未規定である。</p>
+<p>標準レイアウトstructのオブジェクトへのポインターは、reinterpret_castによって変換された場合、クラスの最初のメンバーへのポインターに変換できる。また、その逆も可能である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">S</span> <span class="n">s</span> <span class="p">;</span>
+    <span class="n">S</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="o">*</span> <span class="n">p2</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">.</span><span class="n">x</span> <span class="p">;</span>
+
+    <span class="c1">// 以下の2式は、trueとなることが保証されている</span>
+    <span class="n">p1</span> <span class="o">==</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span> <span class="n">S</span> <span class="o">*</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">p2</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="n">p2</span> <span class="o">==</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span> <span class="kt">int</span> <span class="o">*</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">p1</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="layout-compatible">
+<h3>レイアウト互換（layout-compatible）<a class="headerlink" href="#layout-compatible" title="Permalink to this headline">¶</a></h3>
+<p>レイアウト互換（layout-compatible）という概念がある。まず、同じ型は、レイアウト互換である。</p>
+<p>もし、二つの標準レイアウトstructが、同じ数の非staticデータメンバーを持ち、対応する非staticデータメンバーが、それぞれレイアウト互換であったならば、そのクラスは、お互いにレイアウト互換structである。</p>
+<p>もし、二つの標準レイアウトunionが、同じ数の非staticデータメンバーを持ち、対応する非staticデータメンバーが、それぞれレイアウト互換であったならば、そのクラスは、お互いにレイアウト互換unionである。</p>
+<p>二つの標準レイアウトstructは、レイアウト互換structのメンバーが続く限り、オブジェクト上で共通の表現をしていると保証される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// A、Bは、2番目のメンバーまで、お互いにレイアウト互換</span>
+<span class="k">struct</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span>
+    <span class="kt">float</span> <span class="n">z</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span>
+    <span class="kt">double</span> <span class="n">z</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">A</span> <span class="n">a</span> <span class="p">;</span>
+
+    <span class="n">B</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="k">reinterpret_cast</span><span class="o">&lt;</span> <span class="n">B</span> <span class="o">*</span> <span class="o">&gt;</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">a</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="c1">// OK、aのオブジェクトの、対応するレイアウト互換なメンバーが変更される</span>
+    <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">;</span>
+    <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">y</span> <span class="o">=</span> <span class="mi">2</span> <span class="p">;</span>
+
+    <span class="c1">// エラー、3番目のメンバーは、レイアウト互換ではない</span>
+    <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">z</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ただし、メンバーがビットフィールドの場合、お互いに同じビット数でなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// AとBはお互いにレイアウト互換</span>
+<span class="k">struct</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span><span class="o">:</span><span class="mi">8</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span><span class="o">:</span><span class="mi">8</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>標準レイアウトunionが、お互いにレイアウト互換な複数の標準レイアウトstructを持つとき、先頭から共通のメンバーについては、一方を変更して、他方で使うこともできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span>
+    <span class="kt">float</span> <span class="n">z</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span>
+    <span class="kt">double</span> <span class="n">z</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">union</span> <span class="n">U</span>
+<span class="p">{</span>
+    <span class="n">A</span> <span class="n">a</span> <span class="p">;</span>
+    <span class="n">B</span> <span class="n">b</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">U</span> <span class="n">u</span> <span class="p">;</span>
+    <span class="n">u</span><span class="p">.</span><span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">;</span>
+    <span class="n">u</span><span class="p">.</span><span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">=</span> <span class="mi">2</span> <span class="p">;</span>
+
+    <span class="c1">// 以下の2式はtrueとなることが保証されている</span>
+    <span class="n">u</span><span class="p">.</span><span class="n">b</span><span class="p">.</span><span class="n">x</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">;</span>
+    <span class="n">u</span><span class="p">.</span><span class="n">b</span><span class="p">.</span><span class="n">y</span> <span class="o">==</span> <span class="mi">2</span> <span class="p">;</span>
+
+    <span class="c1">// 3番目のメンバーは、レイアウト互換ではない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="member-functions">
+<h2>メンバー関数（Member functions）<a class="headerlink" href="#member-functions" title="Permalink to this headline">¶</a></h2>
+<p>クラスの定義内で宣言される関数を、クラスのメンバー関数（member function)という。メンバー関数はstatic指定子と共に宣言することができる。その場合、関数はstaticメンバー関数となる。staticメンバー関数ではないメンバー関数のことを、非staticメンバー関数という。ただし、friend指定子と共に宣言された関数は、メンバー関数ではない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">non_static_member_function</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// 非staticメンバー関数</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">static_member_function</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// staticメンバー関数</span>
+
+    <span class="k">friend</span> <span class="kt">void</span> <span class="nf">friend_function</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// これはメンバー関数ではない</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>メンバー関数は、クラス定義の内側でも外側でも定義することができる。クラス定義の内側で定義されたメンバー関数を、inlineメンバー関数という。これは、暗黙的にinline関数となる。クラス定義の外側でメンバー関数を定義する場合、クラスと同じ名前空間スコープ内で定義しなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="c1">// inlineメンバー関数</span>
+    <span class="kt">void</span> <span class="n">inline_member_function</span><span class="p">()</span>
+    <span class="p">{</span> <span class="cm">/*定義*/</span> <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="n">member_function</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// メンバー関数の宣言</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// クラスSと同じ名前空間スコープ</span>
+<span class="kt">void</span> <span class="n">S</span><span class="o">::</span><span class="n">member_function</span><span class="p">()</span>
+<span class="p">{</span> <span class="cm">/*定義*/</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>クラス定義の外側でinlineメンバー関数の定義をすることもできる。それには、関数宣言か関数定義で、inline指定子を使えばよい。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kr">inline</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">g</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">S</span><span class="o">::</span><span class="n">f</span><span class="p">(){</span> <span class="p">}</span>
+<span class="kr">inline</span> <span class="kt">void</span> <span class="n">S</span><span class="o">::</span><span class="n">g</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>クラス定義の外側でメンバー関数を定義するためには、メンバー関数の名前を、::演算子によって、クラス名で修飾しなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">member</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">S</span><span class="o">::</span><span class="n">member</span><span class="p">(){</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>&lt;a href=&#8221;#class.local&#8221;&gt;ローカルクラス&lt;/a&gt;では、メンバー関数をクラス定義の外側で宣言する方法はない。</p>
+<div class="section" id="static-nonstatic-member-functions">
+<h3>非staticメンバー関数（Nonstatic member functions）<a class="headerlink" href="#static-nonstatic-member-functions" title="Permalink to this headline">¶</a></h3>
+<p>非staticメンバー関数は、そのメンバー関数が属するクラスや、そのクラスから派生されたクラスのオブジェクトに対して、&lt;a href=&#8221;#expr.ref&#8221;&gt;クラスメンバーアクセス演算子&lt;/a&gt;を使うことで、呼び出すことができる。同じクラスや、そのクラスから派生されたクラスのメンバー関数からは、他のメンバー関数を、通常の関数の呼び出しと同じように呼ぶことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Object</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(){</span> <span class="p">}</span>
+    <span class="kt">void</span> <span class="n">g</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// 関数呼び出し</span>
+        <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Object</span> <span class="n">object</span> <span class="p">;</span>
+    <span class="c1">// クラスのメンバーアクセス演算子と、関数呼び出し</span>
+    <span class="n">object</span><span class="p">.</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>非staticメンバー関数は、CV修飾子と共に宣言することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">none</span><span class="p">()</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="n">c</span><span class="p">()</span> <span class="k">const</span> <span class="p">;</span> <span class="c1">// constメンバー関数</span>
+    <span class="kt">void</span> <span class="n">v</span><span class="p">()</span> <span class="k">volatile</span> <span class="p">;</span> <span class="c1">// volatileメンバー関数</span>
+    <span class="kt">void</span> <span class="n">cv</span><span class="p">()</span> <span class="k">const</span> <span class="k">volatile</span> <span class="p">;</span> <span class="c1">// const volatileメンバー関数</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>このCV修飾子は、thisポインターの型を変える。また、メンバー関数の型も、CV修飾子に影響される。</p>
+<p>非staticメンバー関数は、リファレンス修飾子と共に宣言することができる。リファレンス修飾子は、オーバーロード解決の際の、暗黙の仮引数の型に影響を与える。詳しくは、&lt;a href=&#8221;#over.match.funcs&#8221;&gt;候補関数と実引数リスト&lt;/a&gt;を参照。</p>
+<p>非staticメンバー関数は、virtualやピュアvirtualの文法で宣言することができる。詳しくは、&lt;a href=&#8221;#class.virtual&#8221;&gt;virtual関数&lt;/a&gt;や、&lt;a href=&#8221;#class.abstract&#8221;&gt;抽象クラス&lt;/a&gt;を参照。</p>
+</div>
+<div class="section" id="this-the-this-pointer">
+<h3>thisポインター（The this pointer）<a class="headerlink" href="#this-the-this-pointer" title="Permalink to this headline">¶</a></h3>
+<p>非staticメンバー関数内では、thisというキーワードが、クラスのオブジェクトへのprvalueのポインターを表す。このクラスのオブジェクトは、メンバー関数を呼び出した際のクラスのオブジェクトである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Object</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">this</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Object</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="p">;</span>
+
+    <span class="n">a</span><span class="p">.</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// thisは&amp;a</span>
+    <span class="n">b</span><span class="p">.</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// thisは&amp;b</span>
+    <span class="n">c</span><span class="p">.</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// thisは&amp;c</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>class Xのメンバー関数におけるthisの型は、X <a href="#id1"><span class="problematic" id="id2">*</span></a>である。もし、constメンバー関数の場合、X const <a href="#id3"><span class="problematic" id="id4">*</span></a>となり、volatileメンバー関数の場合、X volatile <a href="#id5"><span class="problematic" id="id6">*</span></a>となり、const volatileメンバー関数の場合は、X const volatile <a href="#id7"><span class="problematic" id="id8">*</span></a>となる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="c1">// thisの型はX *</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="k">this</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="c1">// thisの型はX const *</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">this</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="c1">// thisの型はX volatile *</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">volatile</span> <span class="p">{</span> <span class="k">this</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="c1">// thisの型はX const volatile *</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">const</span> <span class="k">volatile</span> <span class="p">{</span> <span class="k">this</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>constメンバー関数では、メンバー関数に渡されるクラスのオブジェクトがconstであるため、thisの型も、constなクラスへのポインター型となり、非staticデータメンバーを変更することができない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span>
+
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">const</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="o">-&gt;</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>これは、thisの型を考えてみると分かりやすい。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span>
+
+
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">const</span>
+    <span class="p">{</span>
+        <span class="n">X</span> <span class="k">const</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="k">this</span> <span class="p">;</span>
+        <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>thisの型が、constなクラスに対するポインターなので、データメンバーを変更することはできない。</p>
+<p>同様にして、volatileの場合も、非staticデータメンバーはvolatile指定されたものとみなされる。volatileの具体的な機能ついては、実装に依存する。</p>
+<p>CV修飾されたメンバー関数は、同等か、より少なくCV修飾されたクラスのオブジェクトに対して呼び出すことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">none</span> <span class="p">;</span>
+    <span class="n">none</span><span class="p">.</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// OK、より少なくCV修飾されている</span>
+    <span class="n">X</span> <span class="k">const</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="n">c</span><span class="p">.</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// OK、同じCV修飾</span>
+
+    <span class="n">X</span> <span class="k">const</span> <span class="k">volatile</span> <span class="n">cv</span> <span class="p">;</span>
+    <span class="n">cv</span><span class="p">.</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// エラー、CV修飾子を取り除くことはできない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>これは、非staticメンバー関数から、他の非staticメンバー関数を、クラスメンバーアクセスなしで呼び出す際にも当てはまる。その場合、クラスのオブジェクトとは、thisである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">c</span><span class="p">()</span> <span class="k">const</span> <span class="c1">// constメンバー関数</span>
+    <span class="p">{</span>
+        <span class="c1">// thisの型はX const *</span>
+        <span class="n">nc</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// エラー、CV修飾子を取り除くことはできない</span>
+    <span class="p">}</span> <span class="p">;</span>
+
+    <span class="kt">void</span> <span class="nf">nc</span><span class="p">()</span> <span class="c1">// 非constメンバー関数</span>
+    <span class="p">{</span>
+        <span class="c1">// thisの型はX *</span>
+        <span class="n">c</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// OK、CV修飾子を付け加えることはできる</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>コンストラクターとデストラクターは、CV修飾子と共に宣言することができない。ただし、これらの特別なメンバー関数は、constなクラスのオブジェクトの生成、破棄の際にも、呼び出される。</p>
+</div>
+</div>
+<div class="section" id="static-static-members">
+<h2>staticメンバー（Static members）<a class="headerlink" href="#static-static-members" title="Permalink to this headline">¶</a></h2>
+<p>クラスのデータメンバーやメンバー関数は、クラス定義内で、static指定子と共に宣言することが出来る。そのように宣言されたメンバーを、クラスのstaticメンバーという。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">data_member</span> <span class="p">;</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">member_function</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="n">S</span><span class="o">::</span><span class="n">data_member</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>クラスXのstaticメンバーsは、::演算子を用いて、X::sのように参照することで、使うことができる。staticメンバーは、クラスのオブジェクトがなくても参照できるので、クラスのメンバーアクセス演算子を使う必要はない。しかし、クラスのメンバーアクセス演算子を使っても参照できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">s</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="n">X</span><span class="o">::</span><span class="n">s</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// ::演算子による参照</span>
+    <span class="n">X</span><span class="o">::</span><span class="n">s</span> <span class="p">;</span>
+
+    <span class="c1">// クラスのメンバーアクセス演算子でも参照することはできる</span>
+    <span class="n">X</span> <span class="n">object</span> <span class="p">;</span>
+    <span class="n">object</span><span class="p">.</span><span class="n">s</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスのメンバー関数内では、非修飾名を使った場合、クラスのstaticメンバー、enum名、ネストされた型が名前探索される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">s</span> <span class="p">;</span> <span class="c1">// X::s</span>
+        <span class="n">value</span> <span class="p">;</span> <span class="c1">// X::value</span>
+        <span class="n">type</span> <span class="n">obj</span> <span class="p">;</span> <span class="c1">// X::type</span>
+    <span class="p">}</span>
+
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">s</span> <span class="p">;</span>
+    <span class="k">enum</span> <span class="p">{</span> <span class="n">value</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="k">typedef</span> <span class="kt">int</span> <span class="n">type</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="n">X</span><span class="o">::</span><span class="n">s</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>staticメンバーにも、通常通りのアクセス指定が適用される。</p>
+<div class="section" id="static-static-member-functions">
+<h3>staticメンバー関数（Static member functions）<a class="headerlink" href="#static-static-member-functions" title="Permalink to this headline">¶</a></h3>
+<p>staticメンバー関数は、thisポインターを持たない。virtual指定子を使えない。CV修飾子を使えない。名前と仮引数の同じ、staticメンバー関数と非staticメンバー関数は、両立できない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="c1">// エラー、同じ名前と仮引数のstatic関数と非static関数が存在する</span>
+    <span class="kt">void</span> <span class="n">same</span><span class="p">()</span> <span class="p">;</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">same</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>その他は、通常のメンバー関数と同じである。</p>
+</div>
+<div class="section" id="static-static-data-members">
+<h3>staticデータメンバー（Static data members）<a class="headerlink" href="#static-static-data-members" title="Permalink to this headline">¶</a></h3>
+<p>staticデータメンバーは、クラスのサブオブジェクトには含まれない。staticデータメンバーは、クラスのスコープでアクセス可能なstatic変数だと考えてもよい。クラスのすべてのオブジェクトは、ひとつのstaticデータメンバーのオブジェクトを共有する。ただし、static thread_localなデータメンバーのオブジェクトは、スレッドにつきひとつ存在する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="n">S</span><span class="o">::</span><span class="n">member</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">S</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span> <span class="p">;</span>
+    <span class="c1">// すべて同じオブジェクトを参照する</span>
+    <span class="n">a</span><span class="p">.</span><span class="n">member</span> <span class="p">;</span> <span class="n">b</span><span class="p">.</span><span class="n">member</span> <span class="p">;</span> <span class="n">c</span><span class="p">.</span><span class="n">member</span> <span class="p">;</span> <span class="n">e</span><span class="p">.</span><span class="n">member</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラス定義内のstaticデータメンバー宣言は、定義ではない。staticデータメンバーの定義は、クラスの定義を含む名前空間スコープの中に書かなければならない。その際、名前に::演算子を用いて、クラス名を指定する必要がある。staticデータメンバーの定義には、初期化子を使うことができる。初期化子は必須ではない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// クラス名 :: メンバー名</span>
+<span class="kt">void</span> <span class="n">S</span><span class="o">::</span><span class="n">member</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>staticデータメンバーが、constなリテラル型の場合、クラス定義内の宣言に、初期化子を書くことができる。この場合、初期化子は定数式でなければならない。staticデータメンバー自体も、定数式になる。初期化子を書かない場合は、通常通り、クラス定義の外、同じ名前空間スコープ内で、定義を書かなければならない。この場合は、定数式にはならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">constant_expression</span> <span class="o">=</span> <span class="mi">123</span> <span class="p">;</span> <span class="c1">// 定数式</span>
+    <span class="k">static</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">non_constant_expression</span> <span class="p">;</span> <span class="c1">// 宣言、定数式ではない</span>
+<span class="p">}</span> <span class="p">;</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="n">S</span><span class="o">::</span><span class="n">non_constant_expression</span> <span class="o">=</span> <span class="mi">123</span> <span class="p">;</span> <span class="c1">// 定義</span>
+</pre></div>
+</div>
+<p>リテラル型のstaticデータメンバーは、constexpr指定子をつけて宣言することもできる。この場合、初期化子を書かなければならない。初期化子は、定数式でなければならない。このように定義されたstaticデータメンバーは、定数式になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="n">constexpr</span> <span class="kt">int</span> <span class="n">constant_expression</span> <span class="o">=</span> <span class="mi">123</span> <span class="p">;</span> <span class="c1">// 定数式</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>名前空間スコープのクラスのstaticデータメンバーは、外部リンケージを持つ。ローカルクラスのstaticデータメンバーは、リンケージを持たない。</p>
+<p>staticデータメンバーは、非ローカル変数と同じように、初期化、破棄される。詳しくは、&lt;a href=&#8221;#basic.start.init&#8221;&gt;非ローカル変数の初期化&lt;/a&gt;、&lt;a href=&#8221;#basic.start.term&#8221;&gt;終了&lt;/a&gt;を参照。</p>
+<p>staticデータメンバーには、mutable指定子は使えない。</p>
+</div>
+</div>
+<div class="section" id="union-unions">
+<h2>union（Unions）<a class="headerlink" href="#union-unions" title="Permalink to this headline">¶</a></h2>
+<p>&lt;p class=&#8221;editorial-note&#8221;&gt;
+TODO: variant memberに書き換え。</p>
+<p>unionというクラスは、クラスキーにunionキーワードを用いて宣言する。unionでは、非staticデータメンバーは、どれかひとつのみが有効である。これは、unionのオブジェクト内では、非staticデータメンバーのストレージは、共有されているからである。unionのサイズは、非staticデータメンバーのうち、最も大きな型を格納するのに十分なサイズとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">union</span> <span class="n">U</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="p">;</span>
+    <span class="kt">short</span> <span class="n">s</span> <span class="p">;</span>
+    <span class="kt">double</span> <span class="n">d</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">U</span> <span class="n">u</span> <span class="p">;</span>
+    <span class="n">u</span><span class="p">.</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// U::iが有効</span>
+    <span class="n">u</span><span class="p">.</span><span class="n">s</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// U::sが有効、U::iは有効ではなくなる</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、unionのサイズは、int, short, doubleのうちの、最もサイズが大きな型を格納するのに十分なだけのサイズである。データメンバーであるi, s, dは、同じストレージを共有している。</p>
+<p>unionと、標準レイアウトクラスについては、&lt;a href=&#8221;#class&#8221;&gt;クラス&lt;/a&gt;を参照。</p>
+<p>unionは、通常のクラスに比べて、いくらか制限を受ける。unionはvirtual関数を持つことができない。unionは、基本クラスを持つことができない。unionは基本クラスになれない。unionは、リファレンス型の非staticデータメンバーを持つことができない。unionの非staticデータメンバーのうち、初期化子を持てるのは、ひとつだけである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// エラーの例</span>
+
+<span class="c1">// エラー、virtual関数を持てない</span>
+<span class="k">union</span> <span class="n">U1</span> <span class="p">{</span> <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">// エラー、基本クラスを持てない</span>
+<span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">union</span> <span class="n">U</span> <span class="o">:</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">// エラー、基本クラスになれない</span>
+<span class="k">union</span> <span class="n">Union_base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">union</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Union_base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">// エラー、リファレンス型の非staticデータメンバーを持てない</span>
+<span class="n">uion</span> <span class="n">U2</span> <span class="p">{</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">// エラー、非staticデータメンバーで、初期化子を持てるのは、ひとつだけ</span>
+
+<span class="k">union</span> <span class="n">U3</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー、複数の初期化子、どちらか一つならエラーではない</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>その他は、通常のクラスと変わることがない。unionはメンバー関数を持てる。メンバー関数には、コンストラクターやデストラクター、演算子のオーバーロードも含まれる。アクセス指定も使える。staticデータメンバーならば、リファレンス型でも構わない。ネストされた型も使える。</p>
+<p>unionの非staticデータメンバーが、非trivialなコンストラクター、コピーコンストラクター、ムーブコンストラクター、コピー代入演算子、ムーブ代入演算子、デストラクターを持っている場合、unionの対応するメンバーが、暗黙的にdeleteされる。そのため、これらのメンバーを使う場合には、union側で、ユーザー定義しなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">union</span> <span class="n">U</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">str</span> <span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">vec</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">U</span> <span class="n">u</span> <span class="p">;</span> <span class="c1">// エラー、コンストラクターとデストラクターがdelete定義されている。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、strやvecは、非trivialなコンストラクターやデストラクターなどを持っているので、union側でも、それらを定義しなければならない。また、この例の場合、unionのコンストラクターやデストラクターは何もしないので、このunionを実際に使う場合には、placement newや、明示的なデストラクター呼び出しが必要になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">union</span> <span class="n">U</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">str</span> <span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">vec</span> <span class="p">;</span>
+
+    <span class="n">U</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">U</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">U</span> <span class="n">u</span> <span class="p">;</span>
+
+    <span class="k">new</span> <span class="p">(</span> <span class="o">&amp;</span><span class="n">u</span><span class="p">.</span><span class="n">str</span> <span class="p">)</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span> <span class="s">&quot;hello&quot;</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="n">u</span><span class="p">.</span><span class="n">str</span><span class="p">.</span><span class="o">~</span><span class="n">basic_string</span><span class="p">()</span> <span class="p">;</span>
+
+    <span class="k">new</span> <span class="p">(</span> <span class="o">&amp;</span><span class="n">u</span><span class="p">.</span><span class="n">vec</span> <span class="p">)</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="n">u</span><span class="p">.</span><span class="n">vec</span><span class="p">.</span><span class="o">~</span><span class="n">vector</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>もちろん、unionのコンストラクターやデストラクターで、どれかのデータメンバーの初期化、破棄をすることは可能である。しかし、どのデータメンバーが有効なのかということを、union内で把握するのは難しい。</p>
+<div class="section" id="union-anonymous-union">
+<h3>無名union（anonymous union）<a class="headerlink" href="#union-anonymous-union" title="Permalink to this headline">¶</a></h3>
+<p>以下のような形式のunionの宣言を、無名union（anonymous union）という。</p>
+<div class="highlight-c++"><pre>union { メンバー</pre>
+</div>
+<p>無名unionは、無名の型のunionの、無名のオブジェクトを生成する。無名unionのメンバー指定は、非staticデータメンバーだけでなければならない。無名unionのメンバーの名前は、宣言されているスコープの他の名前と衝突してはならない。無名unionでは、staticデータメンバーやメンバー関数、ネストされた型などは使えない。また、privateやprotectedアクセス指定も使えない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">i</span> <span class="p">;</span> <span class="kt">short</span> <span class="n">s</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="c1">// iかsのどちらかひとつだけが有効</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>これは、以下のようなコードと同じであると考えることもできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">union</span> <span class="n">Anonymous</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">i</span> <span class="p">;</span> <span class="kt">short</span> <span class="n">s</span> <span class="p">;</span> <span class="p">}</span> <span class="n">unnamed</span> <span class="p">;</span>
+    <span class="n">unnamed</span><span class="p">.</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">unnamed</span><span class="p">.</span><span class="n">s</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>名前空間スコープで宣言される無名unionには、必ずstatic指定子をつけなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// グローバル名前空間スコープ</span>
+<span class="k">static</span> <span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>名前空間スコープで宣言される無名unionは、staticストレージの有効期間と、内部リンケージを持つ。</p>
+<p>ブロックスコープで宣言される無名unionは、ブロックスコープ内で許されているすべてのストレージ上に構築できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// 自動ストレージ</span>
+    <span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">a</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="c1">// staticストレージ</span>
+    <span class="k">static</span> <span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">b</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="c1">// thread_localストレージ</span>
+    <span class="n">thread_local</span> <span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">c</span> <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラススコープで宣言される無名unionには、ストレージ指定子を付けることはできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="k">union</span>
+    <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>オブジェクトやポインターを宣言している、クラス名の省略されたunionは、無名unionではない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// クラス名の省略されたunion</span>
+<span class="c1">// 無名unionではない</span>
+<span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="p">}</span> <span class="n">obj</span><span class="p">,</span> <span class="o">*</span> <span class="n">ptr</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="variant-member">
+<h3>共用メンバー（variant member）<a class="headerlink" href="#variant-member" title="Permalink to this headline">¶</a></h3>
+<p>union、もしくは無名unionを直接のメンバーに持つクラスを、unionのようなクラス（union-like class）という。unionのようなクラスには、共用メンバー（variant member）という概念が存在する。unionの共用メンバーは、unionの非staticデータメンバーである。無名unionを直接のメンバーに持つクラスの場合、無名unionの非staticデータメンバーである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// xとyは共用メンバー</span>
+<span class="k">union</span> <span class="n">U</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="c1">// xとyは共用メンバー</span>
+<span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="bit-fields">
+<h2>ビットフィールド（Bit-fields）<a class="headerlink" href="#bit-fields" title="Permalink to this headline">¶</a></h2>
+<p>ビットフィールドは、以下のようなメンバー宣言子の文法で宣言できる。</p>
+<div class="highlight-c++"><pre>識</pre>
+</div>
+<p>定数式は、0よりも大きい整数でなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="c1">// 型指定子</span>
+    <span class="n">x</span> <span class="o">:</span> <span class="mi">8</span> <span class="p">;</span> <span class="c1">// ビットフィールドの宣言子</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ビットフィールドの定数式は、データメンバーのサイズをビット数で指定する。ビットフィールドに関しては、ほとんどの挙動が実装依存である。特に、ビットフィールドがクラスオブジェクトのストレージ上でどのように表現されるのかということや、アライメントなどは、すべて実装依存である。また、実装は、ビットフィールドのメンバー同士を詰めて表現することが許されている。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">char</span> <span class="n">x</span> <span class="o">:</span> <span class="mi">1</span> <span class="p">;</span>
+    <span class="kt">char</span> <span class="n">y</span> <span class="o">:</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ここで、sizeof(S)は、2以上になるとは限らない。例えば、sizeof(S)が1を返す実装もあり得る。</p>
+<p>ビットフィールドの定数式は、オブジェクトのビット数を上回ることができる。その場合、上回ったビット数は、パディングとして確保されるが、オブジェクトの内部表現として使われることはない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">:</span> <span class="mi">1000</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ここで、sizeof(S)は、少なくとも1000ビット以上になる値を返す（規格では、1バイトあたりのビット数は定められていない）。ただし、X::sは、本来のint型以上の範囲の値を保持することはできない。int型のオブジェクトのビット数を上回った分は、単にパディングとして確保されているに過ぎない。</p>
+<p>ビットフィールドの宣言子で、識別子を省略した場合、無名ビットフィールドとなる。無名ビットフィールドはクラスのメンバーではなく、初期化もされない。ただし、実装依存の方法で、クラスのオブジェクト内に存在する。一般的な実装では、無名ビットフィールドは、オブジェクトのレイアウトを調整するためのパディングとして用いられる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">:</span> <span class="mi">4</span> <span class="p">;</span>
+    <span class="kt">char</span> <span class="o">:</span> <span class="mi">3</span> <span class="p">;</span> <span class="c1">// 無名ビットフィールド</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="o">:</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>あるコンパイラーでは、このような無名ビットフィールドにより、S::xとS::yの間に、3ビット分のパディングを挿入することができる。ただし、すでに述べたように、ビットフィールドの内部表現とアライメントは実装依存なので、これはすべてのコンパイラーに当てはまるわけではない。使用しているコンパイラーが、ビットフィールドをどのように実装しているかは、コンパイラー独自のマニュアルを参照すべきである。</p>
+<p>無名ビットフィールドでは、特別に、定数式に0を指定することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">:</span> <span class="mi">4</span> <span class="p">;</span>
+    <span class="kt">char</span> <span class="o">:</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 無名ビットフィールド</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="o">:</span> <span class="mi">4</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>これは、無名ビットフィールドの次のビットフィールドのアライメントを、アロケーション単位の境界に配置させるための指定である。上記の構造体は、ある環境では、S::xとS::yが同一のアロケーション単位に配置されるかもしれないが、無名ビットフィールドを使うことで、X::yを別のアロケーション単位に配置できる。</p>
+<p>&lt;p class=&#8221;editorial-note&#8221;&gt;
+TODO:構造体のオブジェクトの内部表現を視覚化した図</p>
+<p>ビットフィールドはstaticメンバーにはできない。ビットフィールの型は、整数型かenum型でなければならない。符号が指定されていない整数型のビットフィールドの符号は実装依存である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">error</span> <span class="o">:</span> <span class="mi">8</span> <span class="p">;</span> <span class="c1">// エラー、ビットフィールドはstaticメンバーにはできない</span>
+    <span class="kt">int</span> <span class="n">impl</span> <span class="o">:</span> <span class="mi">8</span> <span class="p">;</span> <span class="c1">// 符号は実装依存</span>
+    <span class="kt">signed</span> <span class="n">s</span> <span class="o">:</span> <span class="mi">8</span> <span class="p">;</span> <span class="c1">// 符号はsigned</span>
+    <span class="kt">unsigned</span> <span class="n">u</span> <span class="o">:</span> <span class="mi">8</span> <span class="p">;</span> <span class="c1">// 符号はunsigned</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>bool型のビットフィールドは、ビット数に関わらず、bool型の値を表現できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">bool</span> <span class="n">a</span> <span class="o">:</span> <span class="mi">1</span> <span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">b</span> <span class="o">:</span> <span class="mi">2</span> <span class="p">;</span>
+    <span class="kt">bool</span> <span class="n">c</span> <span class="o">:</span> <span class="mi">3</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">S</span> <span class="n">s</span> <span class="p">;</span>
+    <span class="n">s</span><span class="p">.</span><span class="n">a</span> <span class="o">=</span> <span class="nb">true</span> <span class="p">;</span>
+    <span class="n">s</span><span class="p">.</span><span class="n">b</span> <span class="o">=</span> <span class="nb">false</span> <span class="p">;</span>
+    <span class="n">s</span><span class="p">.</span><span class="n">c</span> <span class="o">=</span> <span class="nb">true</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ビットフィールドのアドレスを得ることはできない。つまり、&amp;amp;演算子をビットフィールドに適用することはできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">:</span> <span class="mi">8</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">S</span> <span class="n">s</span> <span class="p">;</span>
+    <span class="o">&amp;</span><span class="n">s</span><span class="p">.</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>リファレンスは、ビットフィールドを参照することはできない。ただし、constなlvalueリファレンスの初期化子が、lvalueのビットフィールドの場合は、一時オブジェクトが生成され、そのオブジェクトを参照する</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">:</span> <span class="mi">8</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">S</span> <span class="n">s</span> <span class="p">;</span>
+    <span class="c1">// エラー</span>
+    <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="n">x</span> <span class="p">;</span>
+    <span class="c1">// OK</span>
+    <span class="c1">// ただし、crefが参照するのは、生成された一時オブジェクトである</span>
+    <span class="c1">// s.xではない</span>
+    <span class="kt">int</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">cref</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="nested-class-declarations">
+<h2>クラス宣言のネスト（Nested class declarations）<a class="headerlink" href="#nested-class-declarations" title="Permalink to this headline">¶</a></h2>
+<p>クラスは、他のクラスの内側で宣言することができる。これを、ネストされたクラス（nested class）という。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Outer</span>
+<span class="p">{</span>
+    <span class="k">class</span> <span class="nc">Inner</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// ネストされたクラス</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Outer</span><span class="o">::</span><span class="n">Inner</span> <span class="n">object</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ネストされたクラスのスコープは、外側のクラスのスコープに従う。これは、名前探索の際も、外側のクラスのスコープが影響するということである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// グローバル変数</span>
+
+<span class="k">struct</span> <span class="n">Outer</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// Outer::x</span>
+    <span class="k">struct</span> <span class="n">Inner</span>
+    <span class="p">{</span>
+        <span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="k">sizeof</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、sizeofのオペランドは未評価式。Outer::xのサイズを返す</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー、Outer::xはOuterの非staticメンバー</span>
+
+            <span class="o">::</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// OK、グローバル変数</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>関数Inner::fの中で、xという名前を使うと、Outer::xが見つかる。これは、クラスInnerが、クラスOuterのスコープ内にあるためである。しかし、非staticデータメンバーであるOuter::xを使うためには、Outerのオブジェクトが必要なので、ここではエラーとなる。sizeofのオペランドは未評価式なので、問題はない。ただし、ここでのxは、Outer::xである。グローバル変数のxではない。</p>
+<p>ネストされたクラスのメンバー関数やstaticデータメンバーは、通常のクラス通り、クラス定義の外側、同じ名前空間内で定義することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// グローバル名前空間</span>
+<span class="k">struct</span> <span class="n">Outer</span>
+<span class="p">{</span>
+
+    <span class="k">struct</span> <span class="n">Inner</span>
+    <span class="p">{</span>
+        <span class="k">static</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+        <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span>
+    <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 同じ名前空間内</span>
+<span class="kt">int</span> <span class="n">Outer</span><span class="o">::</span><span class="n">Inner</span><span class="o">::</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="n">Outer</span><span class="o">::</span><span class="n">Inner</span><span class="o">::</span><span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>また通常通り、クラスの宣言だけをして、定義を後で書くこともできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Outer</span>
+<span class="p">{</span>
+    <span class="k">class</span> <span class="nc">Inner</span> <span class="p">;</span> <span class="c1">// 宣言</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Outer</span><span class="o">::</span><span class="n">Inner</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// 定義</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="local-class-declarations">
+<h2>ローカルクラス宣言（Local class declarations）<a class="headerlink" href="#local-class-declarations" title="Permalink to this headline">¶</a></h2>
+<p>関数定義の中で、クラスを定義することができる。これをローカルクラス（local class）という。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span> <span class="c1">// 関数定義</span>
+    <span class="k">class</span> <span class="nc">Local</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// ローカルクラス</span>
+    <span class="n">Local</span> <span class="n">object</span> <span class="p">;</span> <span class="c1">// ローカルクラスのオブジェクト</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ローカルクラスのスコープは、クラス定義の外側のスコープである。また、名前探索は、ローカルクラスが定義されている関数と同じとなる。</p>
+<p>ローカルクラスは、定義されている関数内の自動変数を使うことは出来ない。typedef名やstatic変数などは使える。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// ローカル変数</span>
+
+    <span class="k">typedef</span> <span class="kt">int</span> <span class="n">type</span> <span class="p">;</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span>
+
+    <span class="k">class</span> <span class="nc">Local</span>
+    <span class="p">{</span>
+        <span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー</span>
+
+            <span class="c1">// typedef名やstatic変数などは使える</span>
+            <span class="n">type</span> <span class="n">val</span> <span class="p">;</span> <span class="c1">// OK</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// OK</span>
+
+            <span class="c1">// OK、sizeofのオペランドは未評価式</span>
+            <span class="k">sizeof</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ローカルクラスは、通常のクラスより制限が多い。ローカルクラスをテンプレート宣言することはできない。メンバーテンプレートを持つこともできない。ローカルクラスのメンバー関数は、クラス定義内で定義されなければならない。ローカルクラスの外側でメンバー関数を定義する方法はない。staticデータメンバーを持つことはできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// エラー、ローカルクラスはテンプレート宣言できない</span>
+    <span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+    <span class="k">class</span> <span class="nc">Local</span>
+    <span class="p">{</span>
+        <span class="c1">// エラー、ローカルクラスはメンバーテンプレートを持てない。</span>
+        <span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">U</span> <span class="o">&gt;</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+
+        <span class="c1">// OK、ただし、ローカルクラスの外側でメンバー関数を定義する方法はない</span>
+        <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+        <span class="c1">// エラー、ローカルクラスはstaticデータメンバーを持つことはできない。</span>
+        <span class="k">static</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="nested-type-names">
+<h2>型名のネスト（Nested type names）<a class="headerlink" href="#nested-type-names" title="Permalink to this headline">¶</a></h2>
+<p>クラス内の型名を、ネストされた型名（nested type name）という。ネストされた型名を、クラスの外側で使うには、クラス名による修飾が必要である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">typedef</span> <span class="kt">int</span> <span class="n">I</span> <span class="p">;</span>
+    <span class="k">class</span> <span class="nc">Inner</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="n">I</span> <span class="n">member</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">X</span><span class="o">::</span><span class="n">I</span> <span class="n">object</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="class.derived.html" title="派生クラス（Derived classes）"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dcl.decl.html" title="宣言子（Declarators）"
+             >previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ezoe Ryou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

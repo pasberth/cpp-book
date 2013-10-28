@@ -1,0 +1,2062 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>宣言（Declarations） &mdash; C++11: Syntax and Feature</title>
+    
+    <link rel="stylesheet" href="_static/cpp-book.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="C++11: Syntax and Feature" href="index.html" />
+    <link rel="next" title="宣言子（Declarators）" href="dcl.decl.html" />
+    <link rel="prev" title="文（Statements）" href="stmt.stmt.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dcl.decl.html" title="宣言子（Declarators）"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="stmt.stmt.html" title="文（Statements）"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="declarations">
+<h1>宣言（Declarations）<a class="headerlink" href="#declarations" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="simple-declaration">
+<h2>単純宣言（simple-declaration）<a class="headerlink" href="#simple-declaration" title="Permalink to this headline">¶</a></h2>
+<p>単純宣言（simple-declaration）は、大きく分けて三つに分割できる。</p>
+<div class="highlight-c++"><pre>アトリビュート指定子 指定子　宣言子 ;</pre>
+</div>
+<p>変数や関数の宣言などは、この単純宣言で書かれることになる。</p>
+<p>単純宣言のアトリビュート指定子は、宣言子のエンティティに属する。詳しくは、&lt;a href=&#8221;#dcl.attr&#8221;&gt;アトリビュート&lt;/a&gt;を参照。</p>
+<p>指定子というのは、intやclass C、typedefなどを指す。指定子は複数指定できる。</p>
+<p>宣言子は、変数や関数、型などを、ひとつする。宣言子も複数指定できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// int型の変数xの宣言</span>
+<span class="kt">int</span> <span class="c1">// 指定子</span>
+<span class="n">x</span> <span class="c1">// 宣言子</span>
+<span class="p">;</span>
+
+<span class="c1">// int const * const型の変数pの宣言</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="c1">// 指定子</span>
+<span class="o">*</span> <span class="k">const</span> <span class="n">p</span> <span class="c1">// 宣言子</span>
+<span class="p">;</span>
+
+<span class="c1">// typeという名前のint型を宣言。</span>
+<span class="k">typedef</span> <span class="kt">int</span> <span class="c1">// 指定子</span>
+<span class="n">type</span> <span class="c1">// 宣言子</span>
+<span class="p">;</span>
+</pre></div>
+</div>
+<p>宣言子を複数指定できることには、注意が必要である。例えば、ひとつの宣言文で、複数の変数を宣言することもできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// int型で、それぞれa, b, c, dという名前の変数を宣言</span>
+<span class="c1">// 宣言子は4個</span>
+<span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>これは、比較的分かりやすい。しかし、ポインターや配列、関数などという型は、宣言子で指定するので、ひとつの宣言文で、複数の宣言子を使うということは、非常に読みにくいコードを書く事もできてしまうのである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="p">(</span><span class="o">*</span><span class="n">d</span><span class="p">)(</span><span class="kt">void</span><span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この文は非常に分かりにくい。この文を細かく区切って解説すると、以下のようになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="c1">// 指定子</span>
+<span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="c1">// int *型の変数</span>
+<span class="n">b</span><span class="p">,</span> <span class="c1">// int型の変数</span>
+<span class="n">c</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="c1">// int [5]型の変数</span>
+<span class="p">(</span><span class="o">*</span><span class="n">d</span><span class="p">)(</span><span class="kt">void</span><span class="p">)</span> <span class="c1">// int(*)(void)型の変数、引数を取らずint型の戻り値を返す関数ポインター</span>
+<span class="p">;</span>
+</pre></div>
+</div>
+<p>ひとつの宣言文で複数の宣言子を書くことは避けるべきである。</p>
+</div>
+<div class="section" id="static-assert-static-assert-declaration">
+<h2>static_assert宣言（static_assert-declaration）<a class="headerlink" href="#static-assert-static-assert-declaration" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c++"><pre>static_assert ( 定数式 , 文字列リテラル ) ;</pre>
+</div>
+<p>static_assert宣言は、条件付きのコンパイルエラーを引き起こすための宣言である。static_assertの定数式はboolに変換される。結果がtrueならば、何もしない。結果がfalseならば、コンパイルエラーを引き起こす。いわば、コンパイル時のassertとして働くのである。結果がfalseの場合、C++のコンパイラーは文字列リテラルをエラーメッセージとして、何らかの方法で表示する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">static_assert</span><span class="p">(</span> <span class="nb">true</span><span class="p">,</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// コンパイルが通る</span>
+<span class="n">static_assert</span><span class="p">(</span> <span class="nb">false</span><span class="p">,</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// コンパイルエラー</span>
+
+<span class="c1">// コンパイルエラー</span>
+<span class="c1">// 何らかの方法で、helloと表示される。</span>
+<span class="n">static_assert</span><span class="p">(</span> <span class="nb">false</span><span class="p">,</span> <span class="s">&quot;hello&quot;</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>具体的な利用例としては、今、int型のサイズが4バイトであることを前提としたコードを書きたいとする。このコードは当然ながらポータビリティがない。そこで、int型のサイズが4バイトではない環境では、コンパイルエラーになってほしい。これは、以下のように書ける</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">static_assert</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&quot;sizeof(int) must be 4&quot;</span><span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>sizeof(int)が4ではない環境のC++のコンパイラーでは、このコードはコンパイルエラーになる。また、文字列リテラルが、何らかの方法で表示される。</p>
+<p>また別の例では、以下のような関数があるとする。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 仕様：Derived型はBase型から派生されていること</span>
+<span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">Base</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Derived</span> <span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">Base</span> <span class="n">base</span><span class="p">,</span> <span class="n">Derived</span> <span class="n">derived</span> <span class="p">)</span>
+<span class="p">{</span>
+<span class="c1">// 処理</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この関数では、Derivedという型は、Baseという型から派生されていることを前提とした処理を行う。そこで、もしユーザーがうっかり、そのような要求を満たさない型を渡した場合、エラーになって欲しい。これは、以下のように書ける。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;type_traits&gt;</span>
+
+<span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">Base</span><span class="p">,</span> <span class="k">typename</span> <span class="n">Derived</span> <span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">Base</span> <span class="n">base</span><span class="p">,</span> <span class="n">Derived</span> <span class="n">derived</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">static_assert</span><span class="p">(</span>
+        <span class="o">!</span><span class="n">std</span><span class="o">::</span><span class="n">is_same</span><span class="o">&lt;</span><span class="n">Base</span><span class="p">,</span> <span class="n">Derived</span><span class="o">&gt;::</span><span class="n">value</span> <span class="c1">// 同じ型でなければtrue</span>
+        <span class="o">&amp;&amp;</span> <span class="n">std</span><span class="o">::</span><span class="n">is_base_of</span><span class="o">&lt;</span><span class="n">Base</span><span class="p">,</span> <span class="n">Derived</span><span class="o">&gt;::</span><span class="n">value</span> <span class="c1">// DerivedがBaseから派生されていればtrue</span>
+        <span class="p">,</span> <span class="s">&quot;Derived must derive Base.&quot;</span><span class="p">)</span> <span class="p">;</span>
+
+<span class="c1">// 処理</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Base</span> <span class="n">b</span> <span class="p">;</span> <span class="n">Derived</span> <span class="n">d</span> <span class="p">;</span>
+
+    <span class="n">f</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="n">f</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このように、テンプレート引数の型が、あらかじめ定められた要求を満たしていない場合、static_assertを使ってコンパイルエラーにすることもできる。</p>
+<p>static_assertの文字列リテラルには、&lt;a href=&#8221;#lex.charset&#8221;&gt;基本ソース文字セット&lt;/a&gt;を使うことができる。C++の実装は、基本ソース文字セット以外の文字を、エラーメッセージとして表示する義務がない。我々日本人としては、日本語を使いたいところだが、すべてのコンパイラーに日本語の文字コードのサポートを義務づけるのが現実的ではない。そのため規格では、現実的に最低限保証できる文字しかサポートを義務づけていない。もちろん、コンパイラーがstatic_assertの日本語表示をサポートするのは自由である。しかし、サポートする義務がない以上、static_assertの文字列リテラルに基本ソース文字セット以外の文字を使うのは、ポータビリティ上の問題がある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 文字列リテラルが表示されるかどうかは実装依存</span>
+<span class="n">static_assert</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">,</span> <span class="n">u</span><span class="s">&quot;このコードはint型のサイズは4であることを前提にしている&quot;</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="specifiers">
+<h2>指定子（Specifiers）<a class="headerlink" href="#specifiers" title="Permalink to this headline">¶</a></h2>
+<p>指定子には、ストレージクラス指定子、関数指定子、typedef指定子、friend指定子、constexpr指定子、型指定子がある。</p>
+<p>指定子は、組み合わせて使うことができる場合もある。例えば、typedef指定子と型指定子は、組み合わせて使うことができる。その際、指定子の順番には、意味が無い。以下の2行のコードは、全く同じ意味である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// int型の別名typeを宣言</span>
+<span class="c1">// typedefはtypedef指定子、intは型指定子、typeは宣言子</span>
+<span class="k">typedef</span> <span class="kt">int</span> <span class="n">type</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="k">typedef</span> <span class="n">type</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>もちろん、指定子と宣言子は違うので、以下はエラーである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// エラー、*は宣言子。宣言子の後に指定子を書く事はできない</span>
+<span class="kt">int</span> <span class="o">*</span> <span class="k">typedef</span> <span class="n">type</span> <span class="p">;</span>
+</pre></div>
+</div>
+<div class="section" id="storage-class-specifiers">
+<h3>ストレージクラス指定子（Storage class specifiers）<a class="headerlink" href="#storage-class-specifiers" title="Permalink to this headline">¶</a></h3>
+<p>ストレージクラス指定子には、register、static、thread_local、extern、mutableがある。</p>
+<p>ひとつの宣言の中には、ひとつのストレージクラス指定子しか書く事はできない。つまり、ストレージクラス指定子同士は、組み合わせて使うことができない。ただし、thread_localだけは、staticやexternと併用できる。</p>
+<div class="section" id="register">
+<h4>register指定子<a class="headerlink" href="#register" title="Permalink to this headline">¶</a></h4>
+<p>register指定子を使ってはならない。registerは、変数への最適化のヒントを示す目的で導入された。これは、まだハードウェアが十分に高速でないので、賢いコンパイラを実装できなかった当時としては、意味のある機能であった。しかし、現在では、ハードウェアの性能の向上により、コンパイラーはより複雑で高機能な実装ができるようになり、registerは単に無視されるものとなってしまった。</p>
+<p>registerは歴史的理由により存在する。この機能は、現在では互換性のためだけに残されている機能であり、使用を推奨されていない。また、将来的には廃止されるだろう。</p>
+</div>
+<div class="section" id="thread-local">
+<h4>thread_local指定子<a class="headerlink" href="#thread-local" title="Permalink to this headline">¶</a></h4>
+<p>thread_local指定子のある変数は、&lt;a href=&#8221;#basic.stc.thread&#8221;&gt;スレッドストレージの有効期間&lt;/a&gt;を持つ。すなわち、thread_localが指定された変数は、スレッドごとに別のオブジェクトを持つことになる。</p>
+<p>thread_local指定子は、名前空間スコープかブロックスコープの中の変数と、staticデータメンバーに対して適用することができる。ブロックスコープの変数にthread_localが指定された場合は、たとえstatic指定子が書かれていなくても、暗黙的にstaticと指定されたことになる。</p>
+<p>正しい例</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// グローバル名前空間のスコープ</span>
+<span class="n">thread_local</span> <span class="kt">int</span> <span class="n">global_variable</span> <span class="p">;</span>
+
+<span class="c1">// 名前の付いている名前空間のスコープ</span>
+<span class="k">namespace</span> <span class="n">perfect_cpp</span>
+<span class="p">{</span>
+    <span class="n">thread_local</span> <span class="kt">int</span> <span class="n">variable</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// ブロックスコープ</span>
+<span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="c1">// 以下の3行は、すべてthread_localかつstaticな変数である。</span>
+    <span class="n">thread_local</span> <span class="kt">int</span> <span class="n">a</span> <span class="p">;</span>
+    <span class="n">thread_local</span> <span class="k">static</span> <span class="kt">int</span> <span class="n">b</span> <span class="p">;</span>
+    <span class="k">static</span> <span class="n">thread_local</span> <span class="kt">int</span> <span class="n">c</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+<span class="c1">// 以下の2行は、すべてthread_localなstaticデータメンバーである。</span>
+    <span class="k">static</span> <span class="n">thread_local</span> <span class="kt">int</span> <span class="n">a</span> <span class="p">;</span>
+    <span class="n">thread_local</span> <span class="k">static</span> <span class="kt">int</span> <span class="n">b</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>thread_local指定子は、staticデータメンバーにしか指定できないということには、注意を要する。データメンバーがstaticデータメンバーとなるには、static指定子がなければならない。ブロックスコープ内の変数とは違い、暗黙のうちにstaticが指定されたことにはならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="c1">// エラー、thread_localは非staticデータメンバーには適用できない。</span>
+    <span class="n">thread_local</span> <span class="kt">int</span> <span class="n">a</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>thread_localが指定された変数に対する、同じ宣言は、すべてthread_local指定されていなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 翻訳単位 1</span>
+<span class="n">thread_local</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span>
+
+<span class="c1">// 翻訳単位 2</span>
+<span class="k">extern</span> <span class="n">thread_local</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span>
+
+<span class="c1">// 翻訳単位 2</span>
+<span class="k">extern</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span> <span class="c1">// エラー、thread_localが指定されていない</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="static">
+<h4>static指定子<a class="headerlink" href="#static" title="Permalink to this headline">¶</a></h4>
+<p>static指定子には、変数をstatic変数にするという機能と、名前を内部リンケージにするという機能がある。static指定子は、変数と関数と無名unionに指定することができる。ただし、ブロックスコープ内の関数宣言と、関数の仮引数に指定することはできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="c1">// staticデータメンバー</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">data</span> <span class="p">;</span>
+    <span class="c1">// staticメンバー関数</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// 変数、static変数になる</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+
+    <span class="c1">// 無名union、static変数になる</span>
+    <span class="k">static</span> <span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">i</span> <span class="p">;</span> <span class="kt">float</span> <span class="n">f</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>static指定子が指定された変数は、&lt;a href=&#8221;#basic.stc.static&#8221;&gt;静的ストレージの有効期間&lt;/a&gt;を持つ。ただし、thread_local指定子も指定されている場合は、&lt;a href=&#8221;#basic.stc.thread&#8221;&gt;スレッドストレージの有効期間&lt;/a&gt;を持つ。</p>
+<p>クラスのメンバーに対するstatic指定子については、&lt;a href=&#8221;#class.static&#8221;&gt;staticメンバー&lt;/a&gt;を参照。</p>
+<p>static指定子とリンケージの関係については、&lt;a href=&#8221;#basic.link&#8221;&gt;プログラムとリンケージ&lt;/a&gt;を参照。</p>
+<p>名前空間スコープにおける、リンケージ指定目的でのstaticの使用は、無名名前空間で代用した方がよい。この機能は、C++11で非推奨にされるはずだったが、直前で見直された。理由は、既存のコードを考えると、この機能を将来的に廃止することはできないからである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// グローバル名前空間スコープ</span>
+<span class="c1">// 内部リンケージの指定</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{}</span>
+
+<span class="c1">// 無名名前空間を使う</span>
+<span class="k">namespace</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="extern">
+<h4>extern指定子<a class="headerlink" href="#extern" title="Permalink to this headline">¶</a></h4>
+<p>extern指定子には、名前のリンケージを外部リンケージにするという機能と、名前の定義をしないという機能がある。extern指定子は、変数と関数に適用できる。ただし、クラスのメンバーと関数の仮引数には指定できない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 変数</span>
+<span class="k">extern</span> <span class="kt">int</span> <span class="n">i</span> <span class="p">;</span>
+<span class="c1">// 関数</span>
+<span class="k">extern</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>extern指定子と、宣言と定義の関係については、&lt;a href=&#8221;#basic.def&#8221;&gt;宣言と定義&lt;/a&gt;を参照。</p>
+<p>extern指定子とリンケージの関係については、&lt;a href=&#8221;#basic.link&#8221;&gt;プログラムとリンケージ&lt;/a&gt;を参照。</p>
+<p>テンプレートの&lt;a href=&#8221;#temp.explicit&#8221;&gt;明示的なインスタンス化&lt;/a&gt;と、&lt;a href=&#8221;#dcl.link&#8221;&gt;リンケージ指定&lt;/a&gt;は、externキーワードを使うが、指定子ではない。</p>
+</div>
+<div class="section" id="mutable">
+<h4>mutable指定子<a class="headerlink" href="#mutable" title="Permalink to this headline">¶</a></h4>
+<p>mutable指定子は、constでもstaticでもないクラスのデータメンバーに適用することができる。mutable指定子の機能は、クラスのオブジェクトへのconst指定子を、無視できることである。これにより、constなメンバー関数から、データメンバーを変更することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">C</span>
+<span class="p">{</span>
+<span class="nl">private:</span>
+    <span class="k">mutable</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span>
+
+<span class="k">public</span> <span class="o">:</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">const</span>
+    <span class="p">{</span>
+        <span class="c1">// 変更できる</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="n">c</span><span class="p">.</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>mutableの機能について詳しくは、&lt;a href=&#8221;#dcl.type.cv&#8221;&gt;CV修飾子&lt;/a&gt;も参照。</p>
+</div>
+</div>
+<div class="section" id="function-specifiers">
+<h3>関数指定子（Function specifiers）<a class="headerlink" href="#function-specifiers" title="Permalink to this headline">¶</a></h3>
+<p>関数指定子（Function specifier）には、inline、virtual、explicitがある。</p>
+<div class="section" id="inline">
+<h4>inline指定子<a class="headerlink" href="#inline" title="Permalink to this headline">¶</a></h4>
+<p>inline指定子が書かれた関数宣言は、インライン関数（inline function）を宣言する。inline指定子は、この関数をインライン展開することが望ましいと示すための機能である。ただし、インライン関数だからといって、必ずしもインライン展開されるわけではない。インライン関数ではなくても、インライン展開されることもある。あくまで最適化のヒントに過ぎない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// インライン関数</span>
+<span class="kr">inline</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>クラス定義の中の関数定義は、inline指定子がなくても、自動的にinline関数になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="c1">// 関数定義、インライン関数である</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{}</span>
+    <span class="c1">// 関数の宣言、インライン関数である</span>
+    <span class="kr">inline</span> <span class="kt">void</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span>
+    <span class="c1">// 関数の宣言、インライン関数ではない</span>
+    <span class="kt">void</span> <span class="nf">h</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 関数C::gの定義</span>
+<span class="kr">inline</span> <span class="kt">void</span> <span class="n">C</span><span class="o">::</span><span class="n">g</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="c1">// 関数C::hの定義</span>
+<span class="kt">void</span> <span class="n">C</span><span class="o">::</span><span class="n">h</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>インライン指定子は、関数のリンケージに何の影響も与えない。インライン関数のリンケージは、通常の関数と同じである。すなわち、static指定子があれば内部リンケージ持つ。そうでなければ外部リンケージを持つ。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 外部リンケージを持つ</span>
+<span class="kr">inline</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{}</span>
+<span class="c1">// 内部リンケージを持つ</span>
+<span class="kr">inline</span> <span class="k">static</span> <span class="kt">void</span> <span class="nf">g</span><span class="p">()</span> <span class="p">{}</span>
+</pre></div>
+</div>
+<p>ただし、インライン関数は、外部リンケージを持っていたとしても、通常の関数とは異なる扱いを受ける。これは、インライン展開の実装を容易にするための制約である。インライン関数は、その関数を使用するすべての翻訳単位で、「定義」されていなければならない。インライン関数の定義は、すべての翻訳単位で、まったく同一でなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 翻訳単位 1</span>
+<span class="c1">// translation_unit_1.cpp</span>
+
+<span class="c1">// 外部リンケージを持つインライン関数の定義</span>
+<span class="kr">inline</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{}</span>
+<span class="kr">inline</span> <span class="kt">void</span> <span class="nf">g</span><span class="p">()</span> <span class="p">{}</span>
+</pre></div>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 翻訳単位 2</span>
+<span class="c1">// translation_unit_2.cpp</span>
+
+<span class="c1">// 宣言だけ</span>
+<span class="kr">inline</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span>
+
+<span class="c1">// 定義</span>
+<span class="kr">inline</span> <span class="kt">void</span> <span class="nf">g</span><span class="p">()</span> <span class="p">{}</span>
+
+<span class="c1">// 関数の宣言</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// エラー</span>
+    <span class="c1">// この翻訳単位に関数fの定義がない</span>
+    <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+
+    <span class="c1">// OK、定義もある</span>
+    <span class="n">g</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>これは、テンプレートと同じような制限となっている。そのため、外部リンケージを持つインライン関数は、通常、ヘッダーファイルに書き、必要な翻訳単位で#includeする。まったく同一ということに関して、詳しくは、&lt;a href=&#8221;#basic.def.odr&#8221;&gt;ODR（One definition rule）&lt;/a&gt;を参照。</p>
+<p>ただし、翻訳単位に定義があればいいので、呼び出す場所では、宣言だけだとしても、問題はない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 宣言</span>
+<span class="kr">inline</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// すでに名前fは宣言されていて、この翻訳単位に定義がある</span>
+    <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span>
+
+<span class="c1">// 定義</span>
+<span class="kr">inline</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="virtual">
+<h4>virtual指定子<a class="headerlink" href="#virtual" title="Permalink to this headline">¶</a></h4>
+<p>virtual指定子は、クラスの非staticメンバー関数に指定することができる。詳しくは、&lt;a href=&#8221;#class.virtual&#8221;&gt;virtual関数&lt;/a&gt;を参照。</p>
+</div>
+<div class="section" id="explicit">
+<h4>explicit指定子<a class="headerlink" href="#explicit" title="Permalink to this headline">¶</a></h4>
+<p>explicit指定子は、クラス定義内のコンストラクターと変換関数に指定することができる。詳しくは、&lt;a href=&#8221;#class.conv.ctor&#8221;&gt;コンストラクターによる型変換&lt;/a&gt;と、&lt;a href=&#8221;#class.conv.fct&#8221;&gt;変換関数（Conversion functions）&lt;/a&gt;を参照。</p>
+</div>
+</div>
+<div class="section" id="typedef-the-typedef-specifier">
+<h3>typedef指定子（The typedef specifier）<a class="headerlink" href="#typedef-the-typedef-specifier" title="Permalink to this headline">¶</a></h3>
+<p>typedef指定子は、型の別名を宣言するための指定子である。この別名のことを、typedef名（typedef-name）という。typedef名は、型と同じように扱われる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">typedef</span> <span class="kt">int</span> <span class="n">integer</span> <span class="p">;</span>
+<span class="c1">// これ以降、typedef名integerは、int型とおなじように使える。</span>
+
+<span class="n">integer</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">integer</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">integer</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>typedef名は、エイリアス宣言（alias-declaration）で宣言することもできる。</p>
+<div class="highlight-c++"><pre>using 識別子 = 型名 ;</pre>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">using</span> <span class="n">integer</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>エイリアス宣言では、usingキーワードに続く識別子が、typedef名となる。typedef指定子によって宣言されたtypedef名と、エイリアス宣言によって宣言されたtypedef名は、全く同じ意味を持つ。そのため、本書で「typedef名」と記述されている場合、それはtypedef指定子による宣言であろうと、エイリアス宣言による宣言であろうと、等しく適用される。一方、「typedef指定子」と記述されている場合、エイリアス宣言には当てはまらない。</p>
+<p>エイリアス宣言の文法は、typedefより分かりやすい。例えば、関数ポインターの別名を宣言したいとする。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 同じ意味</span>
+<span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="n">type</span><span class="p">)(</span><span class="kt">void</span><span class="p">)</span> <span class="p">;</span>
+<span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="kt">void</span><span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>typedef指定子は、指定子であるので、単純宣言と同じ文法で名前を宣言しなければならない。using宣言は、名前を先に書き、その後に、純粋な型名を書くことができる。</p>
+<p>エイリアス宣言とテンプレートについては、&lt;a href=&#8221;#temp.alias&#8221;&gt;テンプレートエイリアス&lt;/a&gt;を参照。</p>
+<p>&lt;p class=&#8221;editorial-note&#8221;&gt;
+TODO: この部分、規格の文面に問題あり。</p>
+<p>typedef指定子は、クラス以外の同じスコープ内で、同じ型のtypedef名を再宣言することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">typedef</span> <span class="kt">int</span> <span class="n">I</span> <span class="p">;</span>
+<span class="k">typedef</span> <span class="kt">int</span> <span class="n">I</span> <span class="p">;</span> <span class="c1">// OK、同じ型の再宣言</span>
+<span class="k">typedef</span> <span class="kt">short</span> <span class="n">I</span> <span class="p">;</span> <span class="c1">// エラー、型が違う</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">typedef</span> <span class="kt">short</span> <span class="n">I</span> <span class="p">;</span> <span class="c1">// OK、別のスコープなので別の宣言</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">Class_Scope</span>
+<span class="p">{</span>
+    <span class="k">typedef</span> <span class="kt">int</span> <span class="n">type</span> <span class="p">;</span>
+    <span class="k">typedef</span> <span class="kt">int</span> <span class="n">type</span> <span class="p">;</span> <span class="c1">// エラー、クラススコープ内では、同じ型でも再宣言できない</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>typedef名とconstの関係は、一見して分かりにくい。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">typedef</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">type</span> <span class="p">;</span>
+
+<span class="c1">// aの型はint const *</span>
+<span class="k">const</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">a</span> <span class="p">;</span>
+<span class="c1">// bの型は、int * const</span>
+<span class="k">const</span> <span class="n">type</span> <span class="n">b</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>これは、指定子と宣言子との違いによる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">const</span> <span class="kt">int</span> <span class="c1">// 指定子</span>
+<span class="o">*</span> <span class="n">a</span> <span class="c1">// 宣言子</span>
+<span class="p">;</span>
+
+<span class="k">const</span> <span class="n">type</span> <span class="c1">// 指定子、typeの型は int *</span>
+<span class="n">b</span> <span class="c1">// 宣言子</span>
+<span class="p">;</span>
+</pre></div>
+</div>
+<p>変数aの場合、const intへのポインター型となる。変数bの場合、const type型となる。typeの型は、int <a href="#id1"><span class="problematic" id="id2">*</span></a>なので、int <a href="#id3"><span class="problematic" id="id4">*</span></a>へのconst型となる。そのため、違う型となる。</p>
+</div>
+<div class="section" id="friend-the-friend-specifier">
+<h3>friend指定子（The friend specifier）<a class="headerlink" href="#friend-the-friend-specifier" title="Permalink to this headline">¶</a></h3>
+<p>friend指定子については、&lt;a href=&#8221;#class.friend&#8221;&gt;friend&lt;/a&gt;を参照</p>
+</div>
+<div class="section" id="constexpr-the-constexpr-specifier">
+<h3>constexpr指定子（The constexpr specifier）<a class="headerlink" href="#constexpr-the-constexpr-specifier" title="Permalink to this headline">¶</a></h3>
+<p>constexpr指定子は、constexprの制約を満たした、変数の定義、関数と関数テンプレートの宣言、staticデータメンバーの宣言に対して指定できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">constexpr</span> <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>constexpr指定子を使って定義され、定数式で初期化された変数は、定数式として使うことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">constexpr</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">10</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="n">size</span><span class="p">]</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>constexpr指定子を使う変数の型は、リテラル型でなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">literal</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">non_literal</span>
+<span class="p">{</span>
+    <span class="n">non_literal</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">constexpr</span> <span class="n">literal</span> <span class="n">a</span><span class="p">{}</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="n">constexpr</span> <span class="n">non_literal</span> <span class="n">b</span><span class="p">{}</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>コンストラクター以外の関数にconstexpr指定子を記述すると、その関数は、constexpr関数(constexpr function)となる。コンストラクターにconstexpr指定子を記述すると、そのコンストラクターは、constexprコンストラクター(constexpr constructor)となる。constexpr関数とconstexprコンストラクターは暗黙にinlineになる。</p>
+<p>constexpr関数の定義は、以下の条件を満たさなければならない。</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>virtual関数でないこと</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>戻り値の型がリテラル型であること</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>仮引数の型がリテラル型であること</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>関数の本体は、= deleteか、= defaultか、複合文であること。</p>
+<p>複合文として使える文は、以下のものだけである。</p>
+<blockquote>
+<div><ul class="simple">
+<li></li>
+</ul>
+</div></blockquote>
+<p>null文</p>
+<blockquote>
+<div><ul class="simple">
+<li></li>
+</ul>
+</div></blockquote>
+<p>static_assert宣言</p>
+<blockquote>
+<div><ul class="simple">
+<li></li>
+</ul>
+</div></blockquote>
+<p>typedef宣言とエイリアス宣言で、クラスやenumを定義しないもの</p>
+<blockquote>
+<div><ul class="simple">
+<li></li>
+</ul>
+</div></blockquote>
+<p>using宣言</p>
+<blockquote>
+<div><ul class="simple">
+<li></li>
+</ul>
+</div></blockquote>
+<p>usingディレクティブ</p>
+<blockquote>
+<div><ul class="simple">
+<li></li>
+</ul>
+</div></blockquote>
+<p>return文ひとつ</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>戻り値を初期化する際のコンストラクター呼び出しや、暗黙の型変換は、すべて定数式でなければならない。</p>
+<p>以下は合法なconstexpr関数の例である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">constexpr</span> <span class="kt">int</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">constexpr</span> <span class="kt">int</span> <span class="nf">g</span><span class="p">(</span> <span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">+</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">constexpr</span> <span class="kt">int</span> <span class="nf">h</span><span class="p">(</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">n</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">h</span><span class="p">(</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">11</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>以下は、constexpr関数の制約を満たさない誤ったコードの例である</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// エラー、使えない文の使用</span>
+<span class="n">constexpr</span> <span class="kt">int</span> <span class="nf">f</span><span class="p">(</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">constexpr</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// エラー、使えない文の使用</span>
+<span class="n">constexpr</span> <span class="kt">int</span> <span class="nf">g</span><span class="p">(</span> <span class="kt">bool</span> <span class="n">b</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="n">b</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="p">;</span>
+    <span class="k">else</span>
+        <span class="k">return</span> <span class="mi">2</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// エラー、return文がふたつ</span>
+<span class="n">constexpr</span> <span class="kt">int</span> <span class="nf">h</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// エラー、戻り値の型がリテラル型ではない</span>
+<span class="k">struct</span> <span class="n">S</span><span class="p">{</span> <span class="n">S</span><span class="p">(){</span> <span class="p">}</span> <span class="p">}</span> <span class="p">;</span>
+<span class="n">constexpr</span> <span class="n">S</span> <span class="nf">i</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">S</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>C++11のconstexpr関数の制約はとても厳しい。C++14では、この制約は大幅に緩和される。</p>
+<p>constexprコンストラクターの定義は、仮引数の型がリテラルでなければならない。関数の本体は、= deleteか、= defaultか、複合文でなければならない。複合文は以下の制約を満たさなければならない。</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>クラスはvirtual基本クラスを持たないこと</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>関数の本体は関数tryブロックではないこと</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>関数の本体の複合文は、以下のいずれかしか含まないこと</p>
+<blockquote>
+<div><ul class="simple">
+<li></li>
+</ul>
+</div></blockquote>
+<p>null文</p>
+<blockquote>
+<div><ul class="simple">
+<li></li>
+</ul>
+</div></blockquote>
+<p>static_assert宣言</p>
+<blockquote>
+<div><ul class="simple">
+<li></li>
+</ul>
+</div></blockquote>
+<p>typedef宣言とエイリアス宣言で、クラスやenumを定義しないもの</p>
+<blockquote>
+<div><ul class="simple">
+<li></li>
+</ul>
+</div></blockquote>
+<p>using宣言</p>
+<blockquote>
+<div><ul class="simple">
+<li></li>
+</ul>
+</div></blockquote>
+<p>usingディレクティブ</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>クラスの非staticデータメンバーと、基本クラスのサブオブジェクトは、すべて初期化されること</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>非staticデータメンバーと基本クラスのサブオブジェクトの初期化に関わるコンストラクターは、constexprコンストラクターであること</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>非staticデータメンバーに指定された初期化句は定数式であること</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 定数式であること</span>
+
+    <span class="n">constexpr</span> <span class="nf">S</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li></li>
+</ul>
+<p>コンストラクターの実引数を仮引数の型に変換する際の型変換は、定数式であること</p>
+<p>constexprコンストラクターは、ユーザー定義の初期化を記述したリテラル型のクラスを書くことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">point</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span>
+
+    <span class="n">constexpr</span> <span class="nf">S</span><span class="p">(</span> <span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span> <span class="p">)</span>
+        <span class="o">:</span> <span class="n">x</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">y</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>このようなリテラル型のクラスは、constexpr指定子を使った変数で使える。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">constexpr</span> <span class="n">S</span> <span class="nf">s</span><span class="p">(</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>どのような実引数（無引数関数も含む）を与えても、constexprが定数式にならない場合、エラーとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// OK、定数式になる実引数がある</span>
+<span class="n">constexpr</span> <span class="kt">int</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">bool</span> <span class="n">b</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">b</span> <span class="o">?</span> <span class="k">throw</span> <span class="mi">0</span> <span class="o">:</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// エラー、絶対に定数式にならない。</span>
+<span class="n">constexpr</span> <span class="kt">int</span> <span class="nf">g</span><span class="p">(</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">throw</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>constexpr関数テンプレートや、クラステンプレートのconstexprメンバー関数のインスタンス化された特殊化が、constexpr関数の制約を満たさない場合、そのような関数やコンストラクターは、constexpr関数、constexprコンストラクターとはみなされない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="n">constexpr</span> <span class="n">T</span> <span class="n">f</span><span class="p">(</span> <span class="n">T</span> <span class="n">x</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">non_literal</span> <span class="p">{</span> <span class="n">non_literal</span><span class="p">(){</span> <span class="p">}</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、constexpr関数</span>
+
+    <span class="n">non_literal</span> <span class="n">n</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">n</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、ただし通常の関数</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>constexpr関数を呼び出した結果の値は、同等だがconstexprではない関数を呼び出した結果の値と等しくなる。</p>
+<p>コンストラクターを除く非staticメンバー関数にconstexpr指定子を使うと、そのメンバー関数はconst修飾される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="n">constexpr</span> <span class="kt">int</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// constになる</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>これは、以下のように書くのと同等である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">constexpr</span> <span class="kt">int</span> <span class="n">f</span><span class="p">()</span> <span class="k">const</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>constexpr指定子は、これ以外には関数の型に影響を与えない。</p>
+<p>constexpr非staticメンバー関数を持つクラスは、リテラル型でなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// OK、リテラル型</span>
+<span class="k">struct</span> <span class="n">literal</span>
+<span class="p">{</span>
+    <span class="n">constexpr</span> <span class="kt">int</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// エラー、リテラル型ではない</span>
+<span class="k">struct</span> <span class="n">non_literal</span>
+<span class="p">{</span>
+    <span class="n">non_literal</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">constexpr</span> <span class="kt">int</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>constexpr指定子が変数定義に使われた場合、変数はconstになる。変数の型はリテラル型でなければならず、また初期化されなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">constexpr</span> <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+
+<span class="c1">// エラー、初期化されていない</span>
+<span class="n">constexpr</span> <span class="kt">int</span> <span class="n">b</span> <span class="p">;</span>
+
+
+<span class="k">struct</span> <span class="n">non_literal</span> <span class="p">{</span> <span class="n">non_literal</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">// エラー、リテラル型ではない</span>
+<span class="n">constexpr</span> <span class="n">non_literal</span> <span class="n">c</span><span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>初期化にコンストラクター呼び出しが行われる場合、コンストラクター呼び出しは定数式でなければならない</p>
+</div>
+<div class="section" id="type-specifiers">
+<h3>型指定子（Type specifiers）<a class="headerlink" href="#type-specifiers" title="Permalink to this headline">¶</a></h3>
+<p>型指定子（type specifier）には、クラス指定子、enum指定子、単純型指定子（simple-type-specifier）、複雑型指定子（elaborated-type-specifier）、typename指定子、CV修飾子（cv-qualifier）がある。</p>
+<p>クラス指定子は&lt;a href=&#8221;#class&#8221;&gt;クラス&lt;/a&gt;で、enum指定子は&lt;a href=&#8221;#dcl.enum&#8221;&gt;enumの宣言&lt;/a&gt;で、typename指定子は、テンプレートの&lt;a href=&#8221;#temp.res&#8221;&gt;名前解決&lt;/a&gt;を参照。</p>
+<p>型指定子は、一部を除いて、宣言の中にひとつだけ書くことができる。組み合わせることのできる型指定子は、以下の通りである。</p>
+<p>constは、const以外の型指定子と組み合わせることができる。volatileは、volatile以外の型指定子と組み合わせることができる。</p>
+<p>signedとunsignedは、char, short, int, longを後に書くことができる。</p>
+<p>shortとlongは、intを後に書くことができる。</p>
+<p>longは、doubleを後に書くことができる。longは、longを後に書くことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">long</span> <span class="kt">double</span> <span class="n">a</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">l</span> <span class="p">;</span>
+<span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+</pre></div>
+</div>
+<div class="section" id="cv-the-cv-qualifiers">
+<h4>CV修飾子（The cv-qualifiers）<a class="headerlink" href="#cv-the-cv-qualifiers" title="Permalink to this headline">¶</a></h4>
+<p>CV修飾子（cv-qualifier）は、指定子の他に、ポインターの宣言子にも使うことができる。CV修飾子には、constとvolatileがある。この二つのキーワードの頭文字をとって、CV修飾子と呼ばれている。CV修飾子付きの変数は、必ず初期化子が必要である。CV修飾子がオブジェクトに与える影響については、基本事項の&lt;a href=&#8221;#basic.type.qualifier&#8221;&gt;CV修飾子&lt;/a&gt;を参照。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">const</span> <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="k">volatile</span> <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="k">const</span> <span class="k">volatile</span> <span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+
+<span class="k">const</span> <span class="kt">int</span> <span class="n">d</span> <span class="p">;</span> <span class="c1">// エラー、初期化子がない</span>
+</pre></div>
+</div>
+<p>指定子の始めに延べたように、指定子の順番に意味はないので、const intとint constは、同じ意味となる。</p>
+<p>CV修飾子付きの型へのポインターやリファレンスは、必ずしも、CV修飾子付きのオブジェクトを参照する必要はない。ただし、CV修飾子が付いているように振舞う。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 非constなオブジェクト</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 変更できる</span>
+
+    <span class="kt">int</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// 参照する</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー、変更できない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="simple-type-specifiers">
+<h4>単純型指定子（Simple type specifiers）<a class="headerlink" href="#simple-type-specifiers" title="Permalink to this headline">¶</a></h4>
+<p>単純型指定子には、基本型、クラス名、enum名、typedef名、auto指定子、decltype指定子を使うことができる。</p>
+<p>基本型については、&lt;a href=&#8221;#basic.fundamental&#8221;&gt;基本型&lt;/a&gt;を参照。</p>
+<p>注意すべきこととしては、signedやunsignedは、単体で使われると、int型だとみなされる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// signed int</span>
+<span class="kt">signed</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="c1">// unsigned int</span>
+<span class="kt">unsigned</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>また、shortやlongやlong longは、それぞれintが省略されたものとみなされる</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// short int</span>
+<span class="kt">short</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="c1">// long int</span>
+<span class="kt">long</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="c1">// long long int</span>
+<span class="kt">long</span> <span class="kt">long</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="elaborated-type-specifiers">
+<h4>複雑型指定子（Elaborated type specifiers）<a class="headerlink" href="#elaborated-type-specifiers" title="Permalink to this headline">¶</a></h4>
+<p>複雑型指定子の複雑（Elaborated）というのは、あまりふさわしい訳語ではないが、本書では便宜上、elaboratedに対し、複雑という訳語を使用する。class、struct、union、enumなどのキーワードを使った型指定子を指す。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">StructName</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">class</span> <span class="nc">ClassName</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">union</span> <span class="n">UnionName</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">enum</span> <span class="k">struct</span> <span class="n">EnumName</span> <span class="p">{</span> <span class="n">value</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="p">{</span>
+        <span class="c1">// 複雑型指定子</span>
+        <span class="k">struct</span> <span class="n">StructName</span> <span class="n">a</span> <span class="p">;</span>
+        <span class="k">class</span> <span class="nc">ClassName</span> <span class="n">b</span> <span class="p">;</span>
+        <span class="k">union</span> <span class="n">UnionName</span> <span class="n">c</span> <span class="p">;</span>
+        <span class="k">enum</span> <span class="n">EnumName</span> <span class="n">d</span> <span class="o">=</span> <span class="n">EnumName</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="p">{</span>
+        <span class="c1">// 単純型指定子</span>
+        <span class="n">StructName</span> <span class="n">a</span> <span class="p">;</span>
+        <span class="n">ClassName</span> <span class="n">b</span> <span class="p">;</span>
+        <span class="n">UnionName</span> <span class="n">c</span> <span class="p">;</span>
+        <span class="n">EnumName</span> <span class="n">d</span> <span class="o">=</span> <span class="n">EnumName</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>識別子に対するキーワードは、enumにはenumキーワードを、unionにはunionキーワードを、クラスにはstructキーワードかclassキーワードを、すでに行われた宣言と一致して使わなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Name</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Name</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// OK、structキーワードでもよい</span>
+
+<span class="k">enum</span> <span class="n">Name</span> <span class="n">b</span> <span class="p">;</span> <span class="c1">// エラー、キーワードが不一致</span>
+<span class="k">union</span> <span class="n">Name</span> <span class="n">c</span> <span class="p">;</span> <span class="c1">// エラー、キーワードが不一致</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="auto-auto-specifier">
+<h4>auto指定子（auto specifier）<a class="headerlink" href="#auto-auto-specifier" title="Permalink to this headline">¶</a></h4>
+<p>ここでは、変数の宣言に対するauto指定子について説明する。関数の宣言に対するauto指定子については、宣言子の&lt;a href=&#8221;#dcl.fct&#8221;&gt;関数&lt;/a&gt;を参照。また、&lt;a href=&#8221;#expr.new&#8221;&gt;new式&lt;/a&gt;にも、似たような機能がある。</p>
+<p>変数を宣言する際、型指定子にautoキーワードを書くと、変数の型が、初期化子の式から推定される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">auto</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// int</span>
+<span class="k">auto</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0l</span> <span class="p">;</span> <span class="c1">// long</span>
+<span class="k">auto</span> <span class="n">c</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="p">;</span> <span class="c1">// double</span>
+<span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="mf">0.0</span><span class="n">l</span> <span class="p">;</span> <span class="c1">// long double</span>
+</pre></div>
+</div>
+<p>もちろん、単なるリテラルだけにはとどまらない。およそ初期化子に書ける式ならば、何でも使うことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="kt">bool</span> <span class="nf">g</span><span class="p">(</span><span class="kt">int</span><span class="p">){</span> <span class="k">return</span> <span class="nb">true</span> <span class="p">;</span> <span class="p">}</span>
+<span class="kt">char</span> <span class="nf">g</span><span class="p">(</span><span class="kt">double</span><span class="p">){</span> <span class="k">return</span> <span class="sc">&#39;a&#39;</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">a</span> <span class="o">=</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// int</span>
+
+    <span class="c1">// もちろん、オーバーロード解決もされる</span>
+    <span class="k">auto</span> <span class="n">b</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// bool</span>
+    <span class="k">auto</span> <span class="n">c</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// char</span>
+
+    <span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">f</span> <span class="p">;</span> <span class="c1">// int (*)(void)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>auto指定子は、冗長な変数の型の指定を省くためにある。というのも、初期化子の型は、コンパイル時に決定できるので、わざわざ変数の型を指定するのは、冗長だからだ。また、変数の型を指定するのが、非常に面倒な場合もある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;vector&gt;</span>
+<span class="cp">#include &lt;string&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&gt;</span> <span class="n">v</span> <span class="p">;</span>
+    <span class="c1">// 型名が長くて面倒</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">iter1</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">begin</span><span class="p">()</span> <span class="p">;</span>
+
+    <span class="c1">// 簡潔に書ける</span>
+    <span class="k">auto</span> <span class="n">iter2</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">begin</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合では、std::vector&amp;lt; std::string &amp;gt;::iterator型の変数を宣言している。auto指定子を使わないと、非常に冗長になってしまう。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">T2</span> <span class="o">&gt;</span> <span class="k">struct</span> <span class="n">Add</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">T2</span> <span class="o">&gt;</span> <span class="k">struct</span> <span class="n">Sub</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">T2</span> <span class="o">&gt;</span>
+<span class="n">Add</span><span class="o">&lt;</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span> <span class="o">&gt;</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">typedef</span> <span class="n">Add</span><span class="o">&lt;</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span> <span class="o">&gt;</span> <span class="n">type</span> <span class="p">;</span>
+    <span class="k">return</span> <span class="nf">type</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">T2</span> <span class="o">&gt;</span>
+<span class="n">Sub</span><span class="o">&lt;</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span> <span class="o">&gt;</span> <span class="k">operator</span> <span class="o">-</span> <span class="p">(</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">typedef</span> <span class="n">Sub</span><span class="o">&lt;</span> <span class="n">T1</span><span class="p">,</span> <span class="n">T2</span> <span class="o">&gt;</span> <span class="n">type</span> <span class="p">;</span>
+    <span class="k">return</span> <span class="nf">type</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">B</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">A</span> <span class="n">a</span> <span class="p">;</span> <span class="n">B</span> <span class="n">b</span> <span class="p">;</span>
+    <span class="k">auto</span> <span class="n">result</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">-</span> <span class="n">b</span> <span class="o">+</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合、resultの型を明示的に書こうとすると、以下のようになる。これはとてもではないが、まともに書く事はできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">Add</span><span class="o">&lt;</span> <span class="n">Sub</span><span class="o">&lt;</span> <span class="n">Add</span><span class="o">&lt;</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">B</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">Sub</span><span class="o">&lt;</span> <span class="n">B</span><span class="p">,</span> <span class="n">A</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">-</span> <span class="n">b</span> <span class="o">+</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>auto指定子による変数の宣言では、変数の型は、関数のテンプレート実引数の推定と同じ方法で推定される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">auto</span> <span class="n">u</span> <span class="o">=</span> <span class="n">expr</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>という式があったとすると、変数uの型は、</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">U</span> <span class="o">&gt;</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">U</span> <span class="n">u</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>このような関数を、f(expr)と呼び出した場合の、テンプレート仮引数Uと同じ型となる。</p>
+<p>ただし、auto指定子では、初期化子が初期化リストであっても、型を推定できるという違いがある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// std::initializer_list&lt;int&gt;</span>
+<span class="k">auto</span> <span class="n">a</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">// std::initializer_list&lt;double&gt;</span>
+<span class="k">auto</span> <span class="n">b</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// エラー、型を推定できない</span>
+<span class="k">auto</span> <span class="n">c</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">2.0</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">auto</span> <span class="n">d</span> <span class="o">=</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// OK、明示的なキャスト</span>
+<span class="k">auto</span> <span class="n">e</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">2.0</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">auto</span> <span class="n">f</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>テンプレートの実引数推定と同じ方法で型を推定するために、配列型は配列の要素へのポインターに、関数型は関数ポインタ―型になってしまう。これには注意が必要である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">;</span>
+    <span class="k">auto</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// int *</span>
+    <span class="k">auto</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">f</span> <span class="p">;</span> <span class="c1">// int (*)(void)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>auto指定子は、他の指定子や、CV修飾子、宣言子と組み合わせることもできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="k">const</span> <span class="n">expr</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// exprの型はint const</span>
+<span class="k">auto</span> <span class="n">a</span> <span class="o">=</span> <span class="n">expr</span> <span class="p">;</span> <span class="c1">// int</span>
+<span class="k">auto</span> <span class="k">const</span> <span class="n">b</span> <span class="o">=</span> <span class="n">expr</span> <span class="p">;</span> <span class="c1">// int const</span>
+<span class="k">auto</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">c</span> <span class="o">=</span> <span class="n">expr</span> <span class="p">;</span> <span class="c1">// int const &amp;</span>
+<span class="k">auto</span> <span class="k">const</span> <span class="o">*</span> <span class="n">d</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">expr</span> <span class="p">;</span> <span class="c1">// int const *</span>
+
+<span class="k">static</span> <span class="k">auto</span> <span class="n">e</span> <span class="o">=</span> <span class="n">expr</span> <span class="p">;</span> <span class="c1">// static指定子付きのint型の変数</span>
+</pre></div>
+</div>
+<p>この際の型の決定も、関数のテンプレート実引数の推定と同じルールになる。</p>
+<p>宣言子と初期化子の型が合わない場合は、エラーとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">auto</span> <span class="o">&amp;</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー</span>
+</pre></div>
+</div>
+<p>この例では、xの型は、リファレンス型であるが、初期化子の型は、リファレンス型ではない。そのため、エラーとなる。</p>
+<p>宣言子がrvalueリファレンスの場合、注意を要する。auto指定子の型は、テンプレート実引数の推定と同じ方法で決定されるので、lvalueリファレンスになることもある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+
+    <span class="kt">int</span> <span class="o">&amp;&amp;</span> <span class="n">r1</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー、rvalueリファレンスをlvalueで初期化できない</span>
+
+    <span class="k">auto</span> <span class="o">&amp;&amp;</span> <span class="n">r2</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// OK、ただし、r2の型はint &amp;</span>
+    <span class="k">auto</span> <span class="o">&amp;&amp;</span> <span class="n">r3</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、r3の型はint &amp;&amp;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>これは、テンプレート実引数の推定と同じである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">U</span> <span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">U</span> <span class="o">&amp;&amp;</span> <span class="n">u</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+
+    <span class="n">f</span><span class="p">(</span> <span class="n">x</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// Uはint &amp;</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// Uはint &amp;&amp;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>auto指定子で変数を宣言する場合は、必ず初期化子がなければならない。また、宣言しようとしている変数名が、初期化子の中で使われていてはならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">auto</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// エラー、初期化子がない</span>
+<span class="k">auto</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="p">;</span> <span class="c1">// エラー、初期化子の中で宣言しようとしている変数名が使われている</span>
+</pre></div>
+</div>
+<p>初期化子が要素の型Uの初期化リストの場合、autoの型はstd::initializer_list&amp;lt;U&amp;gt;になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// std::initializer_list&lt;int&gt;</span>
+<span class="k">auto</span> <span class="n">a</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>宣言子が関数の場合、auto指定子を使った宣言は関数になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="k">auto</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">)()</span> <span class="o">-&gt;</span> <span class="kt">void</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">f</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>auto指定子を使って、ひとつの宣言文で複数の変数を宣言することは可能である。その場合、変数の型は、それぞれの宣言子と初期化子から推定される型になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">auto</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">&amp;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="o">*</span> <span class="n">c</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、aの型はint、bの型はint &amp;amp;、cの型はint <a href="#id5"><span class="problematic" id="id6">*</span></a>となる。ただし一般に、コードの可読性の問題から、ひとつの宣言文で複数の変数を宣言するのは、避けたほうがよい。</p>
+<p>ただし、複数の変数を宣言する場合、autoによって推定される型は、必ず同じでなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="k">auto</span> <span class="n">a</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="o">*</span> <span class="n">b</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// OK、autoに対して推定される型は同じ</span>
+<span class="k">auto</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="p">;</span> <span class="c1">// エラー、型が同じではない</span>
+</pre></div>
+</div>
+<p>従来の、変数が自動ストレージの有効期間を持つということを明示的に指定する意味でのauto指定子は、廃止された。C++11では、autoキーワードを昔の文法で使用した場合、エラーとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">auto</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー、C++11には存在しない昔の機能</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="decltype-decltype-specifier">
+<h4>decltype指定子（decltype specifier）<a class="headerlink" href="#decltype-decltype-specifier" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><pre>decltype ( 式 )</pre>
+</div>
+<p>decltypeの型は、オペランドの式の型になる。decltype指定子のオペランドの式は、未評価式である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">decltype</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// xの型はint</span>
+    <span class="n">decltype</span><span class="p">(</span> <span class="n">x</span> <span class="p">)</span> <span class="n">y</span> <span class="p">;</span> <span class="c1">// yの型はint</span>
+
+    <span class="kt">int</span> <span class="k">const</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">decltype</span><span class="p">(</span> <span class="n">c</span> <span class="p">)</span> <span class="n">z</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// zの型はint const</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>decltype指定子の型は、以下のような順序で、条件の合うところで、上から優先的に決定される。</p>
+<p>decltype(e)に対して、</p>
+<p>もし、eが括弧式で囲まれていない、名前かクラスのメンバーアクセスであれば、decltypeの型は、名前eの型になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="c1">// decltype(x)の型はint</span>
+<span class="n">decltype</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">t1</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">C</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+<span class="c1">// decltype(c)の型は、class C</span>
+<span class="n">decltype</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="n">t2</span> <span class="p">;</span>
+<span class="c1">// decltype(c.value)の型は、int</span>
+<span class="n">decltype</span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">value</span><span class="p">)</span> <span class="n">t3</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>もし、eが関数呼び出しかオーバーロード演算子の呼び出しであれば、decltypeの型は、関数の戻り値の型になる。この際、括弧式は無視される。eという名前が見つからない場合や、eの名前がオーバーロード関数のセットであった場合、エラーとなる。</p>
+<p>decltypeのオペランドは未評価式なので、sizeofなどと同じく、関数が実際に呼ばれることはない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span>
+
+<span class="c1">// decltype( f() )の型は、int</span>
+<span class="n">decltype</span><span class="p">(</span> <span class="n">f</span><span class="p">()</span> <span class="p">)</span> <span class="n">t1</span> <span class="p">;</span>
+<span class="c1">// decltype( (f()) )の型は、int</span>
+<span class="n">decltype</span><span class="p">(</span> <span class="p">(</span><span class="n">f</span><span class="p">())</span> <span class="p">)</span> <span class="n">t2</span> <span class="p">;</span>
+
+<span class="c1">// エラー、fooという名前は見つからない</span>
+<span class="n">decltype</span><span class="p">(</span> <span class="n">foo</span> <span class="p">)</span> <span class="n">t3</span> <span class="p">;</span>
+
+<span class="c1">// エラー、オーバーロード関数のセット</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span><span class="kt">short</span><span class="p">)</span> <span class="p">;</span>
+
+<span class="n">decltype</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">*</span> <span class="n">ptr</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>もし、eがxvalueであれば、eの型をTとした場合、decltype(e)の型は、T &amp;amp;&amp;amp;となる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="c1">// typeの型はint &amp;&amp;</span>
+<span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="n">decltype</span><span class="p">(</span> <span class="k">static_cast</span><span class="o">&lt;</span> <span class="kt">int</span> <span class="o">&amp;&amp;</span> <span class="o">&gt;</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>もし、eがlvalueであれば、eの型をTとした場合、decltype(e)の型は、T &amp;amp;となる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="c1">// decltype( (x) ) の型は、int &amp;</span>
+<span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="n">decltype</span> <span class="p">(</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>上記以外の場合、decltypeの型は、eの型となる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// decltype(0)の型は、int</span>
+<span class="n">decltype</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="n">t1</span> <span class="p">;</span>
+<span class="c1">// delctype(&quot;hello&quot;)の型は、char const [6]</span>
+<span class="n">decltype</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">)</span> <span class="n">t2</span> <span class="o">=</span> <span class="s">&quot;hello&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>eがlvalueで、しかも括弧式で囲まれている場合は、リファレンス型になるということには、注意を要する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+
+<span class="n">decltype</span> <span class="p">(</span> <span class="n">x</span> <span class="p">)</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// t1の型はint</span>
+<span class="n">decltype</span><span class="p">(</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">)</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// t2の型はint &amp;</span>
+</pre></div>
+</div>
+<p>decltypeは、他の型指定子や宣言子と併用できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="n">decltype</span> <span class="p">(</span> <span class="n">x</span> <span class="p">)</span> <span class="o">*</span> <span class="n">ptr</span> <span class="p">;</span> <span class="c1">// int *</span>
+<span class="n">decltype</span> <span class="p">(</span> <span class="n">x</span> <span class="p">)</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">const_ref</span> <span class="p">;</span> <span class="c1">// int const &amp;</span>
+</pre></div>
+</div>
+<p>decltypeは、ネストされた名前の指定子として使用できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="k">typedef</span> <span class="kt">int</span> <span class="n">type</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="n">decltype</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">::</span><span class="n">type</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// int</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>decltypeは、基本クラスの指定子、メンバー初期化子として、として使用できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="n">Base</span> <span class="n">base</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span>
+    <span class="o">:</span> <span class="n">decltype</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="c1">// decltypeを基本クラスとして指定</span>
+<span class="p">{</span>
+    <span class="n">Derived</span> <span class="p">()</span>
+        <span class="o">:</span> <span class="n">decltype</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="p">()</span> <span class="c1">// メンバー初期化子</span>
+    <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>decltypeは、疑似デストラクター名として使用できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="n">c</span><span class="p">.</span><span class="o">~</span><span class="n">decltype</span><span class="p">(</span><span class="n">c</span><span class="p">)()</span> <span class="p">;</span> <span class="c1">// 疑似デストラクターの呼び出し</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="enum-enumeration-declarations">
+<h2>enumの宣言（Enumeration declarations）<a class="headerlink" href="#enum-enumeration-declarations" title="Permalink to this headline">¶</a></h2>
+<p>enum指定子は、名前付きの定数と型を宣言、定義する。enum（Enumeration）は、歴史的に列挙型と呼ばれている。enum型の名前は、enum名といい、enumが宣言する定数のことを、列挙子（enumerator）と呼ぶ。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// Eはenum名、valueは列挙子</span>
+<span class="k">enum</span> <span class="n">E</span> <span class="p">{</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>本書では、enumの機能を四種類に大別して解説する。unscoped enum、scoped enum、enum基底（enum-base）、enum宣言（opaque-enum-declaration）である。</p>
+<div class="section" id="unscoped-enum">
+<h3>unscoped enum<a class="headerlink" href="#unscoped-enum" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++"><pre>enum指定子:
+    enum 識</pre>
+</div>
+<p>enumというキーワードだけで宣言するenumのことを、unscoped enumという。unscoped enumは、弱い型付けのenumを宣言、定義する。enumの定義は、それぞれ別の型を持つ。列挙子リストとは、コンマで区切られた識別子である。各列挙子には、=に続けて定数を指定することで、値を指定できる。これをenumの初期化子という。ただし、列挙子自体はオブジェクトではない。enumは先頭の列挙子に初期化子がない場合、値は0になる。先頭以外の列挙子に初期化子がない場合、そのひとつ前の列挙子の値に、1を加算した値になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// a = 0, b = 1, c = 2</span>
+<span class="k">enum</span> <span class="n">E</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// a = 3, b = 4, c = 5</span>
+<span class="k">enum</span> <span class="n">E</span> <span class="p">{</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">4</span> <span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">5</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// a = -5, b = -4, c = -3</span>
+<span class="k">enum</span> <span class="n">E</span> <span class="p">{</span> <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// a = 0, b = 1, c = 0, d = 1</span>
+<span class="k">enum</span> <span class="n">E</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">d</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>宣言した列挙子は、次の列挙子から使うことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// a = 0, b = 0, c = 5, d = 3</span>
+<span class="k">enum</span> <span class="n">E</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">c</span> <span class="o">-</span> <span class="mi">2</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>enum名とunscoped enumの列挙子は、enum指定子があるスコープで宣言される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">enum</span> <span class="n">GlobalEnum</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="n">GlobalEnum</span> <span class="n">e1</span> <span class="o">=</span> <span class="n">a</span> <span class="p">;</span>
+<span class="n">GlobalEnum</span> <span class="n">e2</span> <span class="o">=</span> <span class="n">b</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">enum</span> <span class="n">LocalEnum</span> <span class="p">{</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="n">GlobalEnum</span> <span class="n">e1</span> <span class="o">=</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="n">GlobalEnum</span> <span class="n">e2</span> <span class="o">=</span> <span class="n">d</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>unscoped enumによって宣言された列挙子は、整数のプロモーションによって、暗黙的に整数型に変換できる。整数型は、明示的なキャストによって、enum型に変換できる。整数型の値が、enum型の表現できる範囲を超えていた場合の挙動は、未定義である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">enum</span> <span class="n">E</span> <span class="p">{</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">123</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">value</span> <span class="p">;</span> <span class="c1">// enum Eからintへの暗黙の型変換</span>
+
+    <span class="n">E</span> <span class="n">e1</span> <span class="o">=</span> <span class="mi">123</span> <span class="p">;</span> <span class="c1">// エラー、intからenum Eへの暗黙の型変換はできない</span>
+    <span class="n">E</span> <span class="n">e2</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// intからenum Eへの明示的なキャスト</span>
+<span class="p">}</span>
+
+<span class="c1">// コマンドの種類を表す定数</span>
+<span class="k">enum</span> <span class="n">Command</span> <span class="p">{</span> <span class="n">copy</span><span class="p">,</span> <span class="n">cut</span><span class="p">,</span> <span class="n">paste</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// コマンドを処理する関数</span>
+<span class="kt">void</span> <span class="nf">process_command</span><span class="p">(</span> <span class="n">Command</span> <span class="n">id</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">switch</span><span class="p">(</span> <span class="n">id</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">case</span> <span class="n">copy</span> :
+            <span class="c1">// 処理</span>
+            <span class="k">break</span> <span class="p">;</span>
+        <span class="k">case</span> <span class="n">cut</span> :
+            <span class="c1">// 処理</span>
+            <span class="k">break</span> <span class="p">;</span>
+        <span class="k">case</span> <span class="n">paste</span> :
+            <span class="c1">// 処理</span>
+            <span class="k">break</span> <span class="p">;</span>
+
+        <span class="k">default</span> <span class="o">:</span>
+            <span class="c1">// エラー処理</span>
+            <span class="k">break</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスのスコープ内で宣言された列挙子の名前は、クラスのメンバーアクセス演算子（::, ., -&amp;gt;）を使うことによって、参照することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="k">enum</span> <span class="p">{</span> <span class="n">value</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="c1">// クラススコープのなかでは名前のまま参照できる</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="n">value</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">C</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// ::による参照</span>
+    <span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="n">c</span><span class="p">.</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// .による参照</span>
+    <span class="n">C</span> <span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">c</span> <span class="p">;</span>
+    <span class="n">p</span><span class="o">-&gt;</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// -&gt;による参照</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>unscoped enumは、識別子を省略することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 識別子あり</span>
+<span class="k">enum</span> <span class="n">E</span> <span class="p">{</span> <span class="n">a</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 識別子なし</span>
+<span class="k">enum</span> <span class="p">{</span> <span class="n">b</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="scoped-enum">
+<h3>scoped enum<a class="headerlink" href="#scoped-enum" title="Permalink to this headline">¶</a></h3>
+<p>scoped enumは、強い型付けをするenumである。</p>
+<div class="highlight-c++"><pre>enum struct 識別子 enum</pre>
+</div>
+<p>scoped enumは、enum structかenum classという連続した二つのキーワードによって宣言する。enum structとenum classは、全く同じ意味である。どちらを使ってもよい。enumには、クラスのようなアクセス指定はない。scoped enumの識別子は省略できない。列挙子リストの文法は、unscoped enumと変わらない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">enum</span> <span class="k">struct</span> <span class="n">scoped_enum_1</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">enum</span> <span class="n">classs</span> <span class="n">scoped_enum_2</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>scoped enumは、非常に強い型付けを持っている。列挙子は、scoped enumが宣言されているスコープに導入されることはない。かならず、enum名に::演算子をつけて参照しなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">enum</span> <span class="k">struct</span> <span class="n">E</span> <span class="p">{</span> <span class="n">value</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="n">value</span> <span class="p">;</span> <span class="c1">// エラー、scoped enumの列挙子は、このように参照できない</span>
+<span class="n">E</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// OK</span>
+</pre></div>
+</div>
+<p>このため、同じスコープ内で、同じ名前の列挙子を持つ、複数のscoped enumを宣言することもできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// scoped enumの場合</span>
+    <span class="k">enum</span> <span class="k">struct</span> <span class="n">Foo</span> <span class="p">{</span> <span class="n">value</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="k">enum</span> <span class="k">struct</span> <span class="n">Bar</span> <span class="p">{</span> <span class="n">value</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// OK</span>
+
+    <span class="n">Foo</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// enum struct Fooのvalue</span>
+    <span class="n">Bar</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// enum struct Barのvalue</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">g</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// unscoped enumの場合</span>
+    <span class="k">enum</span> <span class="n">Foo</span> <span class="p">{</span> <span class="n">value</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="k">enum</span> <span class="n">Bar</span> <span class="p">{</span> <span class="n">value</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// エラー、すでにvalueは宣言されている。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>scoped enumの列挙子は、暗黙的に整数型に変換することはできない。明示的にキャストすることはできる。整数型からenumへの変換は、unscoped enumと変わらない。つまり、明示的なキャストが必要である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">enum</span> <span class="k">struct</span> <span class="n">E</span> <span class="p">{</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">123</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">E</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// エラー、scoped enumの列挙子は暗黙的に変換できない</span>
+<span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span> <span class="n">E</span><span class="o">::</span><span class="n">value</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、明示的なキャスト</span>
+
+<span class="n">E</span> <span class="n">e</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span><span class="p">(</span> <span class="mi">123</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、unscoped enumと同じ</span>
+</pre></div>
+</div>
+<p>ただし、switch文の中のcaseラベルや、非型テンプレート実引数では、scoped enumも使うことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">enum</span> <span class="k">struct</span> <span class="n">E</span> <span class="p">{</span> <span class="n">value</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">template</span> <span class="o">&lt;</span> <span class="kt">int</span> <span class="n">N</span> <span class="o">&gt;</span> <span class="k">struct</span> <span class="n">C</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">E</span> <span class="n">e</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// switch文のcaseラベル</span>
+    <span class="k">switch</span><span class="p">(</span> <span class="n">e</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="k">case</span> <span class="n">E</span>:<span class="o">:</span><span class="n">value</span> <span class="o">:</span> <span class="p">;</span> <span class="p">}</span>
+
+    <span class="c1">// 非型テンプレート実引数</span>
+    <span class="n">C</span><span class="o">&lt;</span> <span class="n">E</span><span class="o">::</span><span class="n">value</span> <span class="o">&gt;</span> <span class="n">c</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>これが許されている理由は、scoped enumの内部的な値は使わないものの、強い型付けがされた一種のユニークな識別子として、scoped enumを使えるようにするためである。</p>
+<p>scoped enumは、強い型付けをするenumである。scoped enumは、列挙子の内部的な値は使わないが、単に名前付きの状態を表すことができる変数が欲しい場合。また、たとえ内部的な値を使うにしても、強い型付けによって、些細なバグを未然に防ぎたい場合などに使うことができる。</p>
+</div>
+<div class="section" id="enum-enum-base">
+<h3>enum基底（enum-base）<a class="headerlink" href="#enum-enum-base" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++"><pre>enum基底:
+    : 型指定子</pre>
+</div>
+<p>enum型は、内部的には単なる整数型である。この内部的な整数型のことを、内部型（underlying type）という。enum基底（enum-base）は、この内部型を指定するための文法である。enum基底の型は、基本クラスの指定とよく似た文法で指定することができる。enum基底の型指定子は、整数型でなければならない。</p>
+<p>enum基底が指定されたenum型の内部型は、enum基底の型指定子の型になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">enum</span> <span class="n">E</span> <span class="o">:</span> <span class="kt">int</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// 内部型はint</span>
+
+<span class="k">enum</span> <span class="k">struct</span> <span class="n">Foo</span> <span class="o">:</span> <span class="kt">int</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// 内部型はint</span>
+<span class="k">enum</span> <span class="k">struct</span> <span class="n">Bar</span> <span class="o">:</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// 内部型はunsigned int</span>
+
+<span class="k">enum</span> <span class="n">Error</span> <span class="o">:</span> <span class="kt">float</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// エラー、enum基底が整数型ではない</span>
+</pre></div>
+</div>
+<p>enum基底が省略された場合、scoped enumの内部型は、intになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">enum</span> <span class="k">struct</span> <span class="n">E</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// scoped enumのデフォルトの内部型はint</span>
+</pre></div>
+</div>
+<p>scoped enumで、int型の範囲を超える値の列挙子を使いたい場合は、明示的にenum基底を指定しなければならない。</p>
+<p>unscoped enumのenum基底が省略された場合、内部型は明確に定められることがない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">enum</span> <span class="n">E</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// 内部型は定められない。</span>
+</pre></div>
+</div>
+<p>enumの内部型が定められていない場合、内部型は、enumの列挙子をすべて表現できる整数型になる。その際、どの整数型が使われるかは、実装依存である。どの整数型でも、すべての列挙子を表現できない場合は、エラーとなる。</p>
+</div>
+<div class="section" id="enum-opaque-enum-declaration">
+<h3>enum宣言（opaque-enum-declaration）<a class="headerlink" href="#enum-opaque-enum-declaration" title="Permalink to this headline">¶</a></h3>
+<p>enum宣言は、正式には、opaque-enum-declarationという。これは、定義をしないenumの宣言である。関数や変数が、定義せずに宣言できるように、enumも、定義せずに宣言することができる。</p>
+<div class="highlight-c++"><pre>enum 識別子 enum基底 ;
+enum struct 識別子 enum</pre>
+</div>
+<p>unscoped enumの場合は、必ず定義と一致するenum基底を指定しなければならない。scoped enumの場合は、enum基底を省略した場合、内部型はデフォルトのintになる。ただし、安全のためには、enum宣言と対応するenumの定義には、enum基底を明示的に書いておいたほうがよい。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">enum</span> <span class="k">struct</span> <span class="n">Foo</span> <span class="o">:</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="p">;</span> <span class="c1">// 内部型はunsigned int</span>
+<span class="k">enum</span> <span class="k">class</span> <span class="nc">Bar</span> <span class="p">;</span> <span class="c1">// enum基底が省略された場合、内部型はint</span>
+
+<span class="k">enum</span> <span class="n">E1</span> <span class="o">:</span> <span class="kt">int</span> <span class="p">;</span> <span class="c1">// 内部型はint</span>
+
+<span class="k">enum</span> <span class="n">E2</span> <span class="p">;</span> <span class="c1">// エラー、unscoped enumの宣言では、enum基底を省略してはならない。</span>
+</pre></div>
+</div>
+<p>enum宣言によって、宣言のみされたenum名は、通常のenumと同じように使用できる。ただし、列挙子を使うことはできない。なぜならば、列挙子は宣言されていないからだ。</p>
+<p>列挙子を使うことができないenum宣言に、何の意味があるのか。enum宣言が導入された背景には、ある種の利用方法では、すべての翻訳単位に列挙子が必要ないこともあるのだ</p>
+<div class="section" id="id7">
+<h4>無駄な定義を省く<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 翻訳単位 1</span>
+
+<span class="k">enum</span> <span class="n">ID</span> <span class="o">:</span> <span class="kt">int</span> <span class="p">{</span> <span class="cm">/* 自動的に生成される多数の列挙子 */</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 翻訳単位 2</span>
+
+<span class="k">enum</span> <span class="n">ID</span> <span class="o">:</span> <span class="kt">int</span> <span class="p">;</span> <span class="c1">// enum宣言</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">ID</span> <span class="n">id</span> <span class="p">)</span> <span class="c1">// IDを引数にとる関数</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">id</span> <span class="p">;</span>
+    <span class="n">id</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">ID</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>翻訳単位 1で定義されているenumの列挙子は、外部のツールによって、自動的に生成されるものだとしよう。この定義は、かなり頻繁に更新される。もし、翻訳単位 2では、enumの内部的な値が使われ、列挙子という名前付きの定数には、それほど意味が無い場合、この自動的に生成される多数の列挙子は、無駄である。なぜならば、enumが生成されるたびに、たとえ翻訳単位 2のソースコードに変更がなく、再コンパイルが必要ない場合でも、わざわざコンパイルしなおさなければならないからだ。</p>
+<p>なぜenumの定義が必要かというと、完全な定義がなければ、enumの内部型を決定できないからである。C++11では、enum基底によって、明示的に内部型を指定できる。これにより、enumを定義せず宣言することができるようになった。</p>
+</div>
+<div class="section" id="id8">
+<h4>型安全なデータの秘匿<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<p>以下のクラスを考える。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// クラスCのヘッダーファイル</span>
+<span class="c1">// C.h</span>
+<span class="k">enum</span> <span class="k">struct</span> <span class="n">ID</span> <span class="p">{</span> <span class="cm">/* 自動的に生成される多数の列挙子 */</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">C</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="c1">// 外部に公開するメンバー</span>
+
+<span class="k">private</span> <span class="o">:</span>
+    <span class="n">ID</span> <span class="n">id</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>さて、このクラスを、複数の翻訳単位で使いたいとする。このクラスには、データメンバーとしてenum型の変数があるが、これは外部に公開しない。クラスの中の実装の都合上のデータメンバーである。enumの列挙子は、外部ツールで自動的に生成されるものとする。</p>
+<p>すると、このヘッダーファイルを#includeしているソースファイルは、enumが自動的に生成されるたびに、再コンパイルしなければならない。しかし、このクラスを使うにあたって、enumの定義は必要ないはずである。この場合にも、enum宣言が役に立つ。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// クラスCのヘッダーファイル</span>
+<span class="c1">// C.h</span>
+
+<span class="k">enum</span> <span class="k">struct</span> <span class="n">ID</span> <span class="o">:</span> <span class="kt">int</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">C</span> <span class="p">{</span> <span class="cm">/* メンバー */</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// クラスCのソースコード</span>
+<span class="c1">// C.cpp</span>
+
+<span class="k">enum</span> <span class="k">struct</span> <span class="n">ID</span> <span class="o">:</span> <span class="kt">int</span>  <span class="p">{</span> <span class="cm">/* 自動的に生成される多数の列挙子 */</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// メンバーの実装</span>
+</pre></div>
+</div>
+<p>このようにしておけば、enumの定義が変更されても、クラスのヘッダーファイルを#includeして、クラスを使うだけのソースコードまで、再コンパイルする必要はなくなる。
+&lt;/p&gt;]</p>
+</div>
+</div>
+</div>
+<div class="section" id="namespaces">
+<h2>名前空間（Namespaces）<a class="headerlink" href="#namespaces" title="Permalink to this headline">¶</a></h2>
+<p>名前空間とは、宣言の集まりに名前をつける機能である。名前空間の名前は、::演算子によって、宣言を参照するために使うことができる。名前空間は、複数定義することができる。グローバルスコープも、一種の名前空間スコープとして扱われる。</p>
+<div class="section" id="namespace-definition">
+<h3>名前空間の定義（Namespace definition）<a class="headerlink" href="#namespace-definition" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">inli</span>
+</pre></div>
+</div>
+<p>名前空間は、別の名前空間スコープの中か、グローバルスコープに書くことができる。名前空間の本体には、あらゆる宣言を、いくつでも書くことができる。これには、名前空間自身も含まれる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// グローバルスコープ</span>
+
+<span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span> <span class="c1">// NSという名前の名前空間のスコープ</span>
+    <span class="c1">// 宣言の例</span>
+    <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">class</span> <span class="nc">C</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="k">typedef</span> <span class="kt">int</span> <span class="n">type</span> <span class="p">;</span>
+<span class="p">}</span><span class="c1">// NSのスコープ、ここまで</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// NS名前空間の中の名前を使う</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">type</span> <span class="n">t</span> <span class="p">;</span>
+
+    <span class="n">value</span> <span class="p">;</span> <span class="c1">// エラー、名前が見つからない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>名前空間は、名前の衝突を防ぐために使うことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// グローバルスコープ</span>
+<span class="kt">int</span> <span class="n">value</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="n">value</span> <span class="p">;</span> <span class="c1">// エラー、valueという名前はすでに宣言されている</span>
+
+<span class="c1">// OK、名前空間Aのvalue</span>
+<span class="k">namespace</span> <span class="n">A</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span> <span class="p">}</span>
+<span class="c1">// OK、名前空間Bのvalue</span>
+<span class="k">namespace</span> <span class="n">B</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">value</span> <span class="p">;</span> <span class="c1">// グローバルスコープのvalue</span>
+    <span class="n">A</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// 名前空間Aのvalue</span>
+    <span class="n">B</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// 名前空間Bのvalue</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>グローバル変数として、valueような、分かりやすくて誰でも使いたがる名前を使うのは、問題が多い。しかし、名前付きの名前空間スコープの中であれば、名前の衝突を恐れずに、気軽に短くて美しい名前でも使うことができる。</p>
+<p>名前空間は、何度でも定義することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 最初の定義</span>
+<span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="c1">// 二度目の定義</span>
+<span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>名前空間はネストできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">A</span> <span class="p">{</span> <span class="k">namespace</span> <span class="n">B</span> <span class="p">{</span> <span class="k">namespace</span> <span class="n">C</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span> <span class="p">}</span> <span class="p">}</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">A</span><span class="o">::</span><span class="n">B</span><span class="o">::</span><span class="n">C</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// Aの中の、Bの中の、Cの中のvalue</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id9">
+<h4>inline名前空間<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<p>inlineキーワードの書かれた名前空間の定義は、inline名前空間である。inline名前空間スコープの中で宣言された名前は、inline名前空間の外側の名前空間のスコープの中でも使うことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kr">inline</span> <span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="k">namespace</span> <span class="n">Outer</span>
+<span class="p">{</span>
+    <span class="kr">inline</span> <span class="k">namespace</span> <span class="n">Inner</span>
+    <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">value</span> <span class="p">;</span> <span class="c1">// NS::value</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span>
+
+    <span class="n">Outer</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// Outer::Inner::value</span>
+    <span class="n">Outer</span><span class="o">::</span><span class="n">Inner</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="unnamed-namespaces">
+<h4>無名名前空間（Unnamed namespaces）<a class="headerlink" href="#unnamed-namespaces" title="Permalink to this headline">¶</a></h4>
+<p>TODO:変更されそうなので保留</p>
+</div>
+<div class="section" id="namespace-member-definitions">
+<h4>名前空間のメンバーの定義（Namespace member definitions）<a class="headerlink" href="#namespace-member-definitions" title="Permalink to this headline">¶</a></h4>
+<p>ある名前空間スコープの中で宣言された名前を、その名前空間のメンバーと呼ぶ。名前空間のメンバーは、名前空間の外側で定義することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// 関数fの宣言</span>
+    <span class="k">namespace</span> <span class="n">Inner</span>
+    <span class="p">{</span>
+        <span class="kt">void</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// 関数gの宣言</span>
+        <span class="kt">void</span> <span class="nf">h</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// 関数hの宣言</span>
+    <span class="p">}</span>
+    <span class="kt">void</span> <span class="n">Inner</span><span class="o">::</span><span class="n">g</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 関数gの定義</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">NS</span><span class="o">::</span><span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 関数fの定義</span>
+<span class="kt">void</span> <span class="n">NS</span><span class="o">::</span><span class="n">Inner</span><span class="o">::</span><span class="n">h</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 関数hの定義</span>
+</pre></div>
+</div>
+<p>ただし、名前空間の外側で定義されているからといって、名前空間の外側のスコープにも、名前が導入されるわけではない。あくまで、名前空間の外側でも、定義ができるだけである。</p>
+</div>
+</div>
+<div class="section" id="namespace-alias">
+<h3>名前空間エイリアス（Namespace alias）<a class="headerlink" href="#namespace-alias" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++"><pre>namespace 識別子 = 名前空間の名前 ;</pre>
+</div>
+<p>名前空間エイリアス（Namespace alias）とは、名前空間の名前の別名を定義する機能である。</p>
+<p>名前空間は、名前の衝突を防いでくれる。しかし、名前空間の名前自体が衝突してしまうこともある。それを防ぐためには、名前空間の名前には、十分にユニークな名前をつけなければならない。しかし、衝突しない名前をつけようとすると、どうしても、短い名前をつけることはできなくなってしまう。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">Perfect_cpp</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+   <span class="n">Perfect_cpp</span><span class="o">::</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、十分にユニークな名前、Perfect_cppを使っている。このため、xという名前の変数名でも、衝突を恐れず使うことができる。しかし、このPerfect_cppは長い上に、大文字とアンダースコアを使っており、タイプしづらい。そこで、名前空間エイリアスを使うと、別名を付けることができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">Perfect_cpp</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">namespace</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Perfect_cpp</span> <span class="p">;</span>
+    <span class="n">p</span><span class="o">::</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// Perfect_cpp::x</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ネストされた名前にも、短い別名をつけることができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">Perfect_cpp</span> <span class="p">{</span> <span class="k">namespace</span> <span class="n">Library</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="p">}</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">namespace</span> <span class="n">pl</span> <span class="o">=</span> <span class="n">Perfect_cpp</span><span class="o">::</span><span class="n">Library</span> <span class="p">;</span>
+    <span class="n">pl</span><span class="o">::</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// Perfect_cpp::Library::x</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>別名の別名を定義することもできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">Long_name_is_Looooong</span> <span class="p">{</span> <span class="p">}</span>
+<span class="k">namespace</span> <span class="n">long_name</span> <span class="o">=</span> <span class="n">Long_name_is_Looooong</span> <span class="p">;</span>
+<span class="k">namespace</span> <span class="n">ln</span> <span class="o">=</span> <span class="n">long_name</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>同じ宣言領域で、別名と名前空間の名前が衝突してはならない</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="k">namespace</span> <span class="n">B</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="c1">// エラー、同じ宣言領域では、別名と名前空間の名前が衝突してはならない</span>
+<span class="k">namespace</span> <span class="n">A</span> <span class="o">=</span> <span class="n">B</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// OK、別の宣言領域なら可</span>
+    <span class="k">namespace</span> <span class="n">A</span> <span class="o">=</span> <span class="n">B</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-the-using-declaration">
+<h3>using宣言（The using declaration）<a class="headerlink" href="#using-the-using-declaration" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++"><pre>using 識別子 ;</pre>
+</div>
+<p>using宣言は、宣言が書かれている宣言領域に、指定した名前を導入する。これにより、明示的に名前空間名と::演算子を使わなくても、その宣言領域で、名前が使えるようになる。</p>
+<p>using宣言を、名前空間のメンバーに使う場合、using宣言が書かれているスコープで、::演算子による明示的なスコープの指定なしに、その名前を使うことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">name</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー、名前nameは宣言されていない</span>
+
+    <span class="k">using</span> <span class="n">NS</span><span class="o">::</span><span class="n">name</span> <span class="p">;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// NS::nameと解釈される</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">name</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 明示的なスコープの指定</span>
+<span class="p">}</span>
+
+<span class="c1">// ブロックスコープ外でもusing宣言は使える</span>
+<span class="k">using</span> <span class="n">NS</span><span class="o">::</span><span class="n">name</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>using宣言は、テンプレート識別子を指定することはできない。テンプレート名は指定できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">C</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="p">;</span> <span class="c1">// OK、テンプレート名は指定できる</span>
+    <span class="k">using</span> <span class="n">NS</span><span class="o">::</span><span class="n">C</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="p">;</span> <span class="c1">// エラー、テンプレート識別子は指定できない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>using宣言は、名前空間の名前を指定することはできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="p">}</span>
+<span class="k">using</span> <span class="n">NS</span> <span class="p">;</span> <span class="c1">// エラー</span>
+</pre></div>
+</div>
+<p>using宣言は、scoped enumの列挙子を指定することはできない.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">enum</span> <span class="k">struct</span> <span class="n">E</span> <span class="p">{</span> <span class="n">scoped</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="k">enum</span> <span class="p">{</span> <span class="n">unscoped</span> <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="n">NS</span><span class="o">::</span><span class="n">unscoped</span> <span class="p">;</span> <span class="c1">// OK、unscoped enumの列挙子</span>
+    <span class="k">using</span> <span class="n">NS</span><span class="o">::</span><span class="n">E</span><span class="o">::</span><span class="n">scoped</span> <span class="p">;</span> <span class="c1">// エラー、scoped enumの列挙子は指定できない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>using宣言は、その名の通り、宣言である。したがって、通常通り、外側のスコープの名前を隠すこともできる。&lt;a href=&#8221;#namespace.udir&#8221;&gt;usingディレクティブ&lt;/a&gt;とは、違いがある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">name</span>  <span class="p">;</span> <span class="c1">// グローバルスコープのname</span>
+<span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">name</span> <span class="p">;</span> <span class="p">}</span> <span class="c1">// NS名前空間のname</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// ここではまだ、名前が隠されてはいない</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// ::nameを意味する</span>
+
+    <span class="k">using</span> <span class="n">NS</span><span class="o">::</span><span class="n">name</span> <span class="p">;</span> <span class="c1">// このusing宣言は::nameを隠す</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// NS::nameを意味する</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>using宣言は、宣言された時点で、すでに宣言されている名前を、スコープに導入する。宣言場所から見えない名前は、導入されない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span>
+<span class="c1">// void NS::f(int)をグローバルスコープに導入する</span>
+<span class="c1">// void NS::f(double)は、この時点では宣言されていないので、導入されない</span>
+<span class="k">using</span> <span class="n">NS</span><span class="o">::</span><span class="n">f</span> <span class="p">;</span>
+<span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// この時点で、unqualified名fとして名前探索されるのは</span>
+    <span class="c1">// void NS::f(int)のみ</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mf">1.23</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// NS::f(int)を呼ぶ。</span>
+
+    <span class="k">using</span> <span class="n">NS</span><span class="o">::</span><span class="n">f</span> <span class="p">;</span> <span class="c1">// void NS::f(double) をmain関数のブロックスコープに導入する</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mf">1.23</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// オーバーロード解決により、NS::f(double)を呼ぶ</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ただし、テンプレートの部分的特殊化は、プライマリークラステンプレートを経由して探すので、たとえusing宣言の後に宣言されていたとしても、発見される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+    <span class="k">class</span> <span class="nc">C</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">using</span> <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="p">;</span>
+
+<span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+    <span class="k">class</span> <span class="nc">C</span><span class="o">&lt;</span><span class="n">T</span> <span class="o">*</span> <span class="o">&gt;</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// ポインター型への部分的特殊化</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">C</span><span class="o">&lt;</span><span class="kt">int</span> <span class="o">*</span> <span class="o">&gt;</span> <span class="n">c</span> <span class="p">;</span> <span class="c1">// 部分的特殊化が使われる。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>using宣言は、&lt;a href=&#8221;#class.inhctor&#8221;&gt;コンストラクターの継承&lt;/a&gt;に使うこともできる。詳しくは、該当の項目を参照。ここでは、クラスのメンバー宣言としてusing宣言を使う際の、文法上の注意事項だけを説明する。</p>
+<p>クラスのメンバー宣言としてusing宣言を使う場合、基本クラスのメンバー名を指定しなければならない。名前空間のメンバーは指定できない。using宣言は、基本クラスのメンバー名を、派生クラスのスコープに導入する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">Base</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Derived</span> <span class="o">:</span> <span class="k">private</span> <span class="n">Base</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="k">using</span> <span class="n">Base</span><span class="o">::</span><span class="n">f</span> <span class="p">;</span> <span class="c1">// OK、基本クラスのメンバー名</span>
+    <span class="k">using</span> <span class="n">NS</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// エラー、基本クラスのメンバーではない</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>クラスのメンバー宣言としてのusing宣言は、基本クラスのメンバーの名前を、クラスのメンバーの名前探索で発見させることができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Derived1</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Derived2</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="n">Base</span><span class="o">::</span><span class="n">f</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Derived1</span> <span class="n">d1</span> <span class="p">;</span>
+    <span class="n">d1</span><span class="p">.</span><span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// Derived::f(double)を呼ぶ</span>
+    <span class="n">Derived2</span> <span class="n">d2</span> <span class="p">;</span>
+    <span class="n">d2</span><span class="p">.</span><span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// Base::f(int)を呼ぶ</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Derived1::fは、Base::fを隠してしまうので、Base::fはオーバーロード解決の候補関数に上がることはない。Derived2では、using宣言を使って、Base::fをDerived2のスコープに導入しているので、オーバーロード解決の候補関数として考慮される。</p>
+<p>また、using宣言は、基本クラスのメンバーのアクセス指定を変更する目的でも使える。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Base</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="kt">int</span> <span class="n">get</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">value</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="kt">void</span> <span class="n">set</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span> <span class="p">{</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// Baseからprivateで派生</span>
+<span class="k">class</span> <span class="nc">Derived</span> <span class="o">:</span> <span class="k">private</span> <span class="n">Base</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span> <span class="c1">// Base::getのみpublicにする</span>
+    <span class="k">using</span> <span class="n">Base</span><span class="o">::</span><span class="n">get</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、DerivedはBaseからprivate派生している。ただし、Base::getだけは、publicにしたい。そのような場合に、using宣言が使える。</p>
+<p>using宣言でクラスのメンバー名を指定する場合、クラスのメンバー宣言でなければならない。クラスのメンバー宣言以外の場所で、using宣言にクラスのメンバー名を指定してはならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="n">C</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span>
+
+<span class="k">using</span> <span class="n">C</span><span class="o">::</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー、これはクラスのメンバー宣言ではない</span>
+<span class="k">using</span> <span class="n">C</span><span class="o">::</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// エラー、同上</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-using-directive">
+<h3>usingディレクティブ（Using directive）<a class="headerlink" href="#using-using-directive" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++"><pre>using namespace 名前空間名 ;</pre>
+</div>
+<p>usingディレクティブ（using directive）は、その記述以降のスコープにおける非修飾名前探索に、指定された名前空間内のメンバーを追加するための指示文である。usingディレクティブを使うと、指定された名前空間内のメンバーを、::演算子を用いないで使用できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">class</span> <span class="nc">C</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="k">namespace</span> <span class="n">NS</span> <span class="p">;</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// NS::a</span>
+    <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// NS::f</span>
+    <span class="n">C</span> <span class="n">c</span> <span class="p">;</span> <span class="c1">// NS::C</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>usingディレクティブを使えば、指定された名前空間内のすべてのメンバーを、明示的な::演算子を使わずにアクセスできるようになる。</p>
+<p>usingディレクティブは、名前空間スコープとブロックスコープ内で使用することができる。クラススコープ内では使用できない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">A</span> <span class="p">{</span> <span class="k">typedef</span> <span class="kt">int</span> <span class="n">type</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// ブロックスコープ内</span>
+    <span class="k">using</span> <span class="k">namespace</span> <span class="n">A</span> <span class="p">;</span>
+    <span class="n">type</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// A::type</span>
+<span class="p">}</span>
+
+<span class="k">namespace</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="c1">// 名前空間スコープ</span>
+    <span class="k">using</span> <span class="k">namespace</span> <span class="n">A</span> <span class="p">;</span>
+    <span class="n">type</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// A::type</span>
+<span class="p">}</span>
+
+<span class="n">other_namespace</span><span class="o">::</span><span class="n">type</span> <span class="n">g1</span> <span class="p">;</span> <span class="c1">// A::type</span>
+
+<span class="c1">// 名前空間スコープ（グローバルスコープ）</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">A</span> <span class="p">;</span>
+<span class="n">type</span> <span class="n">g2</span> <span class="p">;</span> <span class="c1">// A::type</span>
+
+<span class="k">class</span> <span class="nc">C</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="k">namespace</span> <span class="n">A</span> <span class="p">;</span> <span class="c1">// エラー、クラススコープ内では使用できない</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>グローバルスコープにusingディレクティブを記述するのは推奨できない。特に、ヘッダーファイルのグローバルスコープにusingディレクティブを記述すると、非常に問題が多い。名前空間の本来の目的は、名前の衝突を防ぐためである。usingディレクティブは、名前空間という仕組みに穴を開けるような機能だからだ。</p>
+<p>しかし、usingディレクティブは必要である。たとえば、非常に長い名前空間名や、深くネストした名前空間内の多数のメンバーを使う場合、いちいち::演算子で明示的にスコープを指定したり、using宣言でひとつひとつ宣言していくのは、非常に面倒である。あるブロックスコープで、名前が衝突しないということが保証できるならば、usingディレクティブを使っても構わない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">really_long_name</span> <span class="p">{</span> <span class="k">namespace</span> <span class="n">yet_another_long_name</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="p">;</span> <span class="kt">int</span> <span class="n">b</span> <span class="p">;</span> <span class="kt">int</span> <span class="n">c</span> <span class="p">;</span> <span class="kt">int</span> <span class="n">d</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// このスコープでは、a, b, c, dという名前は衝突しないと保証できる</span>
+    <span class="k">using</span> <span class="k">namespace</span> <span class="n">really_long_name</span><span class="o">::</span><span class="n">yet_another_long_name</span> <span class="p">;</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>usingディレクティブは、宣言ではない。usingディレクティブは、非修飾名前探索に、名前を探すべき名前空間を、特別に追加するという機能を持っている。したがって、usingディレクティブは、名前を隠さない。以下の例はエラーである。&lt;a href=&#8221;#namespace.udecl&#8221;&gt;using宣言&lt;/a&gt;と比較すると、違いがある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">name</span>  <span class="p">;</span> <span class="c1">// グローバルスコープのname</span>
+<span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">name</span> <span class="p">;</span> <span class="p">}</span> <span class="c1">// NS名前空間のname</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// ここではまだ、名前が隠されてはいない</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// ::nameを意味する</span>
+
+    <span class="k">using</span> <span class="k">namespace</span> <span class="n">NS</span> <span class="p">;</span> <span class="c1">// 名前探索にNS名前空間内のメンバーを追加</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー、::nameとNS::nameとで、どちらを使うべきか曖昧</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>usingディレクティブは、非修飾名前探索にしか影響を与えない。ADLには影響を与えない。</p>
+<p>&lt;p class=&#8221;editorial-note&#8221;&gt;
+TODO: range-based forで使われているトリックも記述。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">S</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="k">namespace</span> <span class="n">inner</span>
+    <span class="p">{</span>
+        <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="n">S</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+        <span class="kt">void</span> <span class="n">g</span><span class="p">(</span><span class="n">S</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">using</span> <span class="n">inner</span><span class="o">::</span><span class="n">f</span> <span class="p">;</span> <span class="c1">// inner::fをNS名前空間に導入する</span>
+    <span class="k">using</span> <span class="k">namespace</span> <span class="n">inner</span> <span class="p">;</span> <span class="c1">// 非修飾名前探索に影響をおぼよす</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">S</span> <span class="n">s</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="n">g</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー、usingディレクティブはADLには影響しない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>usingディレクティブで探索できるようになった名前は、オーバーロード関数の候補にもなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// この時点では、NS::fは名前探索で発見されない</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mf">1.23</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// ::f(int)</span>
+
+    <span class="k">using</span> <span class="k">namespace</span> <span class="n">NS</span> <span class="p">;</span> <span class="c1">// NS名前空間のメンバーがunqualified名前探索で発見されるようになる</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mf">1.23</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// オーバーロード解決により、NS::f( double )</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>usingディレクティブは、unqualified名前探索のルールを変更するという、非常に特殊な機能である。usingディレクティブは、確実に名前が衝突しないブロックスコープ内で使うか、あるいは、オーバーロード解決をさせるので、同じ関数名を複数、意図的に名前探索で発見させる場合にのみ、使うべきである。</p>
+</div>
+</div>
+<div class="section" id="linkage-specifications">
+<h2>リンケージ指定（Linkage specifications）<a class="headerlink" href="#linkage-specifications" title="Permalink to this headline">¶</a></h2>
+<p>関数型、外部リンケージを持つ関数名、外部リンケージを持つ変数名には、言語リンケージ（language linkage）という概念がある。リンケージ指定（Linkage specification）は、言語リンケージを指定するための文法である。リンケージ指定と、&lt;a href=&#8221;#dcl.stc&#8221;&gt;ストレージクラス指定子&lt;/a&gt;のextern指定子とは、別物である。</p>
+<p>注意、実装依存の話：言語リンケージは、C++と他のプログラミング言語との間での、関数名や変数名の相互利用のための機能である。異なる言語間で名前を相互利用するには、共通の仕組みが必要である。これには、たとえば名前マングリングを始めとして、レジスターの使い方、引数のスタックへの積み方などの様々な要素がある。しかし、これらはいずれも本書の範疇を超えるので解説しない。</p>
+<div class="highlight-c++"><pre>extern 文字列リテラル { 宣言リスト }
+extern 文字列リテラル 宣言</pre>
+</div>
+<p>標準では、C++言語リンケージと、C言語リンケージを定めている。C++の場合、文字列リテラルは&#8221;C++&#8221;となり、C言語の場合、文字列リテラルは&#8221;C&#8221;となる。何も指定しない場合、デフォルトでC++言語リンケージとなる。異なるリンケージ指定がされた名前は、たとえその他のシグネチャーがすべて同じであったとしても、別の型として認識される。その他の文字列がどのような扱いを受けるかは、実装依存である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 関数型へのC言語リンケージの指定</span>
+<span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="k">typedef</span> <span class="kt">void</span> <span class="n">function_type</span><span class="p">()</span> <span class="p">;</span>
+<span class="c1">// 関数名へのC言語リンケージの指定</span>
+<span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="kt">int</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+<span class="c1">// 変数名へのC言語リンケージの指定</span>
+<span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>{ }を使う方のリンケージ指定子は、複数の宣言に対して、一括して言語リンケージを指定するための文法である。</p>
+<div class="highlight-c++"><pre>// 関数名f, g, hは、すべてC言語リンケージを持つ
+extern "C"
+{
+    void f() ;
+    void g() ;
+    void h() ;
+}
+
+// C_functions.hというヘッダーファイルで宣言されているすべての関数型、関数名、変数名は、C言語リンケージを持つ
+extern "C"
+{
+    #include "C_functions.h"
+}</pre>
+</div>
+<p>リンケージ指定をしない場合、デフォルトでC++言語リンケージだとみなされる。通常、C++言語リンケージを指定する必要はない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// デフォルトのC++言語リンケージ</span>
+<span class="kt">void</span> <span class="nf">g</span><span class="p">()</span> <span class="p">;</span>
+<span class="c1">// 明示的な指定</span>
+<span class="k">extern</span> <span class="s">&quot;C++&quot;</span> <span class="kt">void</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>リンケージ指定はネストすることができる。その場合、一番内側のリンケージ指定が使われる。言語リンケージは、スコープをつくらない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">extern</span> <span class="s">&quot;C&quot;</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// C言語リンケージ</span>
+    <span class="k">extern</span> <span class="s">&quot;C++&quot;</span>
+    <span class="p">{</span>
+        <span class="kt">void</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// C++言語リンケージ</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>リンケージ指定は、名前空間スコープの中でのみ、使うことができる。ブロックスコープ内などでは使えない</p>
+<p>C言語リンケージは、クラスのメンバーに適用しても無視される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">extern</span> <span class="s">&quot;C&quot;</span>
+<span class="p">{</span>
+    <span class="k">class</span> <span class="nc">C</span>
+    <span class="p">{</span>
+        <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// C++言語リンケージ</span>
+    <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>C言語リンケージを持つ同名の関数が、複数あってはならない。これにより、C言語リンケージを持つ関数は、オーバーロードできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">extern</span> <span class="s">&quot;C&quot;</span>
+<span class="p">{</span>
+<span class="c1">// エラー、C言語リンケージを持つ同名の関数が複数ある</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// OK、互いに異なる言語リンケージを持つ</span>
+<span class="kt">void</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span>
+<span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="kt">void</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>このルールは、たとえ関数が名前付きの名前空間の中で宣言されていても、同様である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">namespace</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// エラー、A::fとB::fは同じ関数を参照する</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// OK、C++言語リンケージを持つ</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このように、たとえ名前空間が違ったとしても、C言語リンケージを持つ関数は、名前が衝突してはならない。これは、名前空間という仕組みが存在しないC言語からでも使えるようにするための仕様である。ただし、C言語リンケージを持つ関数を、C++側から、名前空間の中で宣言して、通常通り使うことはできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+
+    <span class="n">NS</span><span class="o">::</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>これにより、C言語で書かれた関数を、何らかの名前空間の中にいれて、C++側から使うこともできる。</p>
+<div class="highlight-c++"><pre>// ヘッダーファイル、C_functions.hは、C言語で書かれているものとする
+namespace obsolete_C_lib
+{
+    extern "C"
+    {
+        #include "C_functions.h"
+    }
+}</pre>
+</div>
+</div>
+<div class="section" id="attributes">
+<h2>アトリビュート（Attributes）<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h2>
+<p>&lt;p class=&#8221;editorial-note&#8221;&gt;
+TODO:attributeは変更される動きが見られるので保留。</p>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dcl.decl.html" title="宣言子（Declarators）"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="stmt.stmt.html" title="文（Statements）"
+             >previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ezoe Ryou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

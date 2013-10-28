@@ -1,0 +1,2113 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>特別なメンバー関数（Special member functions） &mdash; C++11: Syntax and Feature</title>
+    
+    <link rel="stylesheet" href="_static/cpp-book.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="C++11: Syntax and Feature" href="index.html" />
+    <link rel="next" title="オーバーロード(Overloading)" href="over.html" />
+    <link rel="prev" title="メンバーのアクセス指定（Member access control）" href="class.access.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="over.html" title="オーバーロード(Overloading)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="class.access.html" title="メンバーのアクセス指定（Member access control）"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="special-member-functions">
+<h1>特別なメンバー関数（Special member functions）<a class="headerlink" href="#special-member-functions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="constructors">
+<h2>コンストラクター（Constructors）<a class="headerlink" href="#constructors" title="Permalink to this headline">¶</a></h2>
+<p>コンストラクターは名前を持たない。コンストラクターの宣言には、特別な文法が用いられる。</p>
+<div class="highlight-c++"><pre>関数指定子もしくはconstexpr クラス名 仮引数リスト</pre>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// コンストラクターの宣言</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">X</span><span class="o">::</span><span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// コンストラクターの定義</span>
+</pre></div>
+</div>
+<p>コンストラクターは、クラス型のオブジェクトを初期化するのに用いられる。</p>
+<p>コンストラクターのクラス名に、typedef名を用いることはできない。</p>
+<p>コンストラクターに、virtual指定子、static指定子を指定することはできない。要約すれば、コンストラクターに使用可能な指定子は、inline、explicit、constexprである。コンストラクターをCV修飾することはできない。ただし、コンストラクターは、CV修飾されたオブジェクトの初期化に対しても、呼び出される。オブジェクトのCV修飾子は、構築中のオブジェクトには適用されないからである。コンストラクターをリファレンス修飾することはできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span>
+    <span class="k">virtual</span> <span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// エラー、コンストラクターにvirtual指定子は使えない</span>
+    <span class="k">static</span> <span class="nf">X</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// エラー、コンストラクターにstatic指定子は使えない</span>
+    <span class="n">X</span><span class="p">()</span> <span class="k">const</span> <span class="p">;</span> <span class="c1">// エラー、コンストラクターはCV修飾できない</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">&amp;</span> <span class="p">;</span> <span class="c1">// エラー、コンストラクターはリファレンス修飾できない</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<div class="section" id="id1">
+<h3>デフォルトコンストラクター<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>実引数なしで呼べるコンストラクターを、デフォルトコンストラクター（default constructor）という。これには、仮引数を取らないコンストラクターの他に、仮引数にすべてデフォルト実引数が指定されているコンストラクターも含まれる。</p>
+<p>以下はすべて、Xに対するデフォルトコンストラクターの宣言である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">X</span><span class="p">()</span> <span class="p">;</span>
+<span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span>
+<span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>もし、ユーザー定義のデフォルトコンストラクターが存在しない場合、暗黙のデフォルトコンストラクターが、デフォルト化されて宣言される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+<span class="c1">// デフォルトコンストラクターの定義なし</span>
+<span class="c1">// 暗黙に、X() = default ; が宣言される</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span>
+    <span class="n">Y</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// ユーザー定義のコンストラクター</span>
+<span class="c1">// 暗黙のデフォルトコンストラクターはdefault化されない</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ただし、以下のいずれかの条件をみたすクラスの場合、暗黙のデフォルトコンストラクターはdelete定義される。</p>
+<p>&lt;a href=&#8221;#variant_member&#8221;&gt;unionのようなクラス&lt;/a&gt;で、共用メンバーが非トリビアルデフォルトコンストラクターを持つ場合</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 非トリビアルデフォルトコンストラクターを持つクラス</span>
+<span class="k">struct</span> <span class="n">NonTrivial</span>
+<span class="p">{</span>
+    <span class="n">NonTrivial</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 非トリビアルデフォルトコンストラクター</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 非トリビアルデフォルトコンストラクターを持つメンバーのあるunion</span>
+<span class="k">union</span> <span class="n">X</span>
+<span class="p">{</span>
+<span class="c1">// 暗黙のデフォルトコンストラクターはdelete定義される</span>
+    <span class="n">NonTrivial</span> <span class="n">nt</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// そのような無名unionを直接のメンバーに持つクラス</span>
+<span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span>
+<span class="c1">// 暗黙のデフォルトコンストラクターはdelete定義される</span>
+    <span class="k">union</span> <span class="p">{</span> <span class="n">NonTrivial</span> <span class="n">nt</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>初期化子のないリファレンス型の非staticデータメンバーを持つクラスの場合</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">OBJECT</span> <span class="p">;</span> <span class="c1">// グローバル変数</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+<span class="c1">// 初期化子のないリファレンス型の非staticデータメンバー</span>
+    <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span>
+<span class="c1">// 初期化子がある</span>
+    <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="o">=</span> <span class="n">OBJECT</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Z</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="p">;</span>
+<span class="c1">// ユーザー定義のコンストラクターがある</span>
+    <span class="n">Z</span><span class="p">()</span> <span class="o">:</span> <span class="n">ref</span><span class="p">(</span> <span class="n">OBJECT</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー、デフォルトコンストラクターがdelete定義される</span>
+    <span class="n">Y</span> <span class="n">y</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="n">Z</span> <span class="n">z</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスXのデフォルトコンストラクターは暗黙にdelete定義される。Y::refには初期化子がある。Z::refはstaticデータメンバーである。</p>
+<p>unionのメンバーではない、const修飾された型かあるいはその配列型の、非staticデータメンバーが、ユーザー定義デフォルトコンストラクターを持たず、初期化子もない場合。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// ユーザー定義デフォルトコンストラクターを持たないクラス</span>
+<span class="k">struct</span> <span class="n">NoUserDefined</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+<span class="c1">// 初期化子がない</span>
+    <span class="n">NoUserDefined</span> <span class="k">const</span> <span class="n">member</span> <span class="p">;</span>
+    <span class="n">NoUserDefined</span> <span class="k">const</span> <span class="n">array</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span>
+<span class="c1">// 初期化子がある</span>
+    <span class="n">NoUserDefined</span> <span class="k">const</span> <span class="n">member</span> <span class="o">=</span> <span class="n">NoUserDefined</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="k">struct</span> <span class="n">Z</span>
+<span class="p">{</span>
+    <span class="n">NoUserDefined</span> <span class="k">const</span> <span class="n">member</span> <span class="p">;</span>
+<span class="c1">// memberに対する初期化子がないので不可</span>
+<span class="c1">// Z() : member() { } なら可</span>
+    <span class="n">Z</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー</span>
+    <span class="n">Y</span> <span class="n">y</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="n">Z</span> <span class="n">z</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>気をつける点としては、Zのユーザー定義デフォルトコンストラクターが、Z(){}という形の場合、Z::memberに対する初期化子がないので、エラーになる。Z() : member() { }という形の場合は、初期化子があるので、エラーにはならない。</p>
+<p>&lt;a href=&#8221;#variant_member&#8221;&gt;unionのようなクラス&lt;/a&gt;で、共用メンバーがconst修飾されている場合。これには、const修飾されている型への配列型も含む。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">union</span> <span class="n">X</span>
+<span class="p">{</span> <span class="c1">// すべてconst修飾されている</span>
+    <span class="kt">int</span> <span class="k">const</span> <span class="n">a</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="k">const</span> <span class="n">b</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="k">const</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span> <span class="c1">// すべてconst修飾されている無名unionをメンバーに持つ</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">union</span> <span class="n">Z</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// const修飾されていない</span>
+    <span class="kt">int</span> <span class="k">const</span> <span class="n">b</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="k">const</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー</span>
+    <span class="n">Y</span> <span class="n">y</span> <span class="p">;</span> <span class="c1">// エラー</span>
+    <span class="n">Z</span> <span class="n">z</span> <span class="p">;</span> <span class="c1">// OK、Y::aはconst修飾されていない。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>unionのすべての非staticデータメンバーがconst修飾されている場合のみ、デフォルトコンストラクターが暗黙にdelete定義される。ひとつでもconst修飾されていない非staticデータメンバーがある場合、この条件には当てはまらない。</p>
+<p>直接の基本クラス、仮想基本クラス、初期化子のない非staticデータメンバーの型が、デフォルトコンストラクターが使えない型である場合。これには、配列型も含まれる</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// デフォルトコンストラクターが使えないクラスの例</span>
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">=</span> <span class="k">delete</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 直接の基本クラス</span>
+<span class="k">struct</span> <span class="n">A</span> <span class="o">:</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">// 仮想基本クラス</span>
+<span class="k">struct</span> <span class="n">B</span> <span class="o">:</span> <span class="k">virtual</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">// 初期化子のない非staticデータメンバー</span>
+<span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span> <span class="p">;</span>
+    <span class="n">X</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>クラスA、B、Cは、いずれもデフォルトコンストラクターが暗黙にdelete定義される。</p>
+<p>ある型のデフォルトコンストラクターが使えない場合というのは、以下の通りである。</p>
+<p>デフォルトコンストラクターがない場合。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// ユーザー定義コンストラクターがある場合、暗黙のデフォルトコンストラクターは定義されない。</span>
+<span class="k">struct</span> <span class="n">NoDefaultConstructor</span> <span class="p">{</span> <span class="n">NoDefaultConstructor</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">X</span> <span class="o">:</span> <span class="n">NoDefaultConstructor</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>デフォルトコンストラクターのオーバーロード解決の結果が曖昧になる場合。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Ambiguous</span>
+<span class="p">{</span>
+    <span class="n">Ambiguous</span><span class="p">(</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">Ambiguous</span><span class="p">(</span> <span class="kt">double</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span> <span class="o">:</span> <span class="n">Ambiguous</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Ambiguous</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// エラー、デフォルトコンストラクターのオーバーロード解決が曖昧</span>
+    <span class="n">X</span> <span class="n">b</span> <span class="p">;</span> <span class="c1">// エラー、デフォルトコンストラクターは暗黙にdelete定義されている</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>デフォルトコンストラクターがdelete定義されている場合</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">=</span> <span class="k">delete</span> <span class="p">;</span> <span class="c1">// デフォルトコンストラクターのdelete定義</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>クラスのデフォルト化されたデフォルトコンストラクターから、ある型のデフォルトコンストラクターにアクセス出来ない場合。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">B1</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="n">B1</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">B2</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="n">B2</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">D1</span> <span class="o">:</span> <span class="k">public</span> <span class="n">B1</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">class</span> <span class="nc">D2</span> <span class="o">:</span> <span class="k">public</span> <span class="n">B2</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">D1</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// エラー、デフォルトコンストラクターは暗黙にdelete定義されている</span>
+    <span class="n">D2</span> <span class="n">b</span> <span class="p">;</span> <span class="c1">// エラー、デフォルトコンストラクターは暗黙にdelete定義されている</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスB1、B2のデフォルトコンストラクターは、privateメンバーなので、friendではないクラスD1、D2からはアクセスできない。そのため、デフォルトコンストラクターは暗黙にdelete定義される。</p>
+<p>これらの条件に当てはまらない場合、デフォルトコンストラクターは暗黙にdefault化される。</p>
+<p>デフォルトコンストラクターがトリビアル（trivial）となるためには、以下の条件をすべて満たさなければならない。</p>
+<p>デフォルトコンストラクターがユーザー定義もdelete定義もされていない。クラスはvirtual関数とvirtual基本クラスを持たない。クラスの非staticデータメンバーは、初期化子を持たない。クラスの直接の基本クラスは、トリビアルデフォルトコンストラクターを持つ。クラスの非staticデータメンバーは、トリビアルデフォルトコンストラクタを持つ。</p>
+<p>デフォルトコンストラクターは、使われたときに、暗黙にdefault化される。デフォルトコンストラクターがdelete定義されずに、default化された場合、暗黙に定義される。この暗黙のデフォルトコンストラクターは、コンストラクター初期化子を書かずコンストラクターの本体を空にした、ユーザー定義のデフォルトコンストラクターと同等である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="c1">// 暗黙のデフォルトコンストラクターは、以下のコードと同じ</span>
+    <span class="c1">// X(){}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Y</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// 暗黙のデフォルトコンストラクターを使う</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスXはデフォルトコンストラクターが使われているので、暗黙にdefault化される。クラスYのデフォルトコンストラクターは使われていないので、定義されない。</p>
+<p>もし、暗黙のデフォルトコンストラクターが定義されていて、同等のユーザー定義のデフォルトコンストラクターを書いた場合にエラーとなる場合は、プログラムもエラーとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Y</span> <span class="p">{</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー</span>
+    <span class="kt">int</span> <span class="n">obj</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">Y</span> <span class="n">y</span> <span class="o">=</span> <span class="p">{</span> <span class="n">obj</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスXはデフォルトコンストラクターを使っているので、暗黙のデフォルトコンストラクターがdefault化される。しかし、リファレンスの非staticデータメンバーを持つことにより、同等のユーザー定義のデフォルトコンストラクターがエラーになるので、エラーとなる。一方、クラスYでは、デフォルトコンストラクターが使われていない</p>
+<p>同等のユーザー定義のデフォルトコンストラクターがconstexprコンストラクターの要求を満たす場合、暗黙のデフォルトコンストラクターも、constexprコンストラクターになる。</p>
+<p>デフォルトコンストラクターは、初期化子なしで定義されたオブジェクトや、関数形式の明示的なキャストに対して呼ばれる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="n">X</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// デフォルトコンストラクターが呼ばれる</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// デフォルトコンストラクターが呼ばれる</span>
+    <span class="k">new</span> <span class="n">X</span> <span class="p">;</span> <span class="c1">// デフォルトコンストラクターが呼ばれる</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// デフォルトコンストラクターが呼ばれる</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスのオブジェクトをコピー、ムーブする際には、コピー、ムーブコンストラクターがそれぞれ使われる。詳しくは、&lt;a href=&#8221;#class.copy&#8221;&gt;クラスオブジェクトのコピーとムーブ&lt;/a&gt;を参照。</p>
+<p>基本クラスと非staticデータメンバーのコンストラクターが呼ばれる順番や、実引数の渡し方については、&lt;a href=&#8221;#class.base.init&#8221;&gt;基本クラスとデータメンバーの初期化&lt;/a&gt;を参照。</p>
+<p>その他のコンストラクターについては、&lt;a href=&#8221;#class.conv.ctor&#8221;&gt;型変換コンストラクター&lt;/a&gt;を参照。</p>
+<p>コンストラクターに戻り値の型を指定することはできない。コンストラクターの本体の中でreturn文を使う場合は、値を指定してはならない。コンストラクターのアドレスを取得することはできない。</p>
+<p>constなオブジェクトの構築中に、コンストラクターのthisを、直接、間接的に経由しないglvalueによってオブジェクト、またはそのサブオブジェクトにアクセスした場合、値は未規定である。この制限には、通常、まず遭遇することはない。例えば、以下のようなコードが問題になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">C</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span>
+    <span class="n">C</span><span class="p">()</span> <span class="o">:</span> <span class="n">c</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+    <span class="p">{</span> <span class="c1">// オブジェクトは、まだ構築中</span>
+        <span class="n">f</span><span class="p">(</span> <span class="k">this</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// オブジェクトの構築中に呼び出す</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">const</span> <span class="n">C</span> <span class="n">cobj</span> <span class="p">;</span> <span class="c1">// staticストレージ上のconstなオブジェクト</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">C</span><span class="o">*</span> <span class="n">cptr</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">cptr</span><span class="o">-&gt;</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// OK、値は123。cptrはコンストラクターのthis由来</span>
+    <span class="n">cobj</span><span class="p">.</span><span class="n">value</span> <span class="p">;</span> <span class="c1">// 値は未規定</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>オブジェクトは、コンストラクターを実行し終わった時点で、構築済みとなる。コンストラクターを実行中ということは、まだオブジェクトは構築中ということである。cobjは、デフォルトコンストラクターを呼び出す。したがって、関数fは、cobjの構築中に呼び出されるということになる。cptrの値は、コンストラクターのthisによって得られたアドレスである。したがって、cptrの値である、Cのオブジェクトへのアドレスを参照して、cobjにアクセスすることはできる。関数fは、クラスCのコンストラクターから呼び出されている。関数fの中からcobjを直接参照するということは、cobjの構築中に、コンストラクターのthisによらずにアクセスするということである。この場合、値は未規定となる。この例では、123であるとは保証されない。</p>
+<p>この条件に当てはまるようなコードは、現実には極めて珍しい。</p>
+</div>
+</div>
+<div class="section" id="temporary-objects">
+<h2>一時オブジェクト（Temporary objects）<a class="headerlink" href="#temporary-objects" title="Permalink to this headline">¶</a></h2>
+<p>一時オブジェクト（temporary object）は、様々な場面で、自動的に生成、破棄される。例えば、prvalueをリファレンスに束縛する、prvalueを返す、prvalueを生成する型変換、例外のthrow、ハンドラーでキャッチ、初期化などである。例外における一時オブジェクトの寿命は、&lt;a href=&#8221;#except&#8221;&gt;例外&lt;/a&gt;を参照。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="n">X</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// prvalueを生成する型変換</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="o">&amp;&amp;</span> <span class="n">ref</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// prvalueをリファレンスに束縛する</span>
+    <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// prvalueを返す</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>実装は一時オブジェクトの生成を省略できる。例えば、以下のコードについて考える。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// コンストラクター</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// コピーコンストラクター</span>
+    <span class="n">X</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// コピー代入演算子</span>
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// デストラクター</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span>
+    <span class="n">Y</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// コンストラクター</span>
+    <span class="n">Y</span><span class="p">(</span> <span class="n">Y</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// ムーブコンストラクター</span>
+    <span class="o">~</span><span class="n">Y</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// デストラクター</span>
+<span class="p">};</span>
+
+<span class="n">X</span> <span class="nf">f</span><span class="p">(</span> <span class="n">X</span> <span class="p">)</span> <span class="p">;</span>
+<span class="n">Y</span> <span class="nf">g</span><span class="p">(</span> <span class="n">Y</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+
+    <span class="n">X</span> <span class="n">a</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span> <span class="n">X</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #1</span>
+    <span class="n">Y</span> <span class="n">b</span> <span class="o">=</span> <span class="n">g</span><span class="p">(</span> <span class="n">Y</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #2</span>
+    <span class="n">X</span> <span class="n">c</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">;</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// #3</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>#1について考える。ある実装では、X(2)という式で一時オブジェクトがひとつ作られ、関数の実引数として渡す際に、別の一時オブジェクトがひとつ作られてコピーされるかもしれない。関数の戻り値も、別の一時オブジェクトがひとつ作られて、変数aにコピーされるかもしれない。別の実装では、X(2)という式による一時オブジェクトは、関数の実引数の一時オブジェクト上に直接構築されるので、一時オブジェクトを省略できるかもしれない。関数の戻り値も、変数aのオブジェクト上に直接構築されるので、一時オブジェクトを省略できるかもしれない。</p>
+<p>#2も、コピーがムーブに、変数aがbに変わっただけで、同じことが言える。</p>
+<p>#3では、変数cは、すでに構築されたオブジェクトなので、関数の戻り値の一時オブジェクトを、変数cのオブジェクトの上に、直接構築することはできない。ここでは一時オブジェクトが構築され、変数cにコピーされる。</p>
+<p>一時オブジェクトの構築が省略されたとしても、もし一時オブジェクトを作成していればエラーになるようなコードは、エラーになる。たとえば、コンストラクターやデストラクターにアクセスできない場合だ。</p>
+<p>一般に、ある式において一時オブジェクトがいくつ構築されるかということは、規格では定義されていない。実装次第である。一時オブジェクトが構築されなければ、コンストラクターやデストラクターも呼ばれない。</p>
+<p>逆に、一時オブジェクトが構築される場合、非トリビアルなコンストラクターは必ず呼び出されるし、破棄するときには、非トリビアルなデストラクターは必ず呼び出される。</p>
+<p>一時オブジェクトの破棄は原則として、その一時オブジェクトを構築することになった式を含む&lt;a href=&#8221;#intro.execution&#8221;&gt;完全式&lt;/a&gt;の評価の最後の段階として、実行される。言いかえれば、一時オブジェクトの寿命は、完全式が評価され終わるまでということもできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">){</span> <span class="k">return</span> <span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">X</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">a</span> <span class="o">+</span> <span class="n">a</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例で、yの初期化子の中の式において構築された一時オブジェクトがもしあれば、その寿命は、ソースコード上で言えば、セミコロンまでとなる。</p>
+<p>ただし、この原則に従わない場合が、ふたつ存在する。</p>
+<p>ひとつは、配列の要素を初期化する際に、デフォルトコンストラクターがデフォルト実引数を持っていた場合、ある要素のデフォルトコンストラクター実行における一時オブジェクトの破棄は、次の要素の初期化の前に行われる。破棄に伴うあらゆるサイドエフェクトは、次の要素の初期化の以前にシーケンス（sequenced before）される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Fat</span> <span class="p">{</span> <span class="kt">char</span> <span class="p">[</span><span class="mi">1000</span><span class="p">]</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">Fat</span> <span class="n">f</span> <span class="o">=</span> <span class="n">Fat</span><span class="p">()</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// デフォルトコンストラクター</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span><span class="p">[</span><span class="mi">1000</span><span class="p">]</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、a[0]からa[999]までの1000個のX型の配列の要素に対し、デフォルトコンストラクターが呼び出される。もし、a[0]がa[1]の前に初期化された場合、a[0]のデフォルトコンストラクター呼び出しによって構築されたFat型の一時オブジェクトは、a[1]を初期化するときには、すでに破棄されている。配列のすべての要素を初期化し終わるまで、1000個のFat型の一時オブジェクトが保持されることはない。</p>
+<p>もうひとつは、一時オブジェクトをリファレンスに束縛した場合、一時オブジェクトの寿命は、リファレンスの寿命まで延長される。一時オブジェクトは、rvalueリファレンスか、constなlvalueリファレンスで束縛できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="p">{</span>
+        <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">lvalue_reference</span> <span class="o">=</span> <span class="n">X</span><span class="p">()</span> <span class="p">;</span>
+        <span class="n">X</span> <span class="o">&amp;&amp;</span> <span class="n">rvalue_reference</span> <span class="o">=</span> <span class="n">X</span><span class="p">()</span> <span class="p">;</span>
+    <span class="c1">// 一時オブジェクトの寿命はここまで</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ただし、このリファレンス束縛の寿命の延長には、いくつかの例外が存在する。</p>
+<p>コンストラクター初期化子によってリファレンスのメンバーに束縛された一時オブジェクトの寿命は、コンストラクター呼び出しが終了するまでである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Member</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">Member</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">Member</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="p">)</span> <span class="o">:</span> <span class="n">ref</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// refは妥当なオブジェクトを参照している</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="o">=</span> <span class="n">Member</span><span class="p">()</span>  <span class="p">;</span>
+    <span class="c1">// 一時オブジェクトが破棄される</span>
+    <span class="c1">// x.refは無効なオブジェクトを参照している</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>もし、クラスXのコンストラクターの実引数が、一時オブジェクトへのリファレンスだった場合、一時オブジェクトの寿命は、コンストラクター呼び出しが終了するまでである。そのため、初期化の終わった変数xのメンバーrefは、無効なオブジェクトを参照していることになる。</p>
+<p>仮引数のリファレンスに束縛された一時オブジェクトの寿命は、関数呼び出しを含む式の完全式の評価が終了するまでである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// refは妥当なオブジェクトを参照している</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">X</span><span class="p">()</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="c1">// 一時オブジェクトが破棄される</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例で、X()を含む完全式というのは、関数fに対する関数呼び出し式のオペランドである。したがって、完全式はX()となる。しかし、この解釈に従うと、関数の本体では、refは無効なオブジェクトを参照することになってしまう。そのため、仮引数のリファレンス束縛に対しては、関数呼び出しを含む完全式になる。この場合、f( X() )である。そのため、X()によって構築された一時オブジェクトは、関数fの本体の中でも妥当である。</p>
+<p>関数のreturn文によって構築された、関数の戻り値のリファレンスに束縛された一時オブジェクトの寿命は、延長されない。一時オブジェクトは、return文を含む完全式の終了をもって、破棄される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">f</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">X</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span> <span class="n">X</span><span class="p">()</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="c1">// 一時オブジェクトは破棄される</span>
+    <span class="c1">// refは無効なオブジェクトを参照している</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このように、関数の戻り値としてのリファレンスに束縛されても、一時オブジェクトの寿命は延長されない。これには注意が必要である。</p>
+<p>new初期化子の中でリファレンス束縛された一時オブジェクトの寿命は、new初期化子を含む完全式の終わりまでである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="kt">int</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">X</span><span class="p">{</span> <span class="mi">0</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="c1">// 一時オブジェクトが破棄される</span>
+    <span class="c1">// ptr-&gt;refは無効なオブジェクトを参照している</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>リファレンス束縛により、寿命の延長を受けていない一時オブジェクトの破棄の順番は、構築の逆順に行われる。後に構築された一時オブジェクトの方が、先に構築された一時オブジェクトより、先に破棄される。</p>
+<p>もし、リファレンス束縛を受けた、複数の一時オブジェクトが、同じ場所で破棄される場合、破棄の順番は、構築の逆順に行われる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span><span class="p">,</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">X</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">X</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>今、#1のX(1)、X(2)という式に対して、それぞれ一時オブジェクトが構築されたとする。関数の実引数の評価順序は規定されていないので、どちらが先に構築されるかは、規格の定めるところではない。しかし、仮にX(1)の一時オブジェクトが、X(2)に先んじて構築された場合、オブジェクトの破棄は、X(2)が先になる。</p>
+</div>
+<div class="section" id="conversions">
+<h2>型変換（Conversions）<a class="headerlink" href="#conversions" title="Permalink to this headline">¶</a></h2>
+<p>クラスの型変換を実現するには、方法がふたつある。コンストラクターと変換関数（conversion function）だ。このふたつを合わせて、ユーザー定義型変換（user-deﬁned conversions）という。ユーザー定義型変換は、暗黙の型変換、初期化、明示的な型変換に用いられる。</p>
+<p>ひとつの値に対して、ユーザー定義型変換は1回しか適用されない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span>
+    <span class="n">Y</span><span class="p">(</span> <span class="kt">int</span> <span class="p">){</span> <span class="p">}</span> <span class="c1">// int型からY型へ</span>
+    <span class="k">operator</span> <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span> <span class="c1">// Y型からX型へ</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Y</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// OK、int型からY型への型変換</span>
+    <span class="n">X</span> <span class="n">b</span> <span class="o">=</span> <span class="n">Y</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、Y型からX型への型変換</span>
+    <span class="n">X</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ユーザー定義型変換によって、int型からY型に変換することはできる。また、Y型からX型に変換することはできる。ただし、int型から、暗黙にX型に変換することはできない。なぜならば、それにはユーザー定義型変換を、2回適用しなければならないからだ。</p>
+<p>ユーザー定義型変換は、曖昧にならない場合のみ、暗黙に使われる。派生クラスの型変換関数は、基本クラスの型変換関数を隠さない。ただし、同じ型に対する型変換関数の場合を除く。複数の型変換関数がある場合、関数のオーバーロード解決と同じ方法で、最適な関数が解決される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="k">operator</span> <span class="kt">int</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="c1">// Base::operator intを隠さない</span>
+    <span class="k">operator</span> <span class="kt">char</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="kt">char</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Derived</span> <span class="n">obj</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="n">obj</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="kt">char</span> <span class="n">b</span> <span class="o">=</span> <span class="n">obj</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="kt">bool</span> <span class="n">c</span> <span class="o">=</span> <span class="n">obj</span> <span class="p">;</span> <span class="c1">// エラー、　曖昧</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="conversion-by-constructor">
+<h3>コンストラクターによる型変換（Conversion by constructor）<a class="headerlink" href="#conversion-by-constructor" title="Permalink to this headline">¶</a></h3>
+<p>explicit指定子を使わずに宣言されているコンストラクターは、仮引数からクラスへの型変換の方法を指定するメンバー関数である。このような関数を、型変換コンストラクター（converting constructor）という。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{}</span> <span class="c1">// int型からの型変換を提供</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{}</span> <span class="c1">// double型からの型変換を提供</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 3個のint型からの型変換を提供</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// int型からの型変換</span>
+    <span class="n">X</span> <span class="n">b</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// int型からの型変換</span>
+    <span class="n">X</span> <span class="n">c</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="p">;</span> <span class="c1">// double型からの型変換</span>
+    <span class="n">X</span> <span class="n">d</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>型変換コンストラクターは、仮引数からクラス型への変換方法を指定する。仮引数は、複数でもよい。</p>
+<p>explicit指定子のあるコンストラクターは、explicitのないコンストラクターとほぼ同じである。ただし、explicitコンストラクターは、&lt;a href=&#8221;#dcl.init&#8221;&gt;直接初期化&lt;/a&gt;か、キャストが明示的に使われたときにしか、使われない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">explicit</span> <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{}</span> <span class="c1">// explicitコンストラクター</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">X</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー</span>
+    <span class="n">X</span> <span class="n">b</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、直接初期化</span>
+    <span class="n">X</span> <span class="n">c</span> <span class="o">=</span> <span class="n">X</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、明示的なキャスト</span>
+    <span class="n">X</span> <span class="n">d</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">X</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、明示的なキャスト</span>
+
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー</span>
+    <span class="n">f</span><span class="p">(</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">X</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>デフォルトコンストラクター、コピーコンストラクター、ムーブコンストラクターにも、explicitを指定できる。これらの関数も、explicit指定子を指定しない場合、暗黙に使われる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">explicit</span> <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{}</span> <span class="c1">// explicitコピーコンストラクター</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span> <span class="p">;</span>
+    <span class="n">X</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// エラー、コピー初期化（代入式とは違うことに注意）</span>
+    <span class="n">X</span> <span class="n">c</span><span class="p">(</span> <span class="n">a</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、直接初期化</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>デフォルトコンストラクターに対するexplicit指定子の有無は、以下のコード例のような違いをもたらす。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span>
+    <span class="k">explicit</span> <span class="n">Y</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span><span class="p">(</span> <span class="p">{</span> <span class="p">}</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、非explicitデフォルトコンストラクター</span>
+    <span class="n">Y</span> <span class="n">y</span><span class="p">(</span> <span class="p">{</span> <span class="p">}</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー、explicitデフォルトコンストラクター</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>実用上、気になるほどの違いはない。</p>
+</div>
+<div class="section" id="conversion-functions">
+<h3>型変換関数（Conversion functions）<a class="headerlink" href="#conversion-functions" title="Permalink to this headline">¶</a></h3>
+<p>以下のような文法で宣言されるメンバー関数を、型変換関数（Conversion function）という。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">explic</span>
+</pre></div>
+</div>
+<p>型変換関数は、仮引数を取らず、戻り値の型を指定しない。型変換関数は、メンバーであるクラス型から、型識別子の型への型変換を提供する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">operator</span> <span class="kt">int</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// 0</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、クラスXは、暗黙にint型の0に変換できるクラスとなる。</p>
+<p>型変換関数の型は、「仮引数を取らず、型識別子の型を返す、メンバー関数」になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">operator</span> <span class="kt">int</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// 型はint (X::*)(void) const</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="n">X</span><span class="o">::*</span><span class="n">ptr</span><span class="p">)(</span><span class="kt">void</span><span class="p">)</span> <span class="k">const</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">X</span><span class="o">::</span><span class="k">operator</span> <span class="kt">int</span> <span class="p">;</span> <span class="c1">// ポインターを得る</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="o">*</span><span class="n">ptr</span><span class="p">)()</span> <span class="p">;</span> <span class="c1">// 呼び出す</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>型識別子が、自分自身のクラス型（リファレンスも含む）、自分自身の基本クラス型（リファレンスも含む）、void型、またこれらの型にCV修飾子を付けた型の場合、型変換関数が使われることはない。これらの型変換には、標準型変換が用いられる。型変換関数は使われない。これらの型変換関数を宣言することはエラーではないが、使われることはない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span><span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="c1">// これらの型変換関数は、使われることはない</span>
+    <span class="k">operator</span> <span class="n">Derived</span> <span class="p">()</span> <span class="p">;</span> <span class="c1">// 自分自身のクラス型</span>
+    <span class="k">operator</span> <span class="n">Derived</span> <span class="o">&amp;</span> <span class="p">()</span> <span class="p">;</span> <span class="c1">// 自分自身のクラスへのリファレンス型</span>
+    <span class="k">operator</span> <span class="n">Derived</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">()</span> <span class="p">;</span> <span class="c1">// 自分自身のクラスへのconstリファレンス型</span>
+    <span class="k">operator</span> <span class="nf">Base</span> <span class="p">()</span> <span class="p">;</span> <span class="c1">// 基本クラス型</span>
+    <span class="k">operator</span> <span class="nf">void</span> <span class="p">()</span> <span class="p">;</span> <span class="c1">// void型</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Derived</span> <span class="n">d</span> <span class="p">;</span>
+    <span class="n">Base</span> <span class="n">b</span> <span class="o">=</span> <span class="n">d</span> <span class="p">;</span> <span class="c1">// 標準型変換が使われる。型変換関数は使われない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>型変換関数にexplicit指定子が指定されている場合、型変換関数は、直接初期化や明示的なキャストが使われなければ、呼び出されない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">B</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">operator</span> <span class="n">A</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">A</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="k">explicit</span> <span class="k">operator</span> <span class="n">B</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">B</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+
+    <span class="n">A</span> <span class="n">a1</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="n">A</span> <span class="n">a2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="n">A</span> <span class="n">a3</span> <span class="o">=</span> <span class="n">A</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK</span>
+
+    <span class="n">B</span> <span class="n">b1</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー、コピー初期化</span>
+    <span class="n">B</span> <span class="n">b2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、直接初期化</span>
+    <span class="n">B</span> <span class="n">b3</span> <span class="o">=</span> <span class="n">B</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、明示的なキャスト</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>型変換関数の型識別子を、関数型と配列型にすることはできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">operator</span> <span class="kt">void</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">()</span> <span class="p">;</span> <span class="c1">// エラー、関数型</span>
+    <span class="k">operator</span> <span class="kt">int</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">()</span> <span class="p">;</span> <span class="c1">// エラー、配列型</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>その他の型には、特に制限はない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Y</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="n">pointer_type</span> <span class="o">=</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="kt">void</span><span class="p">)</span> <span class="p">;</span>
+    <span class="k">using</span> <span class="n">reference_type</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">(</span><span class="o">&amp;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="p">;</span>
+
+    <span class="k">operator</span> <span class="nf">pointer_type</span> <span class="p">()</span> <span class="p">;</span> <span class="c1">// 関数ポインタ―型</span>
+    <span class="k">operator</span> <span class="nf">reference_type</span> <span class="p">()</span> <span class="p">;</span> <span class="c1">// 配列への参照型</span>
+
+    <span class="k">operator</span> <span class="nf">Y</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// 他のクラス型</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>型変換関数は継承される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="k">operator</span> <span class="kt">int</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Derived</span> <span class="n">d</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">d</span> <span class="p">;</span> <span class="c1">// Base::operator intを呼び出す</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>型変換関数はvirtual関数にできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="c1">// ピュアvirtual関数</span>
+    <span class="k">virtual</span> <span class="k">operator</span> <span class="kt">int</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="c1">// オーバーライド</span>
+    <span class="k">virtual</span> <span class="k">operator</span> <span class="kt">int</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>型変換関数はstatic関数にはできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="k">operator</span> <span class="kt">int</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="destructors">
+<h2>デストラクター（Destructors）<a class="headerlink" href="#destructors" title="Permalink to this headline">¶</a></h2>
+<p>以下のような文法の宣言を、デストラクター（destructor）という。</p>
+<div class="highlight-c++"><pre>関数指</pre>
+</div>
+<p>デストラクターの宣言は、~（チルダ）に続いて、クラス名、空の引数リストを指定する。関数指定子には、inlineとvirtualを指定できる。クラス名の代わりに、typedef名を使用することはできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// デストラクターの宣言</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>デストラクターはクラス型のオブジェクトを破棄する際に使われる。デストラクターには、仮引数や戻り値の型を指定することはできない。デストラクターのアドレスを得ることはできない。デストラクターはstaticメンバーにはなれない。デストラクターは、CV修飾、リファレンス修飾できない。ただし、デストラクターは、CV修飾されたクラス型のオブジェクトに対しても呼び出される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="p">{</span>
+        <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="c1">// オブジェクト破棄、デストラクターが呼ばれる</span>
+    <span class="p">}</span>
+
+    <span class="n">X</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">X</span> <span class="p">;</span>
+    <span class="k">delete</span> <span class="n">ptr</span> <span class="p">;</span> <span class="c1">// オブジェクト破棄、デストラクターが呼ばれる</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>デストラクターの宣言に例外指定がない場合は、暗黙のデストラクターと同等の例外指定が、暗黙に指定される。詳しくは、&lt;a href=&#8221;#except.spec&#8221;&gt;例外指定&lt;/a&gt;を参照。</p>
+<p>&lt;p class=&#8221;editorial-note&#8221;&gt;
+TODO:サンプルコードが必要だが、Madrid会議で変更される可能性があるので保留。</p>
+<p>クラスにユーザー宣言されたデストラクターがない場合、デストラクターは暗黙にdefault化されて宣言される。暗黙に宣言されたデストラクターは、クラスのinline publicメンバーである。</p>
+<p>暗黙のデストラクターは、以下のいずれかの条件を満たしたとき、delete定義される。</p>
+<blockquote>
+<div>unionのようなクラスで、共用メンバーが、非トリビアルデストラクターを持つ場合。</div></blockquote>
+<hr class="docutils" />
+<p>&lt;a href=&#8221;#variant_member&#8221;&gt;unionのようなクラス&lt;/a&gt;で、共用メンバーが、非トリビアルデストラクターを持つ場合。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Trivial</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">NonTrivial</span> <span class="p">{</span> <span class="o">~</span><span class="n">NonTrivial</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// デストラクターは暗黙にdefault化される</span>
+<span class="k">union</span> <span class="n">A1</span> <span class="p">{</span> <span class="n">Trivial</span> <span class="n">member</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">A2</span> <span class="p">{</span> <span class="k">union</span> <span class="p">{</span> <span class="n">Trivial</span> <span class="n">member</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// デストラクターは暗黙にdelete定義される</span>
+<span class="k">union</span> <span class="n">B1</span> <span class="p">{</span> <span class="n">NonTrivial</span> <span class="n">member</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">B2</span> <span class="p">{</span> <span class="k">union</span> <span class="p">{</span> <span class="n">NonTrivial</span> <span class="n">member</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="c1">// OK、暗黙のデストラクターを使う</span>
+    <span class="n">A1</span> <span class="n">a1</span> <span class="p">;</span> <span class="n">A2</span> <span class="n">a2</span> <span class="p">;</span>
+<span class="c1">// エラー、暗黙のデストラクターはdelete定義されている</span>
+    <span class="n">B1</span> <span class="n">b1</span> <span class="p">;</span> <span class="n">B2</span> <span class="n">b2</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスの非staticデータメンバーのデストラクターがdelete定義されているか、デフォルトデストラクターからアクセス出来ない場合。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">deleted_destructor</span>
+<span class="p">{</span>
+    <span class="o">~</span><span class="n">deleted_destructor</span><span class="p">()</span> <span class="o">=</span> <span class="k">delete</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">inaccessible_destructor</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="o">~</span><span class="n">inaccessible_destructor</span><span class="p">()</span> <span class="p">;</span>
+    <span class="k">friend</span> <span class="k">struct</span> <span class="n">Y</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// クラスのデストラクターは暗黙にdelete定義される</span>
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">deleted_destructor</span> <span class="n">m1</span> <span class="p">;</span> <span class="c1">// デストラクターがdelete定義されている</span>
+    <span class="n">inaccessible_destructor</span> <span class="n">m2</span> <span class="p">;</span> <span class="c1">// デストラクターにアクセス出来ない</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span>
+    <span class="n">inaccessible_destructor</span> <span class="n">m</span> <span class="p">;</span> <span class="c1">// friendなので、デストラクターにアクセス可能</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>直接の基本クラス、もしくは、virtual基本クラスのデストラクターがdelete定義されているか、デフォルトデストラクターからアクセス出来ない場合。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="o">~</span><span class="n">Base</span><span class="p">()</span> <span class="o">=</span> <span class="n">delte</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">D1</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+<span class="c1">// D1のデストラクターはdelete定義される</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>間接の基本クラスのデストラクターは、影響しない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="o">~</span><span class="n">Base</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">friend</span> <span class="k">struct</span> <span class="n">D1</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">D1</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+<span class="c1">// friend宣言により、Baseのデストラクターにアクセスできる</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">D2</span> <span class="o">:</span> <span class="n">D1</span>
+<span class="p">{</span>
+<span class="c1">// D1のデストラクターにアクセスできる</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">D1</span> <span class="n">d1</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="n">D2</span> <span class="n">d2</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ただし、virtual基本クラスには、直接と間接の違いはないので、影響する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="o">~</span><span class="n">Base</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">friend</span> <span class="k">struct</span> <span class="n">D1</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">D1</span> <span class="o">:</span> <span class="k">virtual</span> <span class="n">Base</span>
+<span class="p">{</span>
+<span class="c1">// friend宣言により、Baseのデストラクターにアクセスできる</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">D2</span> <span class="o">:</span> <span class="n">D1</span>
+<span class="p">{</span>
+<span class="c1">// virtual基本クラスのBaseのデストラクターにアクセスできない</span>
+<span class="c1">// デストラクターは暗黙にdelete定義される</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">D1</span> <span class="n">d1</span> <span class="p">;</span> <span class="c1">// OK、暗黙のデストラクターを使う</span>
+    <span class="n">D2</span> <span class="n">d2</span> <span class="p">;</span> <span class="c1">// エラー、デストラクターはdelete定義されている</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>D2からD1のデストラクターにアクセスすることはできるが、D2からvirtual基本クラスであるBaseのデストラクターにアクセス出来ないため、D2のデストラクターは暗黙にdelete定義される。</p>
+<p>デストラクターがトリビアルとなるためには、ユーザー提供もdelete定義もされておらず、以下の条件をすべて満たす必要がある。</p>
+<ul class="simple">
+<li>デストラクターはvirtualではない。</li>
+<li>直接の基本クラスのデストラクターは、すべてトリビアルである。</li>
+<li>非staticデータメンバーのデストラクターは、すべてトリビアルである。</li>
+</ul>
+<p>注意すべきこととしては、直接の基本クラスのデストラクターがトリビアルとなるためには、直接の基本クラスの直接の基本クラスのデストラクターもトリビアルでなければならない。つまり、最終的には、間接の基本クラスのデストラクターも、すべてトリビアるでなければならない。</p>
+<p>delete定義されていない暗黙のデストラクターは、使われたときに、定義される。もしくは、明示的にdefault化されたときにも定義される。</p>
+<p>デストラクターの呼び出しは、コンストラクター呼び出しの逆順に行われる。コンストラクター呼び出しの順番については、&lt;a href=&#8221;#class.base.init&#8221;&gt;基本クラスとデータメンバーの初期化&lt;/a&gt;を参照。</p>
+<p>クラスのデストラクターの本体の実行を終え、本体内の自動変数を破棄する。&lt;a href=&#8221;#variant_member&#8221;&gt;共用メンバー&lt;/a&gt;を除くクラスの直接のメンバーに対して、デストラクターを呼び出す。クラスの直接の基本クラスのデストラクターを呼び出す。クラスが、最上位の派生クラスならば、virtual基本クラスのデストラクターを呼び出す。</p>
+<p>配列の要素に対するデストラクターも、コンストラクターの逆順に呼ばれる。</p>
+<p>デストラクターは、virtual関数やピュアvirtual関数にすることができる。基本クラスのデストラクターがvirtual関数である場合、派生クラスのデストラクターもvirtualになる。基本クラスのデストラクターがピュアvirtual関数の場合、派生クラスのオブジェクトを構築するためには、デストラクターを定義しなければならない。これらは、通常のvirtual関数と変わらない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">Base</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// デストラクターはvirtual関数</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="o">~</span><span class="n">Derived</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// デストラクターはvirtual関数</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Abstract_base</span>
+<span class="p">{</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">Abstract_base</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// デストラクターはピュアvirtual関数</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>デストラクターをvirtual関数にする目的は、オブジェクトに動的に構築、破棄する際に、型情報を管理しなくてもいいという点にある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;iostream&gt;</span>
+
+<span class="k">struct</span> <span class="n">B1</span>
+<span class="p">{</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">B1</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// virtual関数</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">D1</span> <span class="o">:</span> <span class="n">B1</span>
+<span class="p">{</span>
+    <span class="o">~</span><span class="n">D1</span><span class="p">()</span> <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;D1 destructor&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B2</span>
+<span class="p">{</span>
+    <span class="o">~</span><span class="n">B2</span><span class="p">()</span> <span class="p">{}</span> <span class="c1">// 非virtual関数</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">D2</span> <span class="o">:</span> <span class="n">B2</span>
+<span class="p">{</span>
+    <span class="o">~</span><span class="n">D2</span><span class="p">()</span> <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;D2 destructor&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">B1</span> <span class="o">*</span> <span class="n">b1_ptr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">D1</span> <span class="p">;</span>
+    <span class="k">delete</span> <span class="n">b1_ptr</span> <span class="p">;</span> <span class="c1">// 派生クラスのデストラクターが呼ばれる</span>
+
+    <span class="n">B2</span> <span class="o">*</span> <span class="n">b2_ptr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">D2</span> <span class="p">;</span>
+    <span class="k">delete</span> <span class="n">b2_ptr</span> <span class="p">;</span> <span class="c1">// 派生クラスのデストラクターが呼ばれない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>delete式に渡しているのは、基本クラスへのポインターである。そのため、非virtualなデストラクターでは、派生クラスのデストラクターが呼び出されない。デストラクターをvirtual関数にしておけば、このような場合にも、派生クラスのデストラクターが正しく呼び出される。</p>
+<p>デストラクターが暗黙に呼ばれる条件は、以下の通りである。</p>
+<ul class="simple">
+<li>staticストレージ上のオブジェクトに対しては、プログラムの終了時に呼ばれる。</li>
+<li>threadストレージ上のオブジェクトに対しては、スレッドの終了時に呼ばれる。</li>
+<li>自動ストレージ上のオブジェクトに対しては、オブジェクトを構築したブロックを抜けたときに呼ばれる。</li>
+<li>一時オブジェクトに対しては、寿命が尽きたときに呼ばれる。</li>
+<li>new式で構築されたオブジェクトに対しては、delete式で破棄されるときに呼ばれる</li>
+<li>その他、例外として投げられたオブジェクトのキャッチに関連して呼ばれることがある</li>
+</ul>
+<p>クラス型、もしくはクラスの配列型のオブジェクトが宣言された箇所で、クラスのデストラクタにアクセス出来ない場合は、エラーとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// privateメンバー</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー、デストラクターにアクセスできない。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスがvirtualデストラクターを持つ場合、クラスには対応する解放関数が使える状態でなければならない。解放関数は、まずクラスのスコープ内で探され、見つからない場合は、グローバルスコープで探される。解放関数が見つからないか、曖昧か、delete定義されている場合、エラーとなる。これは、たとえプログラム中でdeletex式を使わなくてもエラーとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// OK、グローバルスコープのoperator deleteが発見される</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">Y</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// エラー、operator deleteはdelete定義されている。</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="k">delete</span><span class="p">(</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">ptr</span> <span class="p">)</span> <span class="o">=</span> <span class="k">delete</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B1</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="k">delete</span><span class="p">(</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">ptr</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">B1</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B2</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="k">delete</span><span class="p">(</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">ptr</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">B1</span><span class="p">,</span> <span class="n">B2</span>
+<span class="p">{</span>
+<span class="c1">// エラー、曖昧</span>
+<span class="c1">// 暗黙のデストラクターはvirtual関数</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この規格の意図は、動的な型のオブジェクトは、常にdelete式が適用できることを保証するためである。</p>
+<p>デストラクターは、明示的に呼び出すことができる。デストラクターを明示的に呼び出すには、メンバーアクセス演算子を使い、~に続いて、クラス型に対応する型名か、decltype指定子を使う。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// このコードは、あくまで明示的なデストラクター呼び出しを説明するための例である</span>
+<span class="c1">// 関数fを呼び出すと、Xのデストラクターは4回呼び出されることになり、挙動は未定義である</span>
+<span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">x</span><span class="p">.</span><span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// デストラクターの明示的な呼び出し（型名）</span>
+    <span class="n">x</span><span class="p">.</span><span class="n">decltype</span><span class="p">(</span><span class="n">x</span><span class="p">)()</span> <span class="p">;</span> <span class="c1">// デストラクタの明示的な呼び出し（decltype指定子）</span>
+    <span class="n">x</span><span class="p">.</span><span class="n">X</span><span class="o">::~</span><span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// 修飾名付き</span>
+
+    <span class="c1">// ブロックを抜ける際に、デストラクターが暗黙に呼び出される</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>たとえ、自動ストレージ上のオブジェクトに対してデストラクターを明示的に呼び出したとしても、ブロックを抜けた際に、デストラクターは暗黙的に呼び出される。デストラクターを呼び出した後のオブジェクトに対して、再びデストラクターを呼び出した場合、挙動は未定義なので、上記のコードの挙動も、未定義である。</p>
+<p>一般に、自動ストレージ上のオブジェクトに対して明示的にデストラクターを呼び出した後、そのオブジェクトに対して、通常ならば暗黙にデストラクターが呼び出される状況になっている場合、挙動は未定義である。</p>
+<p>デストラクターの明示的な呼び出しは、まず使う必要はない。デストラクターが暗黙に呼び出されることがない場合としては、placement newによる、ユーザー指定のストレージ上へのオブジェクトの構築が上げられる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;new&gt;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="cm">/*実装*/</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="o">::</span><span class="k">operator</span> <span class="k">new</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// ストレージを確保</span>
+    <span class="n">X</span> <span class="o">*</span> <span class="n">x_ptr</span> <span class="o">=</span> <span class="k">new</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span> <span class="n">X</span> <span class="p">;</span> <span class="c1">// ptrの指すストレージ上にX型のオブジェクトを構築</span>
+    <span class="n">x_ptr</span><span class="o">-&gt;~</span><span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// デストラクターの明示的な呼び出し</span>
+    <span class="o">::</span><span class="k">operator</span> <span class="k">delete</span><span class="p">(</span> <span class="n">ptr</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// ストレージの解放</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>スカラー型に対しても、デストラクターを明示的に呼び出すことができる。これによって、テンプレートのコードにおいて、型が組み込み型であるかどうかを気にしなくてすむ。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">typedef</span> <span class="kt">int</span> <span class="n">I</span> <span class="p">;</span>
+    <span class="n">I</span> <span class="n">i</span> <span class="p">;</span>
+    <span class="n">i</span><span class="p">.</span><span class="o">~</span><span class="n">I</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// OK、なにもしない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>デストラクターを呼び出した後のオブジェクトに対して、再びデストラクターを呼び出した場合の挙動は未定義である。</p>
+</div>
+<div class="section" id="free-store">
+<h2>フリーストア（Free store）<a class="headerlink" href="#free-store" title="Permalink to this headline">¶</a></h2>
+<p>クラスに対する確保関数（operator new）と解放関数（operator delete）は、メンバー関数としてオーバーロードすることができる。確保関数と解放関数の具体的な実装方法については、&lt;a href=&#8221;#support.dynamic&#8221;&gt;動的メモリー管理&lt;/a&gt;を参照。</p>
+<p>クラスのメンバー関数としての確保関数、解放関数は、staticメンバー関数である。たとえstatic指定子が明示的に使われていなくても、staticメンバー関数となる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;cstddef&gt;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="c1">// 確保関数</span>
+    <span class="kt">void</span> <span class="o">*</span> <span class="k">operator</span> <span class="k">new</span> <span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="k">return</span> <span class="o">::</span><span class="k">operator</span> <span class="k">new</span><span class="p">(</span> <span class="n">size</span> <span class="p">)</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="c1">// 配列</span>
+    <span class="kt">void</span> <span class="o">*</span> <span class="k">operator</span> <span class="k">new</span><span class="p">[]</span> <span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="k">return</span> <span class="o">::</span><span class="k">operator</span> <span class="k">new</span><span class="p">(</span> <span class="n">size</span> <span class="p">)</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="c1">// placement form</span>
+    <span class="kt">void</span> <span class="o">*</span> <span class="k">operator</span> <span class="k">new</span> <span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="k">return</span> <span class="o">::</span><span class="k">operator</span> <span class="k">new</span><span class="p">(</span> <span class="n">size</span> <span class="p">)</span> <span class="p">;</span> <span class="p">}</span>
+
+    <span class="c1">// 解放関数</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="k">delete</span><span class="p">(</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">ptr</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="o">::</span><span class="k">operator</span> <span class="k">delete</span> <span class="p">(</span> <span class="n">ptr</span> <span class="p">)</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="c1">// 配列</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="k">delete</span><span class="p">[]</span> <span class="p">(</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">ptr</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="o">::</span><span class="k">operator</span> <span class="k">delete</span> <span class="p">(</span> <span class="n">ptr</span> <span class="p">)</span> <span class="p">;</span> <span class="p">}</span>
+
+    <span class="c1">// placement form</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="k">delete</span><span class="p">(</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">ptr</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="o">::</span><span class="k">operator</span> <span class="k">delete</span> <span class="p">(</span> <span class="n">ptr</span> <span class="p">)</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>解放関数に例外指定がない場合、noexcept(true)が指定されたものとみなされる。</p>
+</div>
+<div class="section" id="initialization">
+<h2>初期化（Initialization）<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h2>
+<p>この項目では、クラスのオブジェクトの初期化について取り扱う。特に、明示的に初期化子が指定されているオブジェクトと、クラスの基本クラスとメンバーのサブオブジェクトの初期化方法を解説する。</p>
+<p>クラスのオブジェクトに初期化子が指定されていない場合の初期化方法は、&lt;a href=&#8221;#dcl.init&#8221;&gt;初期化子&lt;/a&gt;を参照。</p>
+<p>クラスオブジェクトの配列の要素を初期化する際には、コンストラクターは、添字の順番に呼ばれる。デストラクターはコンストラクターの逆順に呼ばれる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;iostream&gt;</span>
+
+<span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span> <span class="o">:</span> <span class="n">value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">value</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">value</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>X型の配列の要素は、a[0], a[1], a[2]の順番に構築され、a[2], a[1], a[0]の順番に破棄される。したがって、出力は、123321となる。</p>
+<div class="section" id="explicit-initialization">
+<h3>明示的な初期化（Explicit initialization）<a class="headerlink" href="#explicit-initialization" title="Permalink to this headline">¶</a></h3>
+<p>クラスのオブジェクトの初期化子には括弧に囲まれた式リストを使うことができる。この場合、適切な仮引数リストのコンストラクターによって初期化される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x1</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// X::X(int)</span>
+    <span class="n">X</span> <span class="n">x2</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// X::X(int,int)</span>
+    <span class="n">X</span> <span class="n">x3</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// X::X(int,int,int)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>詳しくは、&lt;a href=&#8221;#dcl.init&#8221;&gt;初期化子&lt;/a&gt;の直接初期化を参照。</p>
+<p>また、=（イコール）記号に続いて値を指定することで、初期化することもできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// X::X(int)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>詳しくは、&lt;a href=&#8221;#dcl.init&#8221;&gt;初期化子&lt;/a&gt;のコピー初期化を参照。</p>
+<p>クラスのオブジェクトは、初期化リストで初期化することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>詳しくは、&lt;a href=&#8221;#dcl.init.list&#8221;&gt;リスト初期化&lt;/a&gt;を参照。</p>
+</div>
+<div class="section" id="initializing-bases-and-members">
+<h3>基本クラスとデータメンバーの初期化（Initializing bases and members）<a class="headerlink" href="#initializing-bases-and-members" title="Permalink to this headline">¶</a></h3>
+<p>基本クラスは、コンストラクター初期化子により初期化できる。データメンバーは、コンストラクター初期化子か、メンバーの宣言に続く初期化子によって、初期化できる。また、コンストラクターはデリゲート(Delegate)できる。</p>
+<div class="section" id="id2">
+<h4>コンストラクター初期化子<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>クラスのコンストラクターの定義で、直接の基本クラス、virtual基本クラス、非staticデータメンバーを初期化できる。文法は、以下のようになる。</p>
+<div class="highlight-c++"><pre>コンストラクター初期化子:
+: メンバー初期化 .</pre>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="n">Base</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member1</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">member2</span> <span class="p">;</span>
+
+    <span class="n">Derived</span><span class="p">()</span><span class="o">-</span>
+    <span class="c1">// コンストラクター初期化子</span>
+        <span class="o">:</span> <span class="n">Base</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span> <span class="c1">// 基本クラス</span>
+        <span class="n">member1</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span> <span class="c1">// メンバー</span>
+        <span class="n">member2</span><span class="p">{</span> <span class="mi">0</span> <span class="p">}</span> <span class="c1">// メンバー（初期化リスト）</span>
+    <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>非修飾のメンバー初期化識別子は、まずコンストラクターのクラスのスコープ内で名前探索され、見つからなかった場合は、基本クラスのスコープから探される。そのため、基本クラスの名前と、クラスの非staticデータメンバーの名前が衝突した場合、必ずメンバーの名前が使われる。その場合、基本クラスを指定するには、修飾名を用いなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">Base</span> <span class="p">;</span>
+    <span class="n">Derived</span><span class="p">()</span> <span class="o">:</span>
+        <span class="n">Base</span><span class="p">(),</span> <span class="c1">// Derivedの非staticデータメンバー</span>
+        <span class="n">Derived</span><span class="o">::</span><span class="n">Base</span><span class="p">()</span> <span class="c1">// 基本クラス</span>
+    <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>メンバー初期化識別子として使える名前は、直接の基本クラスと、Virtual基本クラス、コンストラクターのクラスの非staticデータメンバーである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">B</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">C</span> <span class="o">:</span> <span class="n">B</span><span class="p">,</span> <span class="k">virtual</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">D</span> <span class="o">:</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="n">D</span><span class="p">()</span> <span class="o">:</span>
+        <span class="n">C</span><span class="p">(),</span> <span class="c1">// OK</span>
+        <span class="n">A</span><span class="p">()</span>  <span class="c1">// OK</span>
+        <span class="c1">// BはDの直接の基本クラスではないので使えない</span>
+    <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>メンバー初期化子識別子には、基本クラスの型を指し示すtypedef名やdecltype指定子を使うこともできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">typedef</span> <span class="n">A</span> <span class="n">type</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">B</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="n">B</span> <span class="n">b</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">C</span> <span class="o">:</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="n">C</span><span class="p">()</span> <span class="o">:</span> <span class="n">type</span><span class="p">(),</span> <span class="n">decltype</span><span class="p">(</span><span class="n">b</span><span class="p">)()</span>
+    <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>複数の&lt;a href=&#8221;#variant_member&#8221;&gt;共用メンバー&lt;/a&gt;のうちの、ひとつだけを、メンバー初期化子で初期化することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">union</span> <span class="n">U</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="p">;</span> <span class="kt">int</span> <span class="n">b</span> <span class="p">;</span>
+    <span class="n">U</span><span class="p">()</span> <span class="o">:</span> <span class="n">a</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// OK、ひとつだけ</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">a</span> <span class="p">;</span> <span class="kt">int</span> <span class="n">b</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="n">S</span><span class="p">()</span> <span class="o">:</span> <span class="n">a</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// OK ひとつだけ</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">union</span> <span class="n">Error</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="p">;</span> <span class="kt">int</span> <span class="n">b</span> <span class="p">;</span>
+    <span class="n">Error</span><span class="p">()</span> <span class="o">:</span> <span class="n">a</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">// エラー、複数の指定</span>
+    <span class="p">{</span> <span class="p">}</span>
+
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>同じunionのメンバーである共用メンバーは、オブジェクト上のストレージを共有しているので、複数初期化することはできない。</p>
+<p>メンバー初期化子に、同じメンバー名、あるいは基本クラス名を、複数指定することはできない。</p>
+<p>struct Base { } ;
+struct Derived : Base
+{</p>
+<blockquote>
+<div><p>int member ;
+Derived()
+: member(), member(), // エラー、同じメンバー名</p>
+<blockquote>
+<div>Base(), Base() // エラー、同じ基本クラス名</div></blockquote>
+<p>{ }</p>
+</div></blockquote>
+<p>} ;</p>
+<p>コンストラクターのデリゲートについては、&lt;a href=&#8221;#deligating.constructor&#8221;&gt;コンストラクターのデリゲート&lt;/a&gt;を参照。</p>
+<p>メンバー初期化が明示的に指定されておらず、アブストラクトクラスのvirtual基本クラスでもない非staticデータメンバーと基本クラスは、次のように初期化される。</p>
+<p>非staticデータメンバーに初期化子が指定されている場合、&lt;a href=&#8221;#dcl.init&#8221;&gt;初期化子&lt;/a&gt;の方法に従って初期化される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="o">=</span> <span class="mi">123</span> <span class="p">;</span>
+    <span class="n">S</span><span class="p">()</span> <span class="cm">/*メンバー初期化子によるmemberの指定なし*/</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、memberは、123で初期化される。</p>
+<p>共用メンバーの場合、初期化されない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">union</span> <span class="n">U</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+    <span class="n">U</span><span class="p">()</span> <span class="cm">/*メンバー初期化子による共用メンバー指定なし*/</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="n">S</span><span class="p">()</span> <span class="cm">/*メンバー初期化子による共用メンバーの指定なし*/</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">union</span> <span class="n">initialize</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+    <span class="n">initialize</span><span class="p">()</span> <span class="o">:</span> <span class="n">m1</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// m1を0で初期化</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>共用メンバーには、明示的な初期化が必要である。</p>
+<p>それ以外の場合、&lt;a href=&#8221;#dcl.init.default-initialize&#8221;&gt;デフォルト初期化&lt;/a&gt;される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">m1</span> <span class="p">;</span>
+    <span class="n">X</span> <span class="n">m2</span> <span class="p">;</span>
+    <span class="n">S</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、int型の非staticデータメンバーm1の初期化処理は&lt;a href=&#8221;#dcl.init.default-initialize&#8221;&gt;デフォルト初期化&lt;/a&gt;で定義されているように、何もしない。X型m2は、X型のデフォルトコンストラクターによって初期化される。</p>
+<p>同じunionに属する非staticな共用メンバーは、ひとつしか初期化できない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">union</span> <span class="n">U</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">m1</span> <span class="p">;</span> <span class="kt">int</span> <span class="n">m2</span> <span class="p">;</span>
+    <span class="n">U</span><span class="p">()</span> <span class="o">:</span> <span class="n">m1</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">m2</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// エラー</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">m1</span> <span class="p">;</span> <span class="kt">int</span> <span class="n">m2</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">:</span> <span class="n">m1</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">m2</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// エラー</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span>
+    <span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">m1</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="k">union</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">m2</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="n">Y</span><span class="p">()</span> <span class="o">:</span> <span class="n">m1</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">m2</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// OK、違うunionの共用メンバー</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>Yの例は、違うunionの共用メンバーなので、問題のないコードである。</p>
+<p>クラスのコンストラクターの実行が終了した時点で、初期化も明示的な値の設定もされていないメンバーの値は、不定である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">X</span> <span class="n">x1</span> <span class="p">;</span> <span class="c1">// staticストレージ上に構築されたオブジェクトは、ゼロ初期化されるので、x1.memberの値は0</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x2</span> <span class="p">;</span> <span class="c1">// x2.memberの値は不定</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>非staticデータメンバーの宣言に初期化子があり、メンバー初期化子も指定されている場合、メンバー初期化子が優先される。この場合、メンバー宣言の初期化子は無視される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// memberは1で初期化される</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="n">arg</span> <span class="p">)</span> <span class="o">:</span> <span class="n">member</span><span class="p">(</span> <span class="n">arg</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// memberはargで初期化される</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x1</span> <span class="p">;</span> <span class="c1">// x1.memberの値は1</span>
+    <span class="n">X</span> <span class="n">x2</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// x2.memberの値は2</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>デリゲートしていないコンストラクターにおける初期化は、以下のように行われる。</p>
+<p>まず始めに、クラスが最も派生した型である場合、virtual基本クラスが初期化される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">V</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span> <span class="o">:</span> <span class="k">virtual</span> <span class="n">V</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">C</span> <span class="o">:</span> <span class="n">B</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">D</span> <span class="o">:</span> <span class="n">C</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">D</span> <span class="n">d</span> <span class="p">;</span> <span class="c1">// DのコンストラクターでVが初期化される</span>
+    <span class="n">C</span> <span class="n">c</span> <span class="p">;</span> <span class="c1">// CのコンストラクターでVが初期化される。</span>
+    <span class="n">B</span> <span class="n">b</span> <span class="p">;</span> <span class="c1">// BのコンストラクターでVが初期化される。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>virtual基本クラスは、最も派生したクラスで初期化されるということには、注意が必要である。例えば、以下のような場合、</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">V</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+    <span class="n">V</span><span class="p">(</span> <span class="kt">int</span> <span class="n">arg</span> <span class="p">)</span> <span class="o">:</span> <span class="n">member</span><span class="p">(</span> <span class="n">arg</span> <span class="p">)</span>  <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span> <span class="o">:</span> <span class="k">virtual</span> <span class="n">V</span>
+<span class="p">{</span>
+    <span class="n">B</span><span class="p">()</span> <span class="o">:</span> <span class="n">V</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">C</span> <span class="o">:</span> <span class="n">B</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">C</span> <span class="n">c</span> <span class="p">;</span> <span class="c1">// エラー、Vのデフォルトコンストラクターは暗黙にdelete定義されている。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>VはCで初期化されるので、Bによる初期化は、無視されてしまう。Cのメンバー初期化子には、Vは記述されていないので、Vはデフォルト初期化される。Vのデフォルトコンストラクターは暗黙にdelete定義されているので、エラーとなる。</p>
+<p>複数のvirtual基本クラスを持つ場合、初期化の順番は、深度優先（depth-ﬁrst）かつ、左から右（left-to-right）となる。「深度」とは、基本クラスに行くほど深くなる。「左から右」とは、基本クラス指定子リストに現れるvirtual基本クラスの順番である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">V1</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="k">struct</span> <span class="n">V2</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="k">struct</span> <span class="n">V3</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span> <span class="o">:</span> <span class="k">virtual</span> <span class="n">V1</span><span class="p">,</span> <span class="k">virtual</span> <span class="n">V2</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">C</span> <span class="o">:</span> <span class="n">B</span><span class="p">,</span> <span class="k">virtual</span> <span class="n">V3</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="n">C</span> <span class="n">c</span> <span class="p">;</span> <span class="c1">// V1, V2, V3の順番で初期化される</span>
+</pre></div>
+</div>
+<p>&lt;p class=&#8221;editorial-note&#8221;&gt;
+TODO: directed acyclic graphを表現する図</p>
+<p>virtual基本クラスの初期化が終わった後で、直接の基本クラスが、基本クラス指定子リストに現れる順番で初期化される。メンバー初期化子は、初期化の順番に影響しない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">B1</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="k">struct</span> <span class="n">B2</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">D</span> <span class="o">:</span> <span class="n">B1</span><span class="p">,</span> <span class="n">B2</span>
+<span class="p">{</span>
+    <span class="n">D</span><span class="p">()</span> <span class="o">:</span> <span class="n">B2</span><span class="p">(),</span> <span class="n">B1</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">D</span> <span class="n">d</span> <span class="p">;</span> <span class="c1">// B1, B2の順番に初期化される</span>
+</pre></div>
+</div>
+<p>メンバー初期化子は、初期化の順番に何の影響も与えないことに注意しなければならない。これは、副作用が初期化に影響をあたえるような場合、問題になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">i</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B1</span> <span class="p">{</span> <span class="n">B1</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">B2</span> <span class="p">{</span> <span class="n">B2</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">D1</span> <span class="o">:</span> <span class="n">B1</span><span class="p">,</span> <span class="n">B2</span>
+<span class="p">{</span>
+    <span class="n">D1</span><span class="p">()</span> <span class="o">:</span> <span class="n">B2</span><span class="p">(</span><span class="o">++</span><span class="n">i</span><span class="p">),</span> <span class="n">B1</span><span class="p">(</span><span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">D2</span> <span class="o">:</span> <span class="n">B2</span><span class="p">,</span> <span class="n">B1</span>
+<span class="p">{</span>
+    <span class="n">D2</span><span class="p">()</span> <span class="o">:</span> <span class="n">B2</span><span class="p">(</span><span class="o">++</span><span class="n">i</span><span class="p">),</span> <span class="n">B1</span><span class="p">(</span><span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">D1</span> <span class="n">d1</span> <span class="p">;</span> <span class="c1">// B1(1)、B2(2)で初期化される</span>
+    <span class="n">D2</span> <span class="n">d2</span> <span class="p">;</span> <span class="c1">// B2(1)、B1(2)で初期化される</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>メンバー初期化子の順番は、基本クラスの初期化順序に影響しない。そのため、ある基本クラスの初期化における副作用が、次の基本クラスの初期化に影響をあたえるようなコードでは、基本クラスの記述の順番を変えるだけで、初期化の結果が異なってしまう。一般に、直接の基本クラスの初期化の順番が保証されていることを前提にしたコードを書くべきではない。</p>
+<p>直接の基本クラスの初期化が終わった後で、クラス定義内の非staticデータメンバーが、宣言されている順番で初期化される。メンバー初期化子は、初期化の順番に影響しない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">m1</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">m2</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">:</span> <span class="n">m2</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">m1</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">X</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// m1, m2の順番で初期化される</span>
+</pre></div>
+</div>
+<p>直接の基本クラスの場合と同じく、メンバー初期化子は初期化の順番に影響しないということに注意しなければならない。非staticデータメンバーの初期化の順番は、クラス定義の中でメンバーが宣言されている順番である。したがって、あるメンバーの初期化の副作用が、次のメンバーの初期化に影響をあたえるようなコードでは、メンバーの宣言の順番を変えただけで、初期化処理が異なってしまう。具体的な問題例は、直接の基本クラスの場合と同じである。一般に、非staticデータメンバーの初期化の順番が保証されていることを前提にしたコードを書くべきではない。</p>
+<p>最後に、コンストラクターの本体が実行される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">V</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">B</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">M</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">D</span> <span class="o">:</span> <span class="n">B</span><span class="p">,</span> <span class="k">virtual</span> <span class="n">V</span>
+<span class="p">{</span>
+    <span class="n">M</span> <span class="n">m</span> <span class="p">;</span>
+    <span class="n">D</span><span class="p">()</span> <span class="p">{</span> <span class="cm">/* コンストラクターの本体*/</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">D</span> <span class="n">d</span> <span class="p">;</span> <span class="c1">// V, B, m, コンストラクターの本体の順番で初期化される</span>
+</pre></div>
+</div>
+<p>メンバー初期化子における名前は、コンストラクターの本体で評価される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span>  <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">:</span> <span class="n">x</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">y</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>メンバー初期化子では、thisを使うことができる。ただし、thisの参照先はまだ構築途中である場合もあるので、注意が必要である。</p>
+<p>非staticメンバー関数は、virtual関数を含めて、構築中のオブジェクトであっても呼び出すことができる。また、構築途中のオブジェクトを、&lt;a href=&#8221;#expr.typeid&#8221;&gt;typeid演算子&lt;/a&gt;や&lt;a href=&#8221;#expr.dynamic.cast&#8221;&gt;Dynamic cast（Dynamic cast）&lt;/a&gt;のオペランドに渡すこともできる。</p>
+<p>ただし、コンストラクター初期化子において、まだすべての基本クラスの初期化が終わっていない時点で、この種の操作を行った場合、結果は未定義である。これは、間接的に操作が行われる場合も含む。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span> <span class="p">{</span> <span class="n">A</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">B</span> <span class="o">:</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="n">B</span><span class="p">()</span> <span class="o">:</span> <span class="n">A</span><span class="p">(</span> <span class="n">f</span><span class="p">()</span> <span class="p">)</span> <span class="c1">// 結果は未定義</span>
+    <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 間接的に操作が行われる例</span>
+<span class="k">struct</span> <span class="n">C</span> <span class="o">:</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">call_f</span><span class="p">(</span> <span class="n">C</span> <span class="o">*</span> <span class="n">ptr</span> <span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="kt">int</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="n">C</span><span class="p">()</span> <span class="o">:</span> <span class="n">A</span><span class="p">(</span> <span class="n">call_f</span><span class="p">(</span> <span class="k">this</span> <span class="p">)</span> <span class="p">)</span> <span class="c1">// 未定義</span>
+    <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>構築中のオブジェクトに対してvirtual関数を呼び出したり、typeidやdynamic_castを使った場合の挙動は、&lt;a href=&#8221;#class.cdtor&#8221;&gt;生成と破棄&lt;/a&gt;を参照。</p>
+<p>メンバー初期化子では、パック展開できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">Bases</span> <span class="o">&gt;</span>
+<span class="k">struct</span> <span class="n">X</span> <span class="o">:</span> <span class="n">Bases</span><span class="p">...</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">:</span> <span class="n">Bases</span><span class="p">()...</span>
+    <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h4>コンストラクターのデリゲート<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p>メンバー初期化識別子に、クラス型を指定することによって、別のコンストラクターに初期化処理をデリゲートすることができる。これを、コンストラクターのデリゲート(delegate)という</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span> <span class="o">:</span> <span class="n">member</span><span class="p">(</span> <span class="n">value</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="cm">/* 初期化処理 */</span> <span class="p">}</span>
+
+    <span class="n">X</span><span class="p">(</span> <span class="kt">double</span> <span class="n">d</span> <span class="p">)</span> <span class="o">:</span> <span class="n">X</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span> <span class="c1">// コンストラクターのデリゲート</span>
+    <span class="p">{</span>
+        <span class="c1">// 追加の処理</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、コンストラクターX::X(double)は、初期化処理をX::X(int)にデリゲートしている。</p>
+<p>別のコンストラクターにデリゲートしているコンストラクターのことを、デリゲートコンストラクター(delegating constructor)といい、デリゲート先のコンストラクターのことを、ターゲットコンストラクター(target constructor)という。またオブジェクトの初期化のために最初に呼び出されたコンストラクターのことを、最初のコンストラクター(principal constructor)という。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">:</span> <span class="n">X</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="o">:</span> <span class="n">X</span><span class="p">(</span> <span class="mf">0.0</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">X</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// 初期化</span>
+</pre></div>
+</div>
+<p>上に例における、Xのオブジェクトxの初期化では、最初のコンストラクターとして、X::X()が選ばれる。これは、デリゲートコンストラクターであり、ターゲットコンストラクターであるX::X(int)にデリゲートする。X::X(int)もデリゲートコンストラクターであり、ターゲットコンストラクターのX::X(double)にデリゲートする。</p>
+<p>デリゲートコンストラクターは、他のメンバー初期化識別子を指定してはならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">:</span> <span class="n">X</span><span class="p">(</span> <span class="mi">0</span> <span class="p">),</span>
+        <span class="n">Base</span><span class="p">(),</span> <span class="n">member</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">// エラー、デリゲートコンストラクターは他の識別子を指定できない</span>
+    <span class="p">{</span> <span class="p">}</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ターゲットコンストラクターは、オーバーロード解決により選ばれる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">:</span> <span class="n">X</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// X::X(int)を呼ぶ</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="o">:</span> <span class="n">X</span><span class="p">(</span> <span class="mf">0.0</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// X::X(double)を呼ぶ</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ターゲットコンストラクターが処理を返した後に、デリゲートコンストラクターの本体が実行される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">:</span> <span class="n">X</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="cm">/* 処理2 */</span> <span class="p">}</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span> <span class="o">:</span> <span class="n">member</span><span class="p">(</span> <span class="n">value</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="cm">/* 処理1 */</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、オブジェクトxの初期化の際、最初のコンストラクターとしてX::X()が選ばれる。これはデリゲートコンストラクターである。ターゲットコンストラクターは、X::X(int)となる。ターゲットコンストラクターは、通常のコンストラクターと同じように基本クラスやメンバーの初期化を終えた後、コンストラクターの本体を実行し（処理1）、処理を返す。ターゲットコンストラクターが処理を返したので、最初のコンストラクターの本体が実行される（処理2）。</p>
+<p>デリゲートコンストラクターが、直接的にせよ、間接的にせよ、自分自身にデリゲートを行った場合は、エラーとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">:</span> <span class="n">X</span><span class="p">()</span> <span class="p">{}</span> <span class="c1">// エラー、直接的な自分自身へのデリゲート</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span>
+    <span class="n">Y</span><span class="p">()</span> <span class="o">:</span> <span class="n">Y</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// エラー、間接的な自分自身へのデリゲート</span>
+    <span class="n">Y</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="o">:</span> <span class="n">Y</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// エラー、間接的な自分自身へのデリゲート</span>
+    <span class="n">Y</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span> <span class="o">:</span> <span class="n">Y</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// エラー、間接的な自分自身へのデリゲート</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>クラスYは、間接的に、自分自身へのデリゲートを行う例である。デリゲートのネスト、つまり他のデリゲートコンストラクターへのデリゲートは可能である。ただし、間接的であっても、自分自身へのデリゲートは認められない。</p>
+</div>
+</div>
+</div>
+<div class="section" id="construction-and-destruction">
+<h2>生成と破棄（Construction and destruction）<a class="headerlink" href="#construction-and-destruction" title="Permalink to this headline">¶</a></h2>
+<p>クラスのオブジェクトが構築される前、破棄された後、あるいは構築や破棄の最中には、いくつか気を付けなければならないことがある。</p>
+<p>非トリビアルコンストラクターを持つクラスのオブジェクトのコンストラクターの実行が始まる前に、非staticメンバーや基本クラスにアクセスした場合、挙動は未定義である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 非トリビアルコンストラクター</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">X</span> <span class="o">*&gt;</span><span class="p">(</span> <span class="k">operator</span> <span class="k">new</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>  <span class="p">;</span> <span class="c1">// 初期化されていないストレージ</span>
+    <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">member</span> <span class="p">;</span> <span class="c1">// 未定義</span>
+    <span class="o">&amp;</span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">member</span> <span class="p">;</span> <span class="c1">// 未定義、ポインターを得ることもできない</span>
+    <span class="k">new</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span> <span class="n">X</span> <span class="p">;</span> <span class="c1">// 初期化</span>
+    <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">member</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="o">&amp;</span><span class="n">ptr</span><span class="o">-&gt;</span><span class="n">member</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="k">operator</span> <span class="k">delete</span><span class="p">(</span> <span class="n">ptr</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>非トリビアルデストラクターを持つクラスのオブジェクトのデストラクターの実行が終わった後に、非staticメンバーや基本クラスにアクセスした場合、挙動は未定義である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 非トリビアルデストラクター</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">X</span> <span class="o">*&gt;</span><span class="p">(</span> <span class="k">operator</span> <span class="k">new</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>  <span class="p">;</span> <span class="c1">// 初期化されていないストレージ</span>
+    <span class="k">new</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span> <span class="n">X</span> <span class="p">;</span> <span class="c1">// 初期化</span>
+    <span class="n">ptr</span><span class="o">-&gt;~</span><span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// デストラクターの実行</span>
+
+    <span class="n">ptr</span><span class="o">-&gt;</span><span class="n">member</span> <span class="p">;</span> <span class="c1">// 未定義</span>
+    <span class="k">operator</span> <span class="k">delete</span><span class="p">(</span> <span class="n">ptr</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスへのポインターを、基本クラスへのポインターに型変換する際には、クラスとそのすべての基本クラスのコンストラクターの実行が始まっていなければならない。また、デストラクターの実行が完了していてはならない。そうでない場合の挙動は未定義である。これは、トリビアルクラスにも当てはまる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Y</span> <span class="o">:</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Y</span> <span class="o">*</span> <span class="n">y_ptr</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Y</span> <span class="o">*&gt;</span><span class="p">(</span> <span class="k">operator</span> <span class="k">new</span><span class="p">(</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>  <span class="p">;</span> <span class="c1">// 初期化されていないストレージ</span>
+
+    <span class="n">X</span> <span class="o">*</span> <span class="n">x_ptr</span> <span class="o">=</span> <span class="n">y_ptr</span> <span class="p">;</span> <span class="c1">// 未定義</span>
+    <span class="k">new</span> <span class="p">(</span><span class="n">y_ptr</span><span class="p">)</span> <span class="n">Y</span> <span class="p">;</span> <span class="c1">// 初期化</span>
+    <span class="n">x_ptr</span> <span class="o">=</span> <span class="n">y_ptr</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="n">y_ptr</span><span class="o">-&gt;~</span><span class="n">Y</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// デストラクターの実行</span>
+    <span class="n">x_ptr</span> <span class="o">=</span> <span class="n">y_ptr</span> <span class="p">;</span> <span class="c1">// 未定義</span>
+
+    <span class="k">operator</span> <span class="k">delete</span><span class="p">(</span> <span class="n">y_ptr</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>オブジェクトの構築や破棄の途中で、メンバー関数を呼び出すことはできる。ただし、virtual関数をコンストラクターやデストラクターの中で呼び出す際には、注意が必要である。virtual関数をコンストラクターやデストラクターの中、あるいはその中から呼び出された関数内で呼び出すと、そのコンストラクターあるいはデストラクターのクラスの型にとってのファイナルオーバーライダーが用いられ、派生クラスは考慮されない。これは、基本クラスのコンストラクターの実行中には、派生クラスはまだ完全に初期化されていないからである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">g</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="c1">// A::f、A::gを呼び出す</span>
+    <span class="n">A</span><span class="p">()</span> <span class="p">{</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span>  <span class="p">}</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">A</span><span class="p">()</span> <span class="p">{</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span> <span class="o">:</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span> <span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="c1">// B::f, A::gを呼び出す</span>
+    <span class="n">B</span><span class="p">()</span> <span class="p">{</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">B</span><span class="p">()</span> <span class="p">{</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">C</span> <span class="o">:</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">g</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="c1">// B::f, C::gを呼び出す</span>
+    <span class="n">C</span><span class="p">()</span> <span class="p">{</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">C</span><span class="p">()</span> <span class="p">{</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例で、たとえクラスCのオブジェクトを構築したとしても、基本クラスAのコンストラクターの中ではA::f, A::gが呼ばれることになる。</p>
+<p>オブジェクトの構築や破棄の途中で、typeid演算子を使うことはできる。typeid演算子がコンストラクターやデストラクターの中、あるいはその中から呼び出された関数内で使われていて、typeid演算子のオペランドが、そのクラスの構築中のオブジェクトである場合、typeidはコンストラクターやデストラクターのクラス型情報を表すstd::type_infoオブジェクトを返す。これは、基本クラスの構築中は、まだ派生クラスは構築し終わっていないからである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="n">A</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">typeid</span><span class="p">(</span> <span class="o">*</span><span class="k">this</span> <span class="p">)</span> <span class="o">==</span> <span class="k">typeid</span><span class="p">(</span> <span class="n">A</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// true</span>
+    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">A</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">typeid</span><span class="p">(</span> <span class="o">*</span><span class="k">this</span> <span class="p">)</span> <span class="o">==</span> <span class="k">typeid</span><span class="p">(</span> <span class="n">A</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// true</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span> <span class="o">:</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、たとえBのオブジェクトが構築されたとしても、typeidはA型を表すstd::type_infoオブジェクトを返す。</p>
+<p>オブジェクトの構築や破棄の途中で、dynamic_castを使うことはできる。dynamic_castがコンストラクターやデストラクターの中、あるいはその中から呼び出された関数内で使われていて、オペランドがそのクラスの構築中のオブジェクトである場合、コンストラクターやデストラクターの属するクラスが、最終的に派生された型であるとみなされる。これは、基本クラスの構築中は、まだ派生クラスは構築し終わっていないからである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="n">A</span><span class="p">()</span> <span class="p">;</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">A</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span> <span class="o">:</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="n">A</span><span class="o">::</span><span class="n">A</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">B</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="k">dynamic_cast</span><span class="o">&lt;</span><span class="n">B</span> <span class="o">*&gt;</span><span class="p">(</span> <span class="k">this</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 常にnullポインター</span>
+<span class="p">}</span>
+
+<span class="n">A</span><span class="o">::~</span><span class="n">A</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">B</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="k">dynamic_cast</span><span class="o">&lt;</span><span class="n">B</span> <span class="o">*&gt;</span><span class="p">(</span> <span class="k">this</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 常にnullポインター</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>たとえ、Aから派生されたB型のオブジェクトであっても、Aのコンストラクター、デストラクターの中では、A型が最終的な派生クラスであるとみなされる。</p>
+</div>
+<div class="section" id="id4">
+<h2>クラスのコピーとムーブ<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>&lt;p class=&#8221;editorial-note&#8221;&gt;
+TODO: プログラミング上のコピーとムーブの解説へのリンク。</p>
+<p>ここでは、クラスのコピーとムーブを行うための特別なコンストラクターと代入演算子の宣言について説明している。コピーとムーブのプログラミング上の意味については、[TODO]を参照。</p>
+<p>クラスのオブジェクトは、初期化と代入によって、コピーもしくはムーブされる。コピーやムーブを行うためのコンストラクターと代入演算子を、それぞれ特別に、コピーコンストラクター、ムーブコンストラクター、コピー代入演算子、ムーブ代入演算子と呼ぶ。</p>
+<p>コピーコンストラクター（copy constructor）とは、あるクラスXにおいて、非テンプレートなコンストラクターで、一つ目の仮引数の型が、X &amp;amp;、const X &amp;amp;、volatile X &amp;amp;、const volatile X &amp;amp;のいずれかであり、二つ目以降の仮引数は存在しないか、すべてデフォルト実引数があるものをいう。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="c1">// コピーコンストラクター</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="k">volatile</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 二つ目以降の仮引数にデフォルト実引数がある</span>
+
+    <span class="c1">// コピーコンストラクターではない</span>
+    <span class="n">X</span><span class="p">(</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">T</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// テンプレートコンストラクターはコピーコンストラクターではない</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">short</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 二つ目以降の仮引数にデフォルト実引数がない</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ムーブコンストラクター（move constructor）とは、あるクラスXにおいて、非テンプレートなコンストラクターで、一つ目の仮引数の型が、X &amp;amp;&amp;amp;、const X &amp;amp;&amp;amp;、volatile X &amp;amp;&amp;amp;、const volatile X &amp;amp;&amp;amp;のいずれかであり、二つ目以降の仮引数は存在しないか、すべてデフォルト実引数があるものをいう。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="k">volatile</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;&amp;</span><span class="p">,</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>クラスXのコンストラクターの一つ目の仮引数の型がXで、二つ目以降の仮引数が存在しないか、すべてデフォルト実引数が指定されている場合は、エラーとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>また、テンプレートコンストラクターのインスタンス化の結果が、このようなシグネチャになる場合、そのテンプレートはインスタンス化されない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">T</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// X&lt;X&gt;というインスタンス化は起こらない。</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// テンプレートコンストラクターが使われる。</span>
+    <span class="n">X</span> <span class="n">b</span><span class="p">(</span> <span class="n">a</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 暗黙のコピーコンストラクターが使われる</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>あるクラスにおいて、コピーコンストラクターが明示的に宣言されていない場合、コピーコンストラクターは暗黙的に宣言される。もし、クラスにユーザー定義のムーブコンストラクター、ムーブ代入演算子、コピー代入演算子、デストラクターが存在する場合、コピーコンストラクターは暗黙的にdelete定義される。そうでない場合は、default定義される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="c1">// コピーコンストラクターは暗黙的にdefault定義される</span>
+    <span class="c1">// A( A const &amp; ) = default ;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="n">B</span><span class="p">(</span> <span class="n">B</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// ユーザー定義ムーブコンストラクター</span>
+    <span class="n">B</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span> <span class="n">B</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// ユーザー定義ムーブ代入演算子</span>
+    <span class="n">B</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span> <span class="n">B</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// ユーザー定義コピー代入演算子</span>
+    <span class="o">~</span><span class="n">B</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// ユーザー定義デストラクター</span>
+
+    <span class="c1">// コピーコンストラクターは暗黙的にdelete定義される</span>
+    <span class="c1">// B( B const &amp; ) = delete ;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>クラスXの暗黙のコピーコンストラクターのシグネチャは、通常、</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">X</span><span class="o">::</span><span class="n">X</span><span class="p">(</span> <span class="k">const</span> <span class="n">X</span> <span class="o">&amp;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>となる。ただし、直接の基本クラスやvirtual基本クラス、非staticデータメンバーがconst修飾されていない仮引数のコンストラクターを持つ場合、</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">X</span><span class="o">::</span><span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="o">&amp;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>となる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="n">A</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span> <span class="p">;</span>
+    <span class="n">A</span><span class="p">(</span> <span class="n">A</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span> <span class="o">:</span> <span class="n">A</span>
+<span class="p">{</span>
+<span class="c1">// 暗黙のコピーコンストラクターのシグネチャ</span>
+<span class="c1">// B( B const &amp; ) = default ;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="n">C</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span> <span class="p">;</span>
+    <span class="n">C</span><span class="p">(</span> <span class="n">C</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">D</span> <span class="o">:</span> <span class="n">C</span>
+<span class="p">{</span>
+<span class="c1">// 暗黙のコピーコンストラクターのシグネチャ</span>
+<span class="c1">// D( D &amp; ) = default ;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>あるクラスにおいて、ムーブコンストラクターが明示的に宣言されていない場合、ムーブコンストラクターは暗黙的に宣言される。もし、あるクラスがユーザー定義の、コピーコンストラクター、コピー代入演算子、ムーブ代入演算子、デストラクターを持たず、またムーブコンストラクターがdelete定義されていない場合、ムーブコンストラクターはdefault定義される。</p>
+<p>ユーザー定義のムーブ代入演算子が存在する場合、ムーブコンストラクターは暗黙的にdefault定義されない。これは、デフォルトのムーブコンストラクターの挙動と、ユーザー定義のムーブ代入演算子の挙動が異なる可能性があるため、安全のためにdefault定義されないのである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="c1">// ムーブコンストラクターはdefault定義されない</span>
+
+    <span class="c1">// ユーザー定義のムーブ代入演算子</span>
+    <span class="n">X</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span> <span class="n">X</span> <span class="o">&amp;&amp;</span> <span class="n">obj</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// ユーザー定義のムーブを実装</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>そのため、自前実装のムーブ構築とムーブ代入を行いたい場合、ムーブコンストラクターとムーブ代入演算子を両方ユーザー定義する必要がある。</p>
+<p>ムーブコンストラクターが、暗黙にも明示的にも宣言されていない場合、ムーブコンストラクターを呼び出す式は、代わりにコピーコンストラクターを呼び出す。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span> <span class="p">;</span>
+    <span class="c1">// ユーザー定義のコピーコンストラクター</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="c1">// ムーブコンストラクターは宣言されない</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span> <span class="p">;</span>
+    <span class="c1">// コピーコンストラクターを呼び出す</span>
+    <span class="n">X</span> <span class="n">b</span><span class="p">(</span> <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">X</span> <span class="o">&amp;&amp;</span> <span class="o">&gt;</span><span class="p">(</span> <span class="n">a</span> <span class="p">)</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスXの暗黙のムーブコンストラクターのシグネチャは、以下の通りである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">X</span><span class="o">::</span><span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="o">&amp;&amp;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>あるクラスが以下の条件を満たした時、コピー/ムーブコンストラクターはdelete定義される。</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>クラスがunionのようなクラスで、共用メンバーがそれぞれ非トリビアルなコピー/ムーブコンストラクターを持つ場合、対応するコンストラクターがdelete定義される。</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">NonTrivial</span>
+<span class="p">{</span>
+    <span class="n">NonTrivial</span><span class="p">(</span> <span class="n">NonTrivial</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">NonTrivial</span><span class="p">(</span> <span class="n">NonTrivial</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">union</span> <span class="p">{</span> <span class="n">NonTrivial</span> <span class="n">n</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="c1">// コピーコンストラクターは、nが非トリビアルなコピーコンストラクターを持つためにdelete定義される</span>
+    <span class="c1">// ムーブコンストラクターは、nが非トリビアルなムーブコンストラクターを持つためにdelete定義される。</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li></li>
+</ul>
+<p>&lt;p class=&#8221;editorial-note&#8221;&gt;
+TODO:あとで書く</p>
+</div>
+<div class="section" id="inheriting-constructors">
+<h2>コンストラクター継承（Inheriting constructors）<a class="headerlink" href="#inheriting-constructors" title="Permalink to this headline">¶</a></h2>
+<p>using宣言を使って派生クラスから基本クラスのコンストラクターを指定することで、基本クラスのコンストラクターを明示的に継承できる。これにより、機械的な手書きのコードを省くことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Base</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="n">Base</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span> <span class="o">:</span> <span class="n">member</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="c1">// Base::Base(int)を継承</span>
+    <span class="k">using</span> <span class="n">Base</span><span class="o">::</span><span class="n">Base</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Derived</span> <span class="n">d</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// 継承コンストラクターを使う</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>using宣言は通常通り、アクセス指定の影響を受けることに注意すること。派生クラスによって継承された基本クラスのコンストラクターは、同じ仮引数をとり、引数をそのままメンバー初期化子で基本クラスに渡し、関数本体は空であるコードを手書きした場合と同じように動く。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="n">Base</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">double</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="c1">// Baseクラスのコンストラクターの継承</span>
+    <span class="k">using</span> <span class="n">Base</span><span class="o">::</span><span class="n">Base</span> <span class="p">;</span>
+    <span class="c1">// 以下のコードを手書きした場合と同等</span>
+    <span class="c1">// Derived( int p1, double p2 )</span>
+    <span class="c1">// : Base( p1, p2 )</span>
+    <span class="c1">// { }</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>このような手書きのコンストラクターを、実際に使うとエラーとなる場合、継承コンストラクターの使用もエラーとなる。</p>
+<p>派生クラスで同じシグネチャーのコンストラクターをユーザー定義した場合、そのコンストラクターの継承は起こらない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="n">Base</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">Base</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="n">Base</span><span class="o">::</span><span class="n">Base</span> <span class="p">;</span>
+
+    <span class="n">Derived</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span> <span class="o">:</span> <span class="n">Base</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// 処理</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合、Base::Base(double)は継承されるが、Base::Base(int)は継承されない。クラスDerivedでユーザー定義されたコンストラクターが使用される。</p>
+<p>継承コンストラクターの詳細はすこし難しい。まず、継承される基本クラスのコンストラクターが、継承コンストラクターの候補(candidate set of inherited constructors)として列挙される。この際、コンストラクターにデフォルト実引数がある場合は、デフォルト実引数を省略したシグネチャーの関数も追加される。たとえば、以下のようなクラスの場合、</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="n">A</span><span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="n">A</span><span class="p">(</span> <span class="kt">int</span> <span class="n">p1</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">p2</span> <span class="o">=</span> <span class="mi">2</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>クラスAの継承コンストラクターの候補は、以下の通り。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">A</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span>
+<span class="n">A</span><span class="p">(</span> <span class="n">A</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span>
+<span class="n">A</span><span class="p">(</span> <span class="n">A</span> <span class="o">&amp;&amp;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>クラスBの継承コンストラクターの候補は、以下の通り。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">B</span><span class="p">(</span> <span class="p">)</span> <span class="c1">// デフォルト実引数の省略形</span>
+<span class="n">B</span><span class="p">(</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">)</span> <span class="c1">// デフォルト実引数の省略形</span>
+<span class="n">B</span><span class="p">(</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">2</span> <span class="p">)</span>
+<span class="n">B</span><span class="p">(</span> <span class="n">B</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span>
+<span class="n">B</span><span class="p">(</span> <span class="n">B</span> <span class="o">&amp;&amp;</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>さて、この継承コンストラクターの候補から、引数を取らないコンストラクター（デフォルトコンストラクター）、引数をひとつだけ取るコピー/ムーブコンストラクターを除くコンストラクターが継承コンストラクターとなる。これらのコンストラクターは、派生クラス側で暗黙に宣言されるものだからだ。ただし、派生クラスで同じシグネチャーのコンストラクターがユーザー定義されている場合は、継承されない。</p>
+<p>いくつか例を示す。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="n">Base</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="n">Base</span><span class="o">::</span><span class="n">Base</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この場合、クラスDerivedのコンストラクターは、以下のようになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">Derived</span><span class="p">(</span> <span class="p">)</span> <span class="c1">// 継承コンストラクターではない。使うとエラーになる</span>
+<span class="n">Derived</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="c1">// クラスBから継承されたコンストラクター</span>
+<span class="n">Derived</span><span class="p">(</span> <span class="n">Derived</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="c1">// 継承コンストラクターではない</span>
+<span class="n">Derived</span><span class="p">(</span> <span class="n">Derived</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="c1">// 継承コンストラクターではない</span>
+</pre></div>
+</div>
+<p>デフォルトコンストラクターやコピー/ムーブコンストラクターは継承されないので、通常通りの挙動になる。この場合、クラスBaseのデフォルトコンストラクターは暗黙に宣言されていないし、ユーザー定義もされていないため、使うとエラーになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="n">A</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="n">B</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">C</span> <span class="o">:</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="n">A</span><span class="o">::</span><span class="n">A</span> <span class="p">;</span>
+    <span class="k">using</span> <span class="n">B</span><span class="o">::</span><span class="n">B</span> <span class="p">;</span>
+<span class="c1">// エラー、宣言の重複</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">D</span> <span class="o">:</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="n">A</span><span class="o">::</span><span class="n">A</span> <span class="p">;</span>
+    <span class="k">using</span> <span class="n">B</span><span class="o">::</span><span class="n">B</span> <span class="p">;</span>
+    <span class="n">D</span><span class="p">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">)</span> <span class="o">:</span> <span class="n">A</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">B</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// OK、ユーザー定義を優先</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスCでは、C(int)を重複して宣言してしまうので、エラーとなる。クラスDでは、ユーザー定義があるために、コンストラクターの継承は起こらない。もっとも、この場合、using宣言を使ってコンストラクターを継承する意味がない。</p>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="over.html" title="オーバーロード(Overloading)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="class.access.html" title="メンバーのアクセス指定（Member access control）"
+             >previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ezoe Ryou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

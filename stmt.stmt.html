@@ -1,0 +1,1247 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>文（Statements） &mdash; C++11: Syntax and Feature</title>
+    
+    <link rel="stylesheet" href="_static/cpp-book.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="C++11: Syntax and Feature" href="index.html" />
+    <link rel="next" title="宣言（Declarations）" href="dcl.dcl.html" />
+    <link rel="prev" title="式（Expressions）" href="expr.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dcl.dcl.html" title="宣言（Declarations）"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="expr.html" title="式（Expressions）"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="statements">
+<h1>文（Statements）<a class="headerlink" href="#statements" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="labeled-statement">
+<h2>ラベル文（Labeled statement）<a class="headerlink" href="#labeled-statement" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c++"><pre>識別子 : 文
+case 定数式 : 文
+default : 文</pre>
+</div>
+<p>文にはラベルを付けることができる。ラベルとは、その文を指す識別子である。文にラベルを付けるための文を、ラベル文（label statement）という。ラベル文には、必ず後続する文が存在しなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">label</span> <span class="o">:</span>
+<span class="c1">// エラー、ラベルに続く文がない</span>
+<span class="p">}</span> <span class="c1">// ブロックの終わり</span>
+
+<span class="kt">void</span> <span class="nf">g</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="c1">// OK、ラベルに続く文がある</span>
+    <span class="n">label_1</span> <span class="o">:</span><span class="cm">/* 式文 */</span> <span class="p">;</span>
+    <span class="n">label_2</span> <span class="o">:</span> <span class="p">{</span><span class="cm">/* 複合文 */</span><span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>識別子ラベル（identifier label）は、識別子を宣言する。この識別子は、goto文でしか使えない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="n">label_1</span> <span class="o">:</span> <span class="p">;</span>
+<span class="n">label_2</span> <span class="o">:</span> <span class="p">;</span>
+<span class="n">label_3</span> <span class="o">:</span> <span class="p">;</span>
+
+    <span class="k">goto</span> <span class="n">label_2</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ラベルの識別子のスコープは、宣言された関数内である。ラベルを再宣言することはできない。ラベルの識別子は、宣言する前にgoto文で使うことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// ラベルのスコープは、宣言された関数内</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="n">label_f</span> <span class="o">:</span> <span class="p">;</span> <span class="p">}</span>
+<span class="n">vopd</span> <span class="nf">g</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">goto</span> <span class="n">label_f</span> <span class="p">;</span> <span class="c1">// エラー、この関数のスコープのラベルではない</span>
+<span class="p">}</span>
+
+<span class="c1">// ラベルを再宣言することはできない</span>
+<span class="kt">void</span> <span class="nf">h</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">label_h</span> <span class="o">:</span> <span class="p">;</span> <span class="c1">// label_hの宣言</span>
+    <span class="n">label_h</span> <span class="o">:</span> <span class="p">;</span> <span class="c1">// エラー、ラベルの再宣言はできない</span>
+<span class="p">}</span>
+
+<span class="c1">// ラベルの識別子は、宣言する前にgoto文で使うことができる</span>
+<span class="kt">void</span> <span class="nf">i</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="c1">// 識別子label_iは、この時点では、まだ宣言されていないが、使うことができる</span>
+    <span class="k">goto</span> <span class="n">label_i</span> <span class="p">;</span>
+<span class="n">label_i</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ラベルの識別子は、独自の名前空間を持つので、他の識別子と混同されることはない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">identifier</span> <span class="o">:</span> <span class="p">;</span> <span class="c1">// ラベルの識別子</span>
+    <span class="kt">int</span> <span class="n">identifier</span> <span class="p">;</span> <span class="c1">// 変数の識別子</span>
+
+    <span class="k">goto</span> <span class="n">identifier</span> <span class="p">;</span> <span class="c1">// ラベルの識別子が使われる</span>
+    <span class="n">identifier</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 変数の識別子が使われる</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>caseラベルとdefaultラベルは、switch文の中でしか使うことができない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">switch</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">case</span> <span class="mi">0</span> : <span class="p">;</span>
+        <span class="k">default</span> <span class="o">:</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="expression-statement">
+<h2>式文（Expression statement）<a class="headerlink" href="#expression-statement" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c++"><div class="highlight"><pre>
+</pre></div>
+</div>
+<p>式文（expression statement）とは、式を書く事のできる文である。文の多くは、この式文に該当する。式文は、セミコロン（;）を終端記号として用いる。式文は、書かれている式を評価する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 式は0</span>
+    <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">;</span> <span class="c1">// 式は1 + 1</span>
+
+    <span class="c1">// これは式文ではなく、return文</span>
+    <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>式文は、式を省略することもできる。式を省略した式文を、null文という。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cm">/* 式を省略*/</span> <span class="p">;</span> <span class="c1">// null文</span>
+
+<span class="p">;;;;</span> <span class="c1">// null文が四つ</span>
+<span class="p">;;;;;;;;</span> <span class="c1">// null文が八つ</span>
+</pre></div>
+</div>
+<p>null文は、評価すべき式がないので、何もしない文である。null文はたとえば、ブロックの終りにラベル文を書きたい場合や、for文やwhile文のようなループを、単に回したい場合などに、使うことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// 単にループを回すだけのfor文</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">10</span> <span class="p">;</span> <span class="o">++</span><span class="n">i</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="n">label</span> <span class="o">:</span> <span class="p">;</span> <span class="c1">// ラベル文には、後続する文が必要。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="compound-statement-or-block">
+<h2>複合文、ブロック（Compound statement or block）<a class="headerlink" href="#compound-statement-or-block" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c++"><pre>{ ひとつ以上</pre>
+</div>
+<p>複合文、またはブロックという文は、文をひとつしか書けない場所に、複数の文を書くことができる文である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">bool</span> <span class="n">b</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="n">b</span> <span class="p">)</span>
+        <span class="cm">/*ここにはひとつの文しかかけない*/</span> <span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span> <span class="n">b</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// いくらでも好きなだけ文を書くことができる。</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>複合文は、ブロックスコープを定義する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span><span class="c1">// ブロックスコープ</span>
+    <span class="p">{</span> <span class="c1">// 新たなブロックスコープ</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="selection-statements">
+<h2>選択文（Selection statements）<a class="headerlink" href="#selection-statements" title="Permalink to this headline">¶</a></h2>
+<p>選択文は、複数あるフローのうち、どれかひとつを選ぶ文のことである。</p>
+<p>もし、選択文の中の文が、複合文ではなかった場合、その文を複合文で囲んだ場合と同じになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">bool</span> <span class="n">b</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="n">b</span> <span class="p">)</span>
+        <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー、xは宣言されていない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このコードは、以下のコードと同等であるため、if文の次の式文で、xという名前を見つけられない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">bool</span> <span class="n">b</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="n">b</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="p">}</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー、xは宣言されていない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="id1">
+<h3>条件について<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++"><pre>条件:
+    式
+    宣言</pre>
+</div>
+<p>条件には、式が宣言を書くことができる。条件は、if文やswitch文だけではなく、while文などでも使われる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>条件に宣言を書くことができる理由は、コードを単純にするためである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 何か処理をして結果を返す関数</span>
+<span class="kt">int</span> <span class="nf">do_something</span><span class="p">()</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="n">do_something</span><span class="p">()</span> <span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="n">result</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// 処理</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>条件には宣言を書く事ができるため、以下のように書くことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">if</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="n">do_something</span><span class="p">()</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="if-the-if-statement">
+<h3>if文（The if statement）<a class="headerlink" href="#if-the-if-statement" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++"><pre>if ( 条件 ) 文
+if ( 条件 ) 文 else 文</pre>
+</div>
+<p>if文は、条件の値によって、実行すべき文を変える。</p>
+<p>条件がtrueと評価された場合、一つ目の文が実行される。条件がfalseと評価された場合、elseに続く二つ目の文が有るのならば、二つ目の文が実行される</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="c1">// 一つ目の文が実行される</span>
+        <span class="cm">/*一つ目の文*/</span> <span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">false</span> <span class="p">)</span> <span class="c1">// 一つ目の文は実行されない</span>
+        <span class="cm">/*一つ目の文*/</span> <span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="c1">// 一つ目の文が実行される</span>
+        <span class="cm">/*一つ目の文*/</span> <span class="p">;</span>
+    <span class="k">else</span>
+        <span class="cm">/*二つ目の文*/</span> <span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">false</span> <span class="p">)</span> <span class="c1">// 二つ目の文が実行される</span>
+        <span class="cm">/*一つ目の文*/</span> <span class="p">;</span>
+    <span class="k">else</span>
+        <span class="cm">/*二つ目の文*/</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>elseは、近い方のif文に対応する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">false</span> <span class="p">)</span> <span class="c1">// #1</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="p">;</span><span class="c1">// #2</span>
+
+    <span class="k">else</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// #2のif文に対応するelse</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>インデントに騙されてはいけない。インデントを正しく対応させると、以下のようになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">false</span> <span class="p">)</span> <span class="c1">// #1</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="p">;</span><span class="c1">// #2</span>
+        <span class="k">else</span> <span class="p">;</span> <span class="c1">// #2のif文に対応するelse</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このため、elseのあるif文の中に、さらにif文をネストさせたい場合は、内側のif文にも、elseが必要である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">false</span> <span class="p">)</span> <span class="c1">// #1</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="p">;</span><span class="c1">// #2</span>
+        <span class="k">else</span> <span class="p">;</span> <span class="c1">// #2のif文に対応するelse</span>
+    <span class="k">else</span> <span class="p">;</span> <span class="c1">// #1のif文に対応するelse</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>あるいは、ブロック文を使うという手もある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">false</span> <span class="p">)</span> <span class="c1">// #1</span>
+    <span class="p">{</span> <span class="k">if</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">else</span> <span class="p">;</span> <span class="c1">// #1のif文に対応するelse</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="switch-the-switch-statement">
+<h3>switch文（The switch statement）<a class="headerlink" href="#switch-the-switch-statement" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++"><pre>switch( 条件 ) 文</pre>
+</div>
+<p>switch文は、条件の値によって、実行する文を選択する。</p>
+<p>条件は、整数型かenum型、もしくは非explicitな変換関数を持つクラス型でなければならない。条件がクラス型の場合、整数型かenum型に型変換される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="k">operator</span> <span class="kt">int</span><span class="p">(){</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">switch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="k">switch</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、C::operator int()が呼ばれる</span>
+
+    <span class="k">switch</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー、浮動小数点数型は指定できない</span>
+
+    <span class="k">switch</span><span class="p">(</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>switch文の中の文には、通常、複合文を指定する。複合文の中には、caseラベル文やdefaultラベル文を書く。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">switch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">case</span> <span class="mi">1</span> :
+        <span class="cm">/* 処理 */</span> <span class="p">;</span>
+    <span class="k">break</span> <span class="p">;</span>
+
+    <span class="k">case</span> <span class="mi">2</span> :
+        <span class="cm">/* 処理 */</span> <span class="p">;</span>
+    <span class="k">break</span> <span class="p">;</span>
+
+    <span class="k">default</span> <span class="o">:</span>
+        <span class="cm">/* 処理 */</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>caseラベル文に指定する式は、整数の定数式でなければならない。また、同じswitch内で、caseラベル文の値が重複してはならない。</p>
+<p>defaultラベル文は、switch文の中の文に、ひとつだけ書くことができる。</p>
+<p>switch文が実行されると、まず条件が評価される。結果の値が、switch文の中にあるcaseラベルに対して、ひとつづつ比較される。もし、値が等しいcaseラベル文が見つかった場合、そのラベル分に実行が移る。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="k">const</span> <span class="n">value</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">switch</span><span class="p">(</span> <span class="n">value</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">case</span> <span class="mi">1</span> :
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Good morning.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+        <span class="k">break</span> <span class="p">;</span>
+        <span class="k">case</span> <span class="mi">2</span> :
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Good afternoon.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+        <span class="k">break</span> <span class="p">;</span>
+        <span class="k">case</span> <span class="mi">3</span> :
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Good evening.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+        <span class="k">break</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// Good morning.</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">2</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// Good afternoon.</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">3</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// Good evening.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>条件と値の等しいcaseラベルが見つからない場合で、defaultラベルがある場合、defaultラベルに実行が移る。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">bool</span> <span class="k">const</span> <span class="n">value</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">switch</span><span class="p">(</span> <span class="n">value</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">case</span> <span class="nb">true</span> :
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;true&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+        <span class="k">break</span> <span class="p">;</span>
+
+        <span class="k">default</span> <span class="o">:</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;false&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+        <span class="k">break</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// true</span>
+    <span class="n">f</span><span class="p">(</span> <span class="nb">false</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>条件と値の等しいcaseラベルが見つからず、defaultラベルもない場合、switch内の文は実行されない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// switch内の文は実行されない</span>
+    <span class="k">switch</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">case</span> <span class="mi">999</span> :
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;hello&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+        <span class="k">break</span> <span class="p">;</span>
+        <span class="k">case</span> <span class="mi">123456</span> :
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;hello&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+        <span class="k">break</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>caseラベルとdefaultラベル自体には、文の実行を変更する機能はない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="k">const</span> <span class="n">value</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">switch</span><span class="p">(</span> <span class="n">value</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">case</span> <span class="mi">1</span> :
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;one&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+        <span class="k">default</span> <span class="o">:</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;default&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+        <span class="k">case</span> <span class="mi">2</span> :
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;two&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合、valueの値が1の場合、case 1のラベル文に続く文も、すべて実行されてしまう。また、valueの値が1でも2でもない場合、defaultラベル文に続くcase 2のラベル文も、実行されてしまう。このため、switch内の実行を切り上げたい時点で、&lt;a href=&#8221;#stmt.break&#8221;&gt;break文&lt;/a&gt;を書かなければならない。break文を書き忘れたことによる、意図しない文の実行は、よくあることなので、注意が必要である。なお、このことは、逆に利用することもできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="k">const</span> <span class="n">value</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">switch</span><span class="p">(</span> <span class="n">value</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">case</span> <span class="mi">3</span> :
+        <span class="k">case</span> <span class="mi">5</span> :
+        <span class="k">case</span> <span class="mi">7</span> :
+            <span class="cm">/* 何らかの処理 */</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、valueの値が3, 5, 7のいずれかの場合に、何らかの処理が実行される。</p>
+</div>
+</div>
+<div class="section" id="iteration-statements">
+<h2>繰り返し文（Iteration statements）<a class="headerlink" href="#iteration-statements" title="Permalink to this headline">¶</a></h2>
+<p>繰り返し文（Iteration statements）は、ループを書くための文である。</p>
+<p>繰り返し文の中の文は、暗黙的に、ブロックスコープを定義する。このブロックスコープは、文の実行のループ一回ごとに、出入りする。例えば、</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">while</span><span class="p">(</span> <span class="nb">true</span> <span class="p">)</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>という文は、以下のように書いたものとみなされる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">while</span><span class="p">(</span> <span class="nb">true</span> <span class="p">)</span>
+<span class="p">{</span> <span class="kt">int</span> <span class="n">i</span> <span class="p">;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>従って、繰り返し文の中の変数は、ループが回されるごとに、生成、破棄されることになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="n">C</span><span class="p">(){</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;constructed.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">C</span><span class="p">(){</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;destructed.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">while</span><span class="p">(</span> <span class="nb">true</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="c1">// 生成、破棄を繰り返す</span>
+        <span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="while-the-while-statement">
+<h3>while文（The while statement）<a class="headerlink" href="#while-the-while-statement" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++"><pre>while ( 条件 ) 文</pre>
+</div>
+<p>while文は、条件の結果がfalseになるまで、文を繰り返し実行する。条件は、文の実行前に、繰り返し評価される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// 一度も繰り返さない</span>
+    <span class="k">while</span> <span class="p">(</span> <span class="nb">false</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;hello&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 無限ループ</span>
+    <span class="k">while</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;hello&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// iが10になるまで繰り返す</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">10</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="o">++</span><span class="n">i</span> <span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>条件が宣言である場合、変数のスコープは、while文の宣言された場所から、while文の最後までである。条件の中で宣言された変数は、文の実行が繰り返されるたびに、生成、破棄される。</p>
+<div class="highlight-c++"><pre>while ( T t = x ) 文</pre>
+</div>
+<p>という文は、</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="nl">label:</span>
+<span class="p">{</span>
+    <span class="n">T</span> <span class="n">t</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">statement</span>
+        <span class="k">goto</span> <span class="n">label</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>と書くのに等しい。</p>
+</div>
+<div class="section" id="do-the-do-statement">
+<h3>do文（The do statement）<a class="headerlink" href="#do-the-do-statement" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++"><pre>do 文 while ( 式 ) ;</pre>
+</div>
+<p>do文の式は、boolに変換される。boolに変換できない場合、エラーとなる。</p>
+<p>do文は、式の結果がfalseになるまで、文が繰り返し実行される。ただし、式の評価は、文の実行の後に行われる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// 一度だけ文を実行</span>
+    <span class="k">do</span> <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;hello&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span> <span class="nb">false</span> <span class="p">)</span> <span class="p">;</span>
+
+
+    <span class="c1">// 無限ループ</span>
+    <span class="k">do</span> <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;hello&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="for-the-for-statement">
+<h3>for文（The for statement）<a class="headerlink" href="#for-the-for-statement" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-c++"><pre>for ( for初期化文</pre>
+</div>
+<p>for文は、for初期化文で、ループ前の初期化を書き、条件で、ループを実行するかどうかの判定を行い、文が実行されたあとに、そのつど式が評価される。</p>
+<p>for文の実行では、まず、for初期化文が実行される。for初期化文は、式文か、変数の宣言を行うことができる。変数のスコープは、for文の最後までである。次に、文の実行の前に、条件が評価され、falseとなるまで文が繰り返し実行される。文の実行の後に、式が評価される。</p>
+<div class="highlight-c++"><pre>for ( for初期化文 条件 ; 式 ) 文</pre>
+</div>
+<p>は、以下のコードと同等である。</p>
+<div class="highlight-c++"><pre>{
+    for初期化文
+    while ( 条件 ) {
+        文
+        式 ;
+    }
+}</pre>
+</div>
+<p>ただし、文の中でcontinue文を使ったとしても、式は評価されるという違いがある。</p>
+<p>for文は、while文でよく書かれるコードを書きやすくした構文である。例えば、while文を10回実行したい場合、</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// カウンター用の変数の宣言</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+
+    <span class="k">while</span> <span class="p">(</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// 処理</span>
+        <span class="o">++</span><span class="n">i</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このようなコードを書く。for文は、このようなコードを、一度に書けるようにしたものである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">;</span> <span class="o">++</span><span class="n">i</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// 処理</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>for文の条件と式は、省略することができる。条件を省略した場合、trueとみなされる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// 条件を省略、for ( ; true ; ) と同じ</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="p">;</span> <span class="p">;</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="range-based-for-the-range-based-for-statement">
+<h3>range-based for文（The range-based for statement）<a class="headerlink" href="#range-based-for-the-range-based-for-statement" title="Permalink to this headline">¶</a></h3>
+<p>TODO: Madrid meeting後に変更する。ADL baseではなくtraits baseになる予定。</p>
+<p>ここでは、range-based forの言語機能を説明している。ライブラリとしてのレンジや、ユーザー定義のクラスでレンジをサポートする方法については、ライブラリの&lt;a href=&#8221;#iterator.range&#8221;&gt;レンジ&lt;/a&gt;を参照。</p>
+<div class="section" id="range-based-for">
+<h4>range-based forの基本<a class="headerlink" href="#range-based-for" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><pre>for ( for-range-宣言 : for-range-初期化子 ) 文</pre>
+</div>
+<p>range-based forは、レンジをサポートしている配列、初期化リスト、クラスの各要素に対して、それぞれ文を実行するための文である。</p>
+<p>range-based forは、forに続けて、括弧を書く。括弧の中には、変数の宣言と、レンジとを、:で区切る。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">:</span> <span class="n">a</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 各要素をint型のコピーで受ける</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="o">:</span> <span class="n">a</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 各要素をリファレンスで受ける</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">:</span> <span class="n">a</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// auto指定子を使った例</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このようにして宣言した変数は、range-based for文の中で使うことができる。range-based for文は、変数をレンジの各要素で初期化する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">:</span> <span class="n">a</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">i</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、ループは3回実行され、変数iの値は、それぞれ、1, 2, 3となる。</p>
+<p>ループを使ってコードを書く場合、配列やコンテナーの各要素に対して、それぞれ何らかの処理をするという事が多い。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;iostream&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span> <span class="p">,</span><span class="mi">5</span> <span class="p">}</span>  <span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span>
+        <span class="kt">int</span> <span class="o">*</span> <span class="n">iter</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span> <span class="p">;</span> <span class="c1">// 各要素を表す変数の宣言</span>
+        <span class="n">iter</span> <span class="o">!=</span> <span class="o">&amp;</span><span class="n">a</span> <span class="o">+</span> <span class="mi">5</span> <span class="p">;</span> <span class="c1">// 終了条件の判定</span>
+        <span class="o">++</span><span class="n">iter</span> <span class="c1">// 次の要素の参照</span>
+    <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// 各要素に対する処理</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="o">*</span><span class="n">iter</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>しかし、このようなループを正しく書くのは、至難の業である。なぜならば、人間は間違いを犯すからである。しかし、このようなループは、誰が書いても、概ね似たようなコードになる。range-based forを使えば、このような冗長なコードを省くことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span> <span class="p">,</span><span class="mi">5</span> <span class="p">}</span>  <span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">:</span> <span class="n">a</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">i</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>range-based forは、極めて簡単に使うことができる。for-range-宣言で、各要素を得るための変数を宣言する。for-range初期化子で、レンジをサポートした式を書く。文で、各要素に対する処理を書く。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span> <span class="p">,</span><span class="mi">5</span> <span class="p">}</span>  <span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">i</span> <span class="o">:</span> <span class="n">a</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">i</span> <span class="o">*=</span> <span class="mi">2</span> <span class="p">;</span> <span class="c1">// 二倍する</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、配列aの各要素は、二倍される。配列の要素を書き換えるために、変数は参照で受けている。</p>
+<p>range-based forには、配列の他にも、初期化リストや、レンジをサポートしたクラスを書く事ができる。STLのコンテナーは、レンジをサポートしている。配列以外にrange-based forを適用する場合、&amp;lt;iterator&amp;gt;の#includeが必要である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;iterator&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// 配列</span>
+    <span class="kt">int</span> <span class="n">a</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">:</span> <span class="n">a</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">i</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span> <span class="p">}</span>
+
+    <span class="c1">// 初期化リスト</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">:</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">i</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span> <span class="p">}</span>
+
+    <span class="c1">// クラス</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">:</span> <span class="n">v</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">i</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id2">
+<h4>range-based forの詳細<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>&lt;p class=&#8221;editrial-note&#8221;&gt;
+TODO:メンバー関数begin/end優先の追記。</p>
+<p>range-based forは、本来、コンセプトという言語機能と共に提供される予定であった。しかし、コンセプトは紆余曲折を経た結果、C++11では却下された。そのため、現行のrange-based forは、コンセプトではなく、ADLによる実装をされている。</p>
+<p>以下のrange-based for文があるとする。</p>
+<div class="highlight-c++"><pre>for ( for-range-宣言 : for-range-初期化子 ) 文</pre>
+</div>
+<p>このrange-based for文は、以下のように変換される。</p>
+<p>for-range-初期化子が式の場合、括弧でくくられる。これは、コンマ式が渡されたときに、正しく式を評価するためである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">for</span> <span class="p">(</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">:</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="p">)</span> <span class="p">;</span>
+<span class="c1">// 括弧でくくる</span>
+<span class="k">for</span> <span class="p">(</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">:</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>for-range-初期化子が初期化リストの場合、なにもしない。</p>
+<div class="highlight-c++"><pre>{
+    // 式の結果をlvalueかrvalueのリファレンスで束縛
+    auto &amp;&amp; __range = for-range-初期化子 ;
+    for (
+        auto __begin = begin式, // 先頭のイテレーター
+        __end = end式 ; // 終端のイテレーター
+        __begin != __end ; // 終了条件
+        ++__begin ) // イテレーターのインクリメント
+    {
+        for-range-宣言 = *__begin; // 要素を得る
+        文
+    }
+}</pre>
+</div>
+<p>ここでの、__range、__begin、__endという変数は、説明のための仮の名前である。実際のrange-based for文の中では、このような変数名は存在しない。</p>
+<p>__rangeとは、for-range-初期化子の式の結果を保持するためのリファレンスである。auto指定子とrvalueリファレンスの宣言子が使われていることにより、式のlvalue、rvalue、CV修飾子をいかんを問わずに、結果をリファレンスとして束縛できる。</p>
+<p>begin式とend式は、先頭と終端へのイテレーターを得るための式である。</p>
+<p>for-range-初期化子の型が、配列の場合、begin式は「__range」となり、end式は、「__range + 配列の要素数」となる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">:</span> <span class="n">x</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// 処理</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>上記のrange-based for文は、以下のように変換される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="p">;</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="o">&amp;&amp;</span> <span class="n">__range</span> <span class="o">=</span> <span class="p">(</span> <span class="n">x</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span>
+        <span class="k">auto</span> <span class="n">__begin</span> <span class="o">=</span> <span class="n">__range</span><span class="p">,</span>
+        <span class="n">__end</span> <span class="o">=</span> <span class="n">__range</span> <span class="o">+</span> <span class="mi">10</span> <span class="p">;</span>
+        <span class="n">__begin</span> <span class="o">!=</span> <span class="n">__end</span> <span class="p">;</span>
+        <span class="o">++</span><span class="n">__begin</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="o">*</span><span class="n">__begin</span><span class="p">;</span>
+        <span class="c1">// 処理</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>型が配列以外の場合、begin式は「begin(__range)」に、end式は「end(__range)」に変換される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">;</span>
+<span class="k">for</span><span class="p">(</span> <span class="k">auto</span> <span class="n">i</span> <span class="o">:</span> <span class="n">v</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// 処理</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span> <span class="p">;</span>
+<span class="p">{</span>
+    <span class="c1">// 式の結果をlvalueかrvalueのリファレンスで束縛</span>
+    <span class="k">auto</span> <span class="o">&amp;&amp;</span> <span class="n">__range</span> <span class="o">=</span> <span class="p">(</span> <span class="n">v</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span>
+        <span class="k">auto</span> <span class="n">__begin</span> <span class="o">=</span> <span class="n">begin</span><span class="p">(</span><span class="n">__range</span><span class="p">),</span>
+        <span class="n">__end</span> <span class="o">=</span> <span class="n">end</span><span class="p">(</span><span class="n">__range</span><span class="p">)</span> <span class="p">;</span>
+        <span class="n">__begin</span> <span class="o">!=</span> <span class="n">__end</span> <span class="p">;</span>
+        <span class="o">++</span><span class="n">__begin</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="o">*</span><span class="n">__begin</span><span class="p">;</span>
+        <span class="c1">// 処理</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ここでのbegin(__range)とend(__range)は、関数呼び出しである。ただし、この名前の解決には、通常の名前探索のルールは用いられない。begin/endの名前探索には、関連名前空間に特別にstdを加えた、ADLによってのみ名前探索される。通常のunqualified名前探索は用いられない。&lt;a href=&#8221;#basic.lookup.argdep&#8221;&gt;ADL&lt;/a&gt;の詳細については、詳しい説明を別に設けてあるので、そちらを参照。</p>
+</div>
+</div>
+<div class="section" id="jump-statements">
+<h3>ジャンプ文（Jump statements）<a class="headerlink" href="#jump-statements" title="Permalink to this headline">¶</a></h3>
+<p>ジャンプ文は、実行する文を無条件で変更するための文である。</p>
+<div class="section" id="break-the-break-statement">
+<h4>break文（The break statement）<a class="headerlink" href="#break-the-break-statement" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">break</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>break文は、繰り返し文かswitch文の中で使うことができる。break文は、最も内側の繰り返し文かswitch文から、抜け出す機能を持つ。もし繰り返し文かswitch文に続く、次の文があれば、実行はその文に移る。break文は、ループを途中で抜けたい場合に使うことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">while</span><span class="p">(</span> <span class="nb">true</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">break</span> <span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">do</span>
+    <span class="p">{</span>
+        <span class="k">break</span> <span class="p">;</span>
+    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span> <span class="p">;</span> <span class="p">;</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">break</span> <span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">switch</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">default</span> <span class="o">:</span>
+            <span class="k">break</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>break文によって抜ける繰り返し文かswitch文とは、break文が書かれている場所からみて、最も内側の文である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">while</span><span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="c1">// 外側</span>
+        <span class="k">while</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="c1">// 内側</span>
+        <span class="p">{</span>
+            <span class="k">break</span> <span class="p">;</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>break文が使われている内側の文からは抜けるが、外側の文から抜けることはできない。</p>
+</div>
+<div class="section" id="continue-the-continue-statement">
+<h4>continue文（The continue statement）<a class="headerlink" href="#continue-the-continue-statement" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">continue</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>continue文は、繰り返し文の中で使うことができる。continue文を実行すると、そのループの実行を中止する。</p>
+<p>while文やdo文の場合、条件が評価され、その結果次第で、次のループが再び始まる。for文の場合は、ループの最後に必ず行われる式が、もしあれば評価され、条件が評価され、その結果次第で、次のループが再び始まる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">while</span><span class="p">(</span> <span class="nb">true</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">continue</span> <span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">do</span>
+    <span class="p">{</span>
+        <span class="k">continue</span> <span class="p">;</span>
+    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="nb">true</span> <span class="p">;</span> <span class="o">++</span><span class="n">i</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">continue</span> <span class="p">;</span><span class="c1">// for文の式である++iが評価される。</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>continue文に対する繰り返し文とは、continue文が書かれている場所からみて、最も内側の繰り返し文のループである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">while</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="c1">// 外側</span>
+        <span class="k">while</span> <span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="c1">// 内側</span>
+        <span class="p">{</span>
+            <span class="k">continue</span> <span class="p">;</span>
+        <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、continue文は、内側のwhile文のループを中止する。ただし、continue文はbreak文とは違い、繰り返し文から抜け出すわけではないので、内側のwhile文の実行が続く。</p>
+</div>
+<div class="section" id="return-the-return-statement">
+<h4>return文（The return statement）<a class="headerlink" href="#return-the-return-statement" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">return</span>
+</pre></div>
+</div>
+<p>return文は、関数の呼び出し元に実行を戻す文である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="k">return</span> <span class="p">;</span> <span class="c1">// エラー、戻り値がない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>return文の式は、関数の呼び出し元に、戻り値として返される。式は関数の戻り値の型に暗黙的に変換される。変換できない場合はエラーとなる。</p>
+<p>戻り値を返さない関数の場合、return文の式は省略できる。戻り値を返さない関数とは、戻り値の型がvoid型の関数、コンストラクター、デストラクターである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="n">C</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">C</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="p">;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>戻り値を返さない関数の場合は、return文で戻り値を返してはならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー、関数fは戻り値を返さない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ただし、return文の式がvoidと評価される場合は、戻り値を返していることにはならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">void</span> <span class="nf">g</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// 関数fの呼び出しの結果は、void</span>
+    <span class="k">return</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>関数の本体の最後は、値を返さないreturn文が書かれたことになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="c1">// 値を返さないreturn文が書かれた場合と同じ</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>値を返す関数で、return文が省略された場合の挙動は未定義である。ただし、main関数だけは、特別に0が返されたものとみなされる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 値を返す関数</span>
+<span class="kt">int</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">bool</span> <span class="n">b</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="n">b</span> <span class="p">)</span>
+    <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="c1">// bがfalseの場合の挙動は未定義</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="c1">// return 0 ;が書かれた場合と同じ</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>return文には、初期化リストを書くことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">List</span>
+<span class="p">{</span>
+    <span class="n">List</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">List</span> <span class="nf">g</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>return文は、関数の戻り値の為に、一時オブジェクトを生成するかもしれない。一時オブジェクトを生成する場合、値はコピーかムーブをしなければならないが、return文では、コピーかムーブかの選択のために、式をrvalueとみなす可能性もある。式をrvalueとみなすということは、lvalueであっても、暗黙的にムーブされる可能性があることを意味する。これは例えば、「return文を実行して関数の呼び出し元に戻った場合、関数のローカル変数は破棄されるためムーブしてもかまわない」という状況で、コピーではなく、ムーブを選択できるようにするためである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// コピーとムーブが可能なクラス</span>
+<span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="n">C</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span> <span class="p">;</span> <span class="c1">// デフォルトコンストラクター</span>
+    <span class="n">C</span><span class="p">(</span> <span class="n">C</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="o">=</span> <span class="k">default</span> <span class="p">;</span> <span class="c1">// コピーコンストラクター</span>
+    <span class="n">C</span><span class="p">(</span> <span class="n">C</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="o">=</span> <span class="k">default</span> <span class="p">;</span> <span class="c1">// ムーブコンストラクター</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">C</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="c1">// 一時オブジェクトが生成される場合、コピーかムーブが行われる。</span>
+    <span class="k">return</span> <span class="n">c</span> <span class="p">;</span>
+<span class="c1">// なぜならば、ローカル変数はreturn文の実行後、破棄されるので、ムーブしても構わないからである。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>また、上記のコードで、一時オブジェクトが生成されない場合もある。これはインライン展開やフロー解析などによる最適化の結果、コピーもムーブも行わなくてもよいと判断できる場合、そのような最適化を許可するためである。</p>
+</div>
+<div class="section" id="goto-the-goto-statement">
+<h4>goto文（The goto statement）<a class="headerlink" href="#goto-the-goto-statement" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><pre>goto 識別子 ;</pre>
+</div>
+<p>goto文は、関数内のラベル文に無条件で実行を移すための文である。同じ関数内であれば、どこにでもジャンプできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="n">label</span> <span class="o">:</span> <span class="p">;</span> <span class="c1">// labelという名前のラベル文</span>
+
+    <span class="k">goto</span> <span class="n">label</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>宣言文の前にジャンプする。あるいは、宣言文を飛び越すことについては、宣言文の項目で詳しく解説している。</p>
+</div>
+</div>
+</div>
+<div class="section" id="declaration-statement">
+<h2>宣言文（Declaration statement）<a class="headerlink" href="#declaration-statement" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-c++"><pre>ブロック宣言 ;</pre>
+</div>
+<p>宣言文は、あるブロックの中に、新しい識別子を導入するための文である。ブロック宣言や、その他の宣言についての詳細は、宣言、宣言子、クラスを参照。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// int型の識別子aという変数の宣言</span>
+
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// void (void)型の識別子fという関数の宣言</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>&lt;a href=&#8221;#basic.stc.auto&#8221;&gt;自動ストレージの有効期間&lt;/a&gt;を持つ変数は、宣言文が実行されるたびに、初期化される。また、宣言されているブロックから抜ける際に、破棄される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Object</span>
+<span class="p">{</span>
+    <span class="n">Object</span><span class="p">()</span>
+    <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;constructed.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;}</span>
+    <span class="o">~</span><span class="n">Object</span><span class="p">()</span>
+    <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;destructed.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="p">{</span>
+        <span class="n">Object</span> <span class="n">object</span> <span class="p">;</span> <span class="c1">// 生成</span>
+    <span class="p">}</span> <span class="c1">// ブロックスコープから抜ける際に破棄される</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ジャンプ文を使えば、宣言文の後から前に実行を移すことが可能である。その場合、宣言文によって生成されたオブジェクトは破棄され、宣言文の実行と共に、再び生成、初期化される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Object</span>
+<span class="p">{</span>
+    <span class="n">Object</span><span class="p">()</span>
+    <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;constructed.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;}</span>
+    <span class="o">~</span><span class="n">Object</span><span class="p">()</span>
+    <span class="p">{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;destructed.&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="n">label</span> <span class="o">:</span>
+    <span class="n">Object</span> <span class="n">object</span> <span class="p">;</span> <span class="c1">// 変数objectが生成、初期化される</span>
+
+    <span class="k">goto</span> <span class="n">label</span> <span class="p">;</span> <span class="c1">// 変数objectは破棄される</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、Objectクラスの変数objectは、gotoで宣言文の前にジャンプするたびに、破棄されることになる。</p>
+<p>goto文やswitch文などのジャンプ文を使えば、自動変数の宣言文を実行せずに、通り越すコードが書ける。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// goto文の例</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// labelという名前のラベル文にジャンプする</span>
+    <span class="k">goto</span> <span class="n">label</span> <span class="p">;</span>
+
+    <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span> <span class="c1">// 自動変数の宣言文</span>
+
+<span class="n">label</span> <span class="o">:</span> <span class="p">;</span>
+<span class="c1">// valueの宣言文を、実行せずに通り越してしまった。</span>
+<span class="p">}</span>
+
+<span class="c1">// switch文の例</span>
+<span class="kt">void</span> <span class="nf">g</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span> <span class="n">value</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span> <span class="c1">// 変数の宣言文</span>
+
+        <span class="c1">// 宣言文を飛び越えてしまっている。</span>
+        <span class="k">case</span> <span class="mi">0</span> : <span class="k">break</span> <span class="p">;</span>
+        <span class="k">case</span> <span class="mi">1</span> : <span class="k">break</span> <span class="p">;</span>
+        <span class="k">default</span> <span class="o">:</span> <span class="k">break</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このようなコードは、ほぼすべての場合、エラーとなるので、書くべきではない。では、変数の宣言文を通り越してもエラーとならない場合は何か。これは、相当の制限を受ける。まず、変数の型は、スカラー型か、trivialなデフォルトコンストラクターとtrivialなデストラクターを持つクラス型でなければならない。また、そのような型にCV修飾子を加えた型と、配列型でもよい。その上で、初期化子が存在していてはならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">POD</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">// trivialではないコンストラクターを持つクラス</span>
+<span class="k">struct</span> <span class="n">Object</span> <span class="p">{</span> <span class="n">Object</span><span class="p">()</span> <span class="p">{}</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// 変数の宣言文を飛び越えるgoto文</span>
+    <span class="k">goto</span> <span class="n">label</span> <span class="p">;</span>
+
+    <span class="c1">// エラー</span>
+    <span class="c1">// 変数の型はスカラー型だが、初期化子がある。</span>
+    <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="kt">int</span> <span class="n">scalar</span> <span class="p">;</span> <span class="c1">// OK</span>
+
+    <span class="c1">// エラー</span>
+    <span class="c1">// 変数のクラス型がtrivialではないコンストラクターを持っている</span>
+    <span class="n">Object</span> <span class="n">object</span> <span class="p">;</span>
+
+    <span class="n">POD</span> <span class="n">pod</span> <span class="p">;</span> <span class="c1">// OK</span>
+
+<span class="n">label</span> <span class="o">:</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>すべてのstatic変数とthread_local変数は、他のあらゆる初期化に先立って、ゼロ初期化される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">goto</span> <span class="n">label</span> <span class="p">;</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span> <span class="c1">// static変数は必ずゼロ初期化される</span>
+<span class="n">label</span> <span class="o">:</span>
+    <span class="c1">// この場合、valueは0であることが保証されている</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="n">value</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ブロックスコープ内のstatic変数とthread_local変数は、定数初期化による早期の初期化が行われない場合、宣言に始めて処理が到達した際に、初期化される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 定数初期化できない型</span>
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span> <span class="o">:</span> <span class="n">member</span><span class="p">(</span> <span class="n">value</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// xのゼロ初期化はすでに行われている</span>
+    <span class="k">static</span> <span class="n">X</span> <span class="n">x</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span> <span class="p">;</span>
+    <span class="c1">// この時点で、xの初期化は完了している。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ブロックスコープ内のstatic変数とthread_local変数が定数初期化されている場合、実装は早期に初期化を行なってもかまわない。ただし、行われるという保証はない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 定数初期化できる型</span>
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+    <span class="n">constexpr</span> <span class="nf">X</span><span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span> <span class="o">:</span> <span class="n">member</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 定数初期化できない型</span>
+<span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+    <span class="n">Y</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">value</span> <span class="p">)</span> <span class="o">:</span> <span class="n">member</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">g</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">goto</span> <span class="n">label</span> <span class="p">;</span> <span class="c1">// 宣言文を飛び越してしまっている。</span>
+
+    <span class="c1">// constexpr指定子が使われていないことに注意</span>
+    <span class="c1">// xはstatic変数であり、constexprコンストラクターを使っているため、定数初期化である</span>
+    <span class="k">static</span> <span class="n">X</span> <span class="n">x</span><span class="p">(</span> <span class="mi">123</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="c1">// constexprコンストラクターを使っていないため、定数初期化ではない</span>
+    <span class="k">static</span> <span class="n">Y</span> <span class="n">y</span><span class="p">(</span> <span class="mi">123</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="n">label</span> <span class="o">:</span>
+    <span class="c1">// xは初期化されているかもしれないし、初期化されていないかもしれない</span>
+    <span class="c1">// yは初期化されていない</span>
+    <span class="c1">// 両方とも、ゼロ初期化は保証されている</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、関数gのstaticローカル変数xとyの宣言文には、処理が到達しない。そのため、xとyが初期化されている保証はない。ただし、xは定数初期化なので、実装によっては、早期初期化されている可能性がある。ゼロ初期化だけは常に保証されている。</p>
+<p>static変数とthread_local変数は、宣言文の実行のたびに初期化されることはない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// 一回だけ初期化される</span>
+    <span class="c1">// 定数初期化なので、いつ初期化されるかは定められていない</span>
+    <span class="c1">// ただし、ゼロ初期化はすでに行われている</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">;</span>
+    <span class="c1">// この時点で、初期化は完了していることが保証されている</span>
+
+    <span class="kt">int</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">value</span> <span class="p">;</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span>
+
+    <span class="k">return</span> <span class="n">temp</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// 1</span>
+    <span class="n">f</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// 2</span>
+    <span class="n">f</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// 3</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>もし、static変数とthread_local変数の初期化が、例外がthrowされたことにより終了した場合は、初期化は未完了だとみなされる。そのような場合、次に宣言文を実行した際に、再び初期化が試みられる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">flag</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="n">flag</span><span class="o">++</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span>
+            <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// 関数fのstaticローカル変数xの初期化は未完了</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// 関数fのstaticローカル変数xの初期化完了</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>もし、static変数とthread_local変数の宣言文の初期化が再帰した場合、挙動は未定義である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="p">);</span> <span class="c1">// エラー、初期化が再帰している</span>
+    <span class="k">return</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、static変数sの初期化が終わらなければ、関数fはreturn文を実行できない。しかし、sの初期化は、再帰している。この場合、挙動は未定義である。</p>
+</div>
+<div class="section" id="ambiguity-resolution">
+<h2>曖昧解決（Ambiguity resolution）<a class="headerlink" href="#ambiguity-resolution" title="Permalink to this headline">¶</a></h2>
+<p>関数形式のキャストを用いた式文と、宣言文とは、文法が曖昧になる場合がある。その場合、宣言文だと解釈される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="c1">// 不必要な括弧がついた宣言文？　それともキャスト？</span>
+    <span class="kt">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合、int(x) ;という文は、キャストを含む式文ではなく、宣言文になる。したがって、上記の例は、変数xの再定義となるので、エラーである。</p>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dcl.dcl.html" title="宣言（Declarations）"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="expr.html" title="式（Expressions）"
+             >previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ezoe Ryou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

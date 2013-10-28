@@ -1,0 +1,164 @@
+body
+{
+    background-color : #efefef  ;
+    margin-left : 1em ;
+    font-size : large ;
+}
+
+p
+{
+
+}
+
+.document h1, h2, h3, h4, h5, h6
+{
+    font-size : x-large ;
+    font-weight : normal ;
+}
+
+.document pre 
+{
+    display : block ;
+    font-family: "Inconsolata", "Consolas", monospace ;
+    border-style: solid ;
+    border-width: medium ;
+    border-color: black ;
+    padding: 0em 1em 1em 1em  ;
+    background-color: #ffffdd ;
+    word-wrap: break-word ;
+    white-space : pre-wrap ;
+
+    border-radius: 0.4em ;
+}
+
+/*
+* i element represents represents syntactic categories.
+* b element represents other technical terms.
+* as defined in HTML5 draft.
+*/
+i, b
+{
+    font-weight : normal ;
+    font-style : normal ;
+    text-decoration : none ;
+}
+
+a
+{
+    text-decoration : none  ;
+}
+
+a:hover
+{
+    background-color : #ffffdd  ;
+    border-radius: 0.4em  ;
+    -moz-border-radius: 0.4em  ;
+    -webkit-border-radius: 0.4em  ;
+}
+
+
+.maybe
+{
+    background-color : #dfdfdf ;
+    border-radius: 0.4em  ;
+    -moz-border-radius: 0.4em  ;
+    -webkit-border-radius: 0.4em  ;
+}
+
+.maybe a
+{
+    color : black  ;
+}
+
+.maybe > a:before
+{
+    content : "[書かないかも] "  ;
+}
+
+.hide
+{
+    background-color : #dfdfdf ;
+    border-radius: 0.4em  ;
+}
+
+.hide a
+{
+    color : black  ;
+}
+.hide > a:before
+{
+    content : "[ネストが深すぎる] "  ;
+}
+
+.editorial-note
+{
+    padding : 1em ;
+    border : red thick solid ;
+}
+
+.section
+{
+    display : block ;
+    
+    margin-bottom : 4em ;
+}
+
+.todo
+{
+    padding : 1em ;
+    border : red thick solid ;
+}
+
+.todo:before
+{
+    content : "TODO: " ;
+}
+
+table
+{
+    border-collapse:collapse;
+}
+
+table, th, td
+{
+    padding : 0.5em ;
+    border : black thin solid ;
+}
+
+
+/******************************************************************************\
+ * Related
+\******************************************************************************/
+
+.related {
+  height: 1em;
+  margin: 0;
+  padding: 0;
+}
+
+.related h3 {
+  display: none;
+}
+
+.related ul {
+  height: 1em;
+  margin: 0;
+  padding: 0;
+}
+
+.related li {
+  height: 1em;
+  margin: 0 0.5em 0;
+  padding: 0;
+  float: right;
+  list-style-type: none;
+}
+
+/******************************************************************************\
+ * Footer
+\******************************************************************************/
+
+.footer {
+  margin-top: 2em;
+  text-align: center;
+}

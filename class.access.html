@@ -1,0 +1,649 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>メンバーのアクセス指定（Member access control） &mdash; C++11: Syntax and Feature</title>
+    
+    <link rel="stylesheet" href="_static/cpp-book.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="C++11: Syntax and Feature" href="index.html" />
+    <link rel="next" title="特別なメンバー関数（Special member functions）" href="special.html" />
+    <link rel="prev" title="派生クラス（Derived classes）" href="class.derived.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="special.html" title="特別なメンバー関数（Special member functions）"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="class.derived.html" title="派生クラス（Derived classes）"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="member-access-control">
+<h1>メンバーのアクセス指定（Member access control）<a class="headerlink" href="#member-access-control" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="access-specifiers">
+<h2>アクセス指定子（Access specifiers）<a class="headerlink" href="#access-specifiers" title="Permalink to this headline">¶</a></h2>
+<p>クラスのメンバーのアクセス指定は、ラベルにアクセス指定子（Access specifiers）を記述することで指定する。</p>
+<div class="highlight-c++"><pre>アクセス指定子 : メンバー</pre>
+</div>
+<p>アクセス指定子とは、private、protected、publicのいずれかである。アクセス指定子が現れた場所から、次のアクセス指定子か、クラス定義の終了までの間のメンバーが、アクセス指定子の影響を受ける</p>
+<p>class X
+{</p>
+<blockquote>
+<div>int a ; // デフォルトのprivate</div></blockquote>
+<dl class="docutils">
+<dt>public :</dt>
+<dd>int b ; // public
+int c ; // public</dd>
+<dt>protected :</dt>
+<dd>int d ; // protected</dd>
+<dt>private :</dt>
+<dd>int e ; // private</dd>
+</dl>
+<p>} ;</p>
+<p>アクセス指定子には、順番や使用可能な回数の制限はない。好きな順番で、何度でも指定できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+<span class="k">public</span> <span class="o">:</span>
+<span class="k">protected</span> <span class="o">:</span>
+<span class="k">public</span> <span class="o">:</span>
+<span class="k">public</span> <span class="o">:</span>
+<span class="k">private</span> <span class="o">:</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="accessibility-of-base-classes-and-base-class-members">
+<h2>基本クラスと、基本クラスのメンバーへのアクセス指定（Accessibility of base classes and base class members）<a class="headerlink" href="#accessibility-of-base-classes-and-base-class-members" title="Permalink to this headline">¶</a></h2>
+<p>あるクラスを、別のクラスの基本クラスとするとき、いずれかのアクセス指定子を指定する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Derived_by_public</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// public派生</span>
+<span class="k">class</span> <span class="nc">Derived_by_protected</span> <span class="o">:</span> <span class="k">protected</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// protected派生</span>
+<span class="k">class</span> <span class="nc">Derived_by_private</span> <span class="o">:</span> <span class="k">private</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// private派生</span>
+</pre></div>
+</div>
+<p>アクセス指定子がpublicの場合、基本クラスのpublicメンバーは、派生クラスのpublicメンバーとしてアクセス可能になり、基本クラスのprotectedメンバーは、派生クラスのprotectedメンバーとしてアクセス可能になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Base</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="kt">int</span> <span class="n">public_member</span> <span class="p">;</span>
+<span class="k">protected</span> <span class="o">:</span>
+    <span class="kt">int</span> <span class="n">protected_member</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Derived</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">public_member</span> <span class="p">;</span> <span class="c1">// OK</span>
+        <span class="n">protected_member</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Derived</span> <span class="n">d</span> <span class="p">;</span>
+    <span class="n">d</span><span class="p">.</span><span class="n">public_member</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>アクセス指定子がprotectedの場合、基本クラスのpublicとprotectedメンバーは、派生クラスのprotectedメンバーとしてアクセス可能になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Base</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="kt">int</span> <span class="n">public_member</span> <span class="p">;</span>
+<span class="k">protected</span> <span class="o">:</span>
+    <span class="kt">int</span> <span class="n">protected_member</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Derived</span> <span class="o">:</span> <span class="k">protected</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">public_member</span> <span class="p">;</span> <span class="c1">// OK、ただしprotectedメンバー</span>
+        <span class="n">protected_member</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Derived</span> <span class="n">d</span> <span class="p">;</span>
+    <span class="n">d</span><span class="p">.</span><span class="n">public_member</span> <span class="p">;</span> <span class="c1">// エラー、Derivedからは、protectedメンバーである</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>アクセス指定子がprivateの場合、基本クラスのpublicとprotectedメンバーは、派生クラスのprivateメンバーとしてアクセス可能になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Base</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="kt">int</span> <span class="n">public_member</span> <span class="p">;</span>
+<span class="k">protected</span> <span class="o">:</span>
+    <span class="kt">int</span> <span class="n">protected_member</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Derived</span> <span class="o">:</span> <span class="k">private</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">public_member</span> <span class="p">;</span> <span class="c1">// OK、ただし、privateメンバー</span>
+        <span class="n">protected_member</span> <span class="p">;</span> <span class="c1">// OK、ただし、privateメンバー</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Derived2</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Derived</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">public_member</span> <span class="p">;</span> <span class="c1">// エラー、基本クラスのprivateメンバーにはアクセスできない</span>
+        <span class="n">protected_member</span> <span class="p">;</span> <span class="c1">// エラー、基本クラスのprivateメンバーにはアクセスできない</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Derived</span> <span class="n">d</span> <span class="p">;</span>
+    <span class="n">d</span><span class="p">.</span><span class="n">public_member</span> <span class="p">;</span> <span class="c1">// エラー、Derivedからは、privateメンバーである</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>基本クラスにアクセス指定子を指定しなかった場合、structキーワードで宣言されたクラスは、デフォルトでpublicに、classキーワードで宣言されたクラスは、デフォルトでprivateになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// デフォルトのpublic派生</span>
+<span class="k">struct</span> <span class="n">D1</span> <span class="o">:</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">// デフォルトのprivate派生</span>
+<span class="k">class</span> <span class="nc">D2</span> <span class="o">:</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>どのアクセス指定子を指定して派生しても、基本クラスのprivateメンバーを派生クラスから使うことはできない。クラスAからprivate派生したクラスBから派生しているクラスCでは、クラスAのメンバーは使えないのも、この理由による。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// classキーワードで宣言されたクラスのメンバーはデフォルトでprivate</span>
+<span class="k">class</span> <span class="nc">Base</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">private_member</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Derived</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Base</span>
+<span class="p">{</span>
+<span class="c1">// どのアクセス指定を用いても、基本クラスのprivate_memberは使えない</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">A</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">public_member</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">class</span> <span class="nc">B</span> <span class="o">:</span> <span class="k">private</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">class</span> <span class="nc">C</span> <span class="o">:</span> <span class="k">public</span> <span class="n">B</span>
+<span class="p">{</span>
+<span class="c1">// クラスBは、クラスAからprivate派生しているため、ここではA::public_memberは使えない。</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>クラス名自体も、クラススコープ内の名前として扱われる。クラスAからprivate派生したクラスBから派生しているクラスCでは、クラスAのクラス名自体がprivateメンバーになってしまう。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// グローバル名前空間のスコープ</span>
+<span class="k">struct</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">class</span> <span class="nc">B</span> <span class="o">:</span> <span class="k">private</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">class</span> <span class="nc">C</span> <span class="o">:</span> <span class="k">public</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">A</span> <span class="n">a1</span> <span class="p">;</span> <span class="c1">// エラー、名前Aは、基本クラスのprivateメンバーのA</span>
+        <span class="o">::</span><span class="n">A</span> <span class="n">a2</span> <span class="p">;</span> <span class="c1">// OK、名前::Aは、グローバル名前空間スコープ内のA</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、クラスCのスコープ内で、非修飾名Aに対して、クラス名Aが発見されてしまうので、エラーになる。クラスCの中でクラスAを使いたい場合、明示的な修飾が必要である。</p>
+<p>アクセス指定子は、staticメンバーにも適用される。publicなstaticメンバーを持つクラスを、protectedやprivateで派生すると、基本クラスからはアクセスできるが、派生クラスを介してアクセスできなくなってしまうこともある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// グローバル名前空間のスコープ</span>
+<span class="k">struct</span> <span class="n">A</span> <span class="p">{</span> <span class="k">static</span> <span class="kt">int</span> <span class="n">data</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="n">A</span><span class="o">::</span><span class="n">data</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">B</span> <span class="o">:</span> <span class="k">private</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">class</span> <span class="nc">C</span> <span class="o">:</span> <span class="k">public</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">data</span> <span class="p">;</span> <span class="c1">// エラー</span>
+        <span class="o">::</span><span class="n">A</span><span class="o">::</span><span class="n">data</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>クラスCからは、名前dataは、基本クラスAのメンバーdataとして発見されるので、アクセスできない。しかし、クラスA自体は、名前空間に存在するので、明示的な修飾を使えば、アクセスできる。</p>
+<p>protectedの場合、friendではないクラス外部の関数からアクセスできなくなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span> <span class="p">{</span> <span class="k">static</span> <span class="kt">int</span> <span class="n">data</span> <span class="p">;</span> <span class="p">}</span>
+<span class="kt">int</span> <span class="n">A</span><span class="o">::</span><span class="n">data</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">B</span> <span class="o">:</span> <span class="k">protected</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">B</span><span class="o">::</span><span class="n">data</span> <span class="p">;</span> <span class="c1">// エラー</span>
+    <span class="n">A</span><span class="o">::</span><span class="n">data</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ここでは、B::dataとA::dataは、どちらも同じオブジェクトを指しているが、アクセス指定の違いにより、B::dataという修飾名では、クラスBのfriendではないmain関数からアクセスすることができない。</p>
+<p>基本クラスにアクセス可能である場合、派生クラスへのポインター型から、基本クラスへのポインター型に型変換できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">class</span> <span class="nc">B</span> <span class="o">:</span> <span class="k">public</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">class</span> <span class="nc">C</span> <span class="o">:</span> <span class="k">protected</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">A</span> <span class="o">*</span> <span class="o">&gt;</span><span class="p">(</span> <span class="k">this</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、アクセス可能</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">B</span> <span class="n">b</span> <span class="p">;</span>
+    <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">A</span> <span class="o">*</span> <span class="o">&gt;</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">b</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、アクセス可能</span>
+    <span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="k">static_cast</span><span class="o">&lt;</span> <span class="n">A</span> <span class="o">*</span> <span class="o">&gt;</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">c</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー、main関数からは、protectedメンバーにアクセスできない</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="friend-friends">
+<h2>friend（Friends）<a class="headerlink" href="#friend-friends" title="Permalink to this headline">¶</a></h2>
+<p>クラスはfriendを宣言することができる。friendを宣言するには、friend指定子を使う。クラスのfriendとして宣言できるものは、関数かクラスである。クラスのfriendは、クラスのprivateとprotectedメンバーにアクセスできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="k">typedef</span> <span class="kt">int</span> <span class="n">type</span> <span class="p">;</span> <span class="c1">// privateメンバー</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// friend関数</span>
+    <span class="k">friend</span> <span class="k">class</span> <span class="nc">Y</span> <span class="p">;</span> <span class="c1">// friendクラス</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="o">::</span><span class="n">type</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// OK、関数void f(void)はXのfriend</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">Y</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="o">::</span><span class="n">type</span> <span class="n">member</span> <span class="p">;</span> <span class="c1">// OK、クラスYはXのfriend</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">X</span><span class="o">::</span><span class="n">type</span> <span class="n">member</span> <span class="p">;</span> <span class="c1">// OK、クラスYはXのfriend</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>friendクラスの宣言は、friend指定子に続けて、&lt;a href=&#8221;#dcl.type.elab&#8221;&gt;複雑型指定子&lt;/a&gt;、&lt;a href=&#8221;#dcl.type.simple&#8221;&gt;単純型指定子&lt;/a&gt;、typename指定子（&lt;a href=&#8221;#temp.res&#8221;&gt;名前解決&lt;/a&gt;を参照）のいずれかを宣言しなければならない。</p>
+<p>複雑型指定子は、最も分かりやすい。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="k">friend</span> <span class="k">class</span> <span class="nc">Y</span> <span class="p">;</span>
+    <span class="k">friend</span> <span class="k">struct</span> <span class="n">Z</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>複雑型指定子を使う場合、クラスをあらかじめ宣言しておく必要はない。名前がクラスであることが、その時点で宣言されるからだ。</p>
+<p>単純型指定子に名前を使う場合は、それより以前に、クラスを宣言しておく必要がある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Y</span> <span class="p">;</span> <span class="c1">// Yをクラスとして宣言</span>
+
+<span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="k">friend</span> <span class="n">Y</span> <span class="p">;</span> <span class="c1">// OK、Yはクラスである</span>
+    <span class="k">friend</span> <span class="n">Z</span> <span class="p">;</span> <span class="c1">// エラー、名前Zは見つからない</span>
+
+    <span class="k">friend</span> <span class="k">class</span> <span class="nc">A</span> <span class="p">;</span> <span class="c1">// OK、Aはクラスとして、ここで宣言されている</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>あらかじめ名前が宣言されていない場合は、エラーとなる。</p>
+<p>単純型指定子にテンプレート名を使うこともできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="k">friend</span> <span class="n">T</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>typename指定子を指定する場合は、以下のようになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="k">friend</span> <span class="k">typename</span> <span class="n">T</span><span class="o">::</span><span class="n">type</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>T::typeは、依存名を型として使っているので、typenameが必要である。</p>
+<p>もし、型指定子がクラス型ではない場合、単に無視される。これは、テンプレートコードを書くときに便利である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="k">friend</span> <span class="n">T</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">X</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// OK、friend宣言は無視される</span>
+
+<span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Y</span>
+<span class="p">{</span>
+    <span class="k">friend</span> <span class="k">typename</span> <span class="n">T</span><span class="o">::</span><span class="n">type</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Z</span> <span class="p">{</span> <span class="k">typedef</span> <span class="kt">int</span> <span class="n">type</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="n">Y</span><span class="o">&lt;</span><span class="n">Z</span><span class="o">&gt;</span> <span class="n">y</span> <span class="p">;</span> <span class="c1">// OK、friend宣言は無視される</span>
+</pre></div>
+</div>
+<p>無視されるのは、あくまで、型指定子がクラス型ではなかった場合である。すでに説明したように、単純型指定子で、名前が見つからなかった場合は、エラーになる。</p>
+<p>friend関数の宣言は、通常通りの関数の宣言の文法に、friend指定子を記述する。前方宣言は必須ではない。friend関数には、&lt;a href=&#8221;#dcl.stc&#8221;&gt;ストレージクラス指定子&lt;/a&gt;を記述することはできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+    <span class="k">friend</span> <span class="kt">int</span> <span class="nf">g</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="k">friend</span> <span class="n">X</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span><span class="p">,</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>friend関数として宣言された関数がオーバーロードされていた場合でも、friend関数として宣言したシグネチャの関数しか、friendにはならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、void f(int)のみが、Xのfriend関数になる。void f(double)は、friend関数にはならない。</p>
+<p>他のクラスのメンバー関数も、friend関数として宣言できる。メンバー関数には、コンストラクターやデストラクターも含まれる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">X</span> <span class="p">;</span> <span class="c1">// 名前Xをクラス型として宣言</span>
+
+<span class="k">class</span> <span class="nc">Y</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// メンバー関数</span>
+    <span class="n">Y</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 代入演算子</span>
+    <span class="n">Y</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// コンストラクター</span>
+    <span class="o">~</span><span class="n">Y</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// デストラクター</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="c1">// 以下4行は、すべて正しいfriend宣言</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="n">Y</span><span class="o">::</span><span class="n">f</span><span class="p">(</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="k">friend</span> <span class="n">Y</span> <span class="o">&amp;</span> <span class="n">Y</span><span class="o">::</span><span class="k">operator</span> <span class="o">=</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="k">friend</span> <span class="n">Y</span><span class="o">::</span><span class="n">Y</span><span class="p">()</span> <span class="p">;</span>
+    <span class="k">friend</span> <span class="n">Y</span><span class="o">::~</span><span class="n">Y</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>friend宣言自体には、アクセス指定は適用されない。ただし、friend宣言の中でアクセスできない名前を使うことはできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Y</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// privateメンバー</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="c1">// エラー、Yのprivateメンバーにはアクセス出来ない</span>
+    <span class="c1">// friend宣言の中の名前の使用には、アクセス指定が影響する</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="n">Y</span><span class="o">::</span><span class="n">g</span><span class="p">()</span> <span class="p">;</span>
+
+<span class="c1">// アクセス指定は、friend宣言自体に影響を及ぼさない</span>
+<span class="c1">// 以下3行のfriend宣言に、アクセス指定は何の意味もなさない</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+<span class="k">protected</span> <span class="o">:</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="n">h</span><span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>Y::fはprivateメンバーなので、Xからはアクセスできない。Xのfriend宣言は、関数f, g, hを、Xのfriendとして宣言しているが、この宣言に、Xのアクセス指定は何の効果も与えない。</p>
+<p>friend宣言は、実は関数を定義することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 関数の定義</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>friend宣言で定義された関数は、クラスが定義されている名前空間スコープの関数になる。クラスのメンバー関数にはならない。ただし、friend宣言で定義された関数は、ADLを使わなければ、呼び出すことはできない。非修飾名前探索や、修飾名前探索で、関数名を参照する方法はない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// グローバル名前空間のスコープ</span>
+
+<span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="c1">// fはメンバー関数ではない</span>
+    <span class="c1">// クラスXの定義されているグローバル名前空間のスコープ内の関数</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">X</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="c1">// gはメンバー関数ではない</span>
+    <span class="c1">// gを呼び出す方法は存在しない</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="n">g</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、ADLによる名前探索</span>
+
+    <span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー、括弧がADLを阻害する。ADLが働かないので名前fが見つからない</span>
+    <span class="o">::</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー、名前fが見つからない</span>
+    <span class="n">g</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// エラー、名前gが見つからない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このように、通常の名前探索では関数名が見つからないという問題があるため、friend宣言内での関数定義は、行うべきではない。</p>
+<p>friendによって宣言された関数は、前方宣言されていない場合、外部リンケージを持つ。前方宣言されている場合、リンケージは前方宣言に従う。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kr">inline</span> <span class="kt">void</span> <span class="nf">g</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// 前方宣言、関数gは内部リンケージを持つ</span>
+
+<span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// 関数fは外部リンケージを持つ</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="nf">g</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// 関数gは内部リンケージを持つ</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 定義</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 外部リンケージ</span>
+<span class="kr">inline</span> <span class="kt">void</span> <span class="nf">g</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>friend宣言は、派生されることはない。また、あるクラスのfriendのfriendは、あるクラスのfriendではない。つまり、友達の友達は、友達ではない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">A</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="k">typedef</span> <span class="kt">int</span> <span class="n">type</span> <span class="p">;</span>
+    <span class="k">friend</span> <span class="k">class</span> <span class="nc">B</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">B</span>
+<span class="p">{</span>
+    <span class="c1">// OK、BはAのfriend</span>
+    <span class="k">typedef</span> <span class="n">A</span><span class="o">::</span><span class="n">type</span> <span class="n">type</span> <span class="p">;</span>
+
+    <span class="k">friend</span> <span class="k">class</span> <span class="nc">C</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">C</span>
+<span class="p">{</span>
+    <span class="c1">// エラー、BはAのfriendである。CはBのfriendである。</span>
+    <span class="c1">// Cは、Aからみて、friendのfriendにあたる。</span>
+    <span class="c1">// しかし、CはAのfriendではない。</span>
+    <span class="k">typedef</span> <span class="n">A</span><span class="o">::</span><span class="n">type</span> <span class="n">type</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">D</span> <span class="o">:</span> <span class="k">public</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="c1">// エラー、DはBから派生している。BはAのfriendである。</span>
+    <span class="c1">// しかし、DはAのfriendではない</span>
+    <span class="k">typedef</span> <span class="n">A</span><span class="o">::</span><span class="n">type</span> <span class="n">type</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ローカルクラスの中でfriend宣言で、非修飾名を使った場合、名前探索において、ローカルクラスの定義されている関数外のスコープは考慮されない。friend関数を宣言する場合、対象の関数はfriend宣言に先立って宣言されていなければならない。friendクラスを宣言する場合、クラス名はローカルクラスの名前であると解釈される。</p>
+<div class="highlight-c++"><pre>class A ; // ::A
+void B() ; // ::B
+
+void f()
+{
+    // 関数の前方宣言は関数内でも可能
+    void C( void ) ; // 定義は別の場所
+
+    class Y ; // ローカルクラスYの宣言
+
+    // ローカルクラスXの定義
+    class X
+    {
+        friend class A ; // OK、ただし、::Aではなく、ローカルクラスのA
+        friend class ::A ; // OK、::A
+        friend class Y ; // OK、ただしローカルクラスY
+
+        friend void B() ; // エラー、Bは宣言されていない。::Bは考慮されない
+        friend void C() ; // OK、関数内の前方宣言により名前を発見
+    } ;
+}</pre>
+</div>
+<p>friend宣言とテンプレートの組み合わせについては、&lt;a href=&#8221;#temp.friend&#8221;&gt;テンプレート宣言のfriend&lt;/a&gt;を参照。</p>
+</div>
+<div class="section" id="protected-protected-member-access">
+<h2>protectedメンバーアクセス（Protected member access）<a class="headerlink" href="#protected-protected-member-access" title="Permalink to this headline">¶</a></h2>
+<p>&lt;p class=&#8221;editorial-note&#8221;&gt;
+TODO:保留</p>
+</div>
+<div class="section" id="virtual-access-to-virtual-functions">
+<h2>virtual関数へのアクセス（Access to virtual functions）<a class="headerlink" href="#virtual-access-to-virtual-functions" title="Permalink to this headline">¶</a></h2>
+<p>virtual関数へのアクセスは、virtual関数の宣言によって決定される。virtual関数のオーバーライドには影響されない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Base</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Derived</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Base</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// Base::fをオーバーライド</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Derived</span> <span class="n">d</span> <span class="p">;</span>
+    <span class="n">d</span><span class="p">.</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// エラー、Derived::fはprivateメンバー</span>
+
+    <span class="n">Base</span> <span class="o">&amp;</span> <span class="n">ref</span> <span class="o">=</span> <span class="n">d</span> <span class="p">;</span>
+    <span class="n">ref</span><span class="p">.</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// OK、Derived::fを呼ぶ</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Derived::fはprivateメンバーなので、関数mainから呼び出すことはできない。しかし、Base::fはpublicメンバーである。Base::fはvirtual関数なので、呼び出す関数は、実行時のオブジェクトの型によって決定される。この時、オーバーライドしたvirtual関数のアクセス指定は、考慮されない。Base::fのアクセス指定のみが考慮される。この例では、関数mainから、Derived::fを直接呼び出すことはできないが、Baseへのリファレンスやポインターを経由すれば、呼び出すことができる。</p>
+<p>virtual関数呼び出しのアクセスチェックは、呼び出す際の式の型によって、静的に決定される。基本クラスでpublicメンバーとして宣言されているvirtual関数を、派生クラスでprotectedやprivateにしても、基本クラス経由で呼び出すことができる。</p>
+</div>
+<div class="section" id="multiple-access">
+<h2>複数のアクセス（Multiple access）<a class="headerlink" href="#multiple-access" title="Permalink to this headline">¶</a></h2>
+<p>多重派生によって、基本クラスのメンバーに対して、複数のアクセスパスが形成されている場合、アクセス可能なパスを経由してアクセスが許可される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Base</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">D1</span> <span class="o">:</span> <span class="k">private</span> <span class="k">virtual</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">class</span> <span class="nc">D2</span> <span class="o">:</span> <span class="k">public</span> <span class="k">virtual</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">Derived</span> <span class="o">:</span> <span class="k">public</span> <span class="n">D1</span><span class="p">,</span> <span class="k">public</span> <span class="n">D2</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Base</span><span class="o">::</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// OK、D2を経由してアクセスする</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>D1はBaseをprivate派生しているので、DerivedからD1経由では、Baseにアクセスできない。しかし、D2経由でアクセスできる。</p>
+</div>
+<div class="section" id="nested-classes">
+<h2>ネストされたクラス（Nested classes）<a class="headerlink" href="#nested-classes" title="Permalink to this headline">¶</a></h2>
+<p>ネストされたクラスも、クラスのメンバーであるので、他のメンバーとアクセス権限を持つ。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Outer</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="k">typedef</span> <span class="kt">int</span> <span class="n">type</span> <span class="p">;</span> <span class="c1">// privateメンバー</span>
+
+    <span class="k">class</span> <span class="nc">Inner</span>
+    <span class="p">{</span>
+        <span class="n">Outer</span><span class="o">::</span><span class="n">type</span> <span class="n">data</span> <span class="p">;</span> <span class="c1">// OK、InnerはOuterのメンバー</span>
+    <span class="p">}</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>OuterにネストされたクラスInnerは、Outerのメンバーなので、Outerのprivateメンバーにアクセスすることができる。</p>
+<p>ただし、ネストされたクラスをメンバーとして持つクラスは、ネストされたクラスに対して、特別なアクセス権限は持たない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Outer</span>
+<span class="p">{</span>
+    <span class="k">class</span> <span class="nc">Inner</span>
+    <span class="p">{</span>
+    <span class="k">private</span> <span class="o">:</span>
+        <span class="k">typedef</span> <span class="kt">int</span> <span class="n">type</span> <span class="p">;</span> <span class="c1">// privateメンバー</span>
+    <span class="p">}</span> <span class="p">;</span>
+
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Inner</span><span class="o">::</span><span class="n">type</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー、Inner::typeはprivateメンバー</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、Outerは、Innerのprivateメンバーにはアクセスできない。</p>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="special.html" title="特別なメンバー関数（Special member functions）"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="class.derived.html" title="派生クラス（Derived classes）"
+             >previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ezoe Ryou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

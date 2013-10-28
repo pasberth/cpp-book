@@ -1,0 +1,1062 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>基本事項（Basic concepts） &mdash; C++11: Syntax and Feature</title>
+    
+    <link rel="stylesheet" href="_static/cpp-book.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="C++11: Syntax and Feature" href="index.html" />
+    <link rel="next" title="標準型変換（Standard conversions）" href="conv.html" />
+    <link rel="prev" title="字句規約（Lexical conventions）" href="lex.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="conv.html" title="標準型変換（Standard conversions）"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="lex.html" title="字句規約（Lexical conventions）"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="basic-concepts">
+<h1>基本事項（Basic concepts）<a class="headerlink" href="#basic-concepts" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="declarations-and-definitions">
+<h2>宣言と定義（Declarations and definitions）<a class="headerlink" href="#declarations-and-definitions" title="Permalink to this headline">¶</a></h2>
+<p>C++には、名前という概念が存在する。変数や関数、クラス等には、名前をつけられる。名前を使うには、必ず、あらかじめ、その名前が宣言されていなければならない。</p>
+<div class="section" id="declaration-definition">
+<h3>宣言（Declaration）と定義（Definition）の違い<a class="headerlink" href="#declaration-definition" title="Permalink to this headline">¶</a></h3>
+<p>宣言とは、ある名前が、その翻訳単位で、何を意味するのかということを、明示するためにある。</p>
+<p>定義とは、名前の指し示すものを、具体的に記述することである。宣言と定義は、多くの場合、同時に行われることが多いので、あまり意識しづらい。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// これは関数の宣言</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="c1">// これは関数の宣言と定義</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>以下の例は、関数を宣言だけして、具体的な定義をせずに、使っている。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 関数の宣言</span>
+<span class="kt">int</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>これは、問題がない。なぜならば、関数を使うには、引数や戻り値の型などが決まってさえいればよいからだ。この場合、その関数を指し示す名前として、fが使われている。この関数 int f( int )の、具体的な実装、つまり、「定義」は、同じ翻訳単位になくても構わない。つまり、int f( int )は、別のソースコードで定義されているかもしれない。</p>
+</div>
+<div class="section" id="id1">
+<h3>定義ではない宣言<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>&lt;p class=&#8221;editorial-note&#8221;&gt;
+TODO: FDIS後に変更される。</p>
+<p>すべての定義は、宣言である。宣言は、定義ではない場合もある。定義ではない宣言は、以下の通りである。</p>
+<blockquote>
+<div>関数宣言で、関数の本体がない場合。</div></blockquote>
+<hr class="docutils" />
+<div class="highlight-c++"><pre> // 宣言
+ void f( int ) ;
+
+ // 宣言と定義
+ void f ( int )  { }
+
+
+
+
+extern指定子を使っていて、初期化子も、関数の本体も記述されていない宣言。</pre>
+</div>
+<hr class="docutils" />
+<div class="highlight-c++"><pre> // 宣言
+ extern int x ;
+
+ // 宣言と定義
+ int x ;
+
+
+
+
+リンケージ指定されていて、初期化子も、関数の本体も記述されていない宣言。ただし、{}の中の宣言には、影響しない。</pre>
+</div>
+<hr class="docutils" />
+<div class="highlight-c++"><pre> // 宣言
+ extern "C" void f() ;
+
+
+ extern "C"
+ {
+ // これは、宣言と定義
+     void f() { }
+     int x ;
+
+ // 宣言
+     void g() ;
+     extern int y ;
+ }
+
+
+
+
+クラス名の宣言。</pre>
+</div>
+<hr class="docutils" />
+<div class="highlight-c++"><pre> // クラス名の宣言
+ class C ;
+
+ // クラスの宣言と定義
+ class C { } ;
+
+
+
+
+クラス定義の中の、staticなデータメンバーの宣言。</pre>
+</div>
+<hr class="docutils" />
+<div class="highlight-c++"><pre> class C
+ {
+ // 宣言
+     static int x ;
+ } ;
+
+ // 定義
+ int C::x ;
+
+
+
+
+enum名の宣言</pre>
+</div>
+<hr class="docutils" />
+<div class="highlight-c++"><pre> // 宣言
+ enum E ;
+
+ // 宣言と定義
+ enum E { up, down } ;
+
+
+
+
+typedef宣言</pre>
+</div>
+<hr class="docutils" />
+<div class="highlight-c++"><pre> // 宣言
+ typedef int type ;
+
+
+
+
+using宣言と、usingディレクティブ</pre>
+</div>
+<hr class="docutils" />
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(){}</span> <span class="p">}</span>
+
+<span class="c1">// 宣言</span>
+<span class="k">using</span> <span class="n">NS</span><span class="o">::</span><span class="n">f</span> <span class="p">;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">NS</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>また、static_assert宣言、アトリビュート宣言、空宣言は、定義ではない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">static_assert</span><span class="p">(</span> <span class="nb">true</span><span class="p">,</span> <span class="s">&quot;&quot;</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 宣言</span>
+<span class="p">[[</span> <span class="p">]]</span> <span class="p">;</span> <span class="c1">// 宣言</span>
+ <span class="p">;</span> <span class="c1">// 宣言</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="odr-one-definition-rule">
+<h2>ODR（One definition rule）<a class="headerlink" href="#odr-one-definition-rule" title="Permalink to this headline">¶</a></h2>
+<p>ODR（One definition rule）とは、定義は原則として、ひとつしか書けないというルールである。</p>
+<p>多くの場合、同じ宣言は、いくつでも書ける。ただし、変数、関数、クラス型、enum型、テンプレートの、同じ定義は、ひとつしか書くことができない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 同じ宣言はいくつでも書ける。</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span>
+
+<span class="c1">// 定義はひとつしか書けない。</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="c1">// エラー、定義が重複している</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>定義は、プログラムのすべての翻訳単位で、一つでなければならない。なぜ定義はひとつしか書けないのか。定義が複数あると、問題があるからだ。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 定義が二つある。</span>
+<span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="c1">// どっちのx？</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+
+<span class="c1">// 定義が二つある</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="c1">// どっちのf()？</span>
+<span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>このような問題を防ぐために、定義は、原則として一つでなければならないとされている。</p>
+<p>原則としてというのは、例外があるのだ。もし、本当に、定義を一箇所でしか書けないと、困ることがある。たとえば、クラスだ。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 翻訳単位1 A.cpp</span>
+<span class="c1">// 定義</span>
+<span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">C</span> <span class="n">c</span> <span class="p">;</span> <span class="c1">// OK</span>
+</pre></div>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 翻訳単位2 B.cpp</span>
+<span class="c1">// 宣言</span>
+<span class="k">struct</span> <span class="n">C</span> <span class="p">;</span>
+
+<span class="n">C</span> <span class="n">c</span> <span class="p">;</span> <span class="c1">// エラー</span>
+</pre></div>
+</div>
+<p>翻訳単位2で、クラスCの変数を定義するためには、クラスCは、定義されていなければならない。しかし、すでに、別の翻訳単位で、定義は書かれている。B.cppにも定義を書いてしまうと、ODRに違反する。これは一体、どうすればいいのか。</p>
+<p>このため、C++では、クラス型、enum型、外部リンケージを持つインライン関数、クラステンプレート、外部リンケージを持つ関数テンプレート、クラステンプレートのstaticデータメンバー、クラステンプレートのメンバー関数、具体的な型を完全に指定していないテンプレートの特殊化に限り、ある条件を満たせば、別の翻訳単位での、定義の重複を認めている。ある条件とは何か。これには、大きく分けて、二つある。</p>
+<blockquote>
+<div>同じ定義のソースコードは、全く同じトークン列であること。</div></blockquote>
+<hr class="docutils" />
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 翻訳単位1 A.cpp</span>
+<span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 翻訳単位2 B.cpp</span>
+<span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span><span class="c1">// エラー。</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ここで、翻訳単位2に、public :があろうとなかろうと、意味は変わらない。しかし、全く同じトークン列ではないので、このプログラムはエラーである。</p>
+<p>全く同じ複数の定義を管理するのは、極めて困難である。そのため、このように翻訳単位ごとに定義しなければならないクラスやテンプレートは、通常、ヘッダーファイルに記述して、必要な翻訳単位ごとに、#includeされる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// ヘッダーファイル C.h</span>
+<span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 翻訳単位1 A.cpp</span>
+<span class="cp">#include &quot;C.h&quot;</span>
+
+<span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-c++"><pre> // 翻訳単位2 B.cpp
+ #include "C.h"
+
+ C c ;
+
+
+
+
+定義の意味が、プログラム中のすべての翻訳単位で、同じであること。</pre>
+</div>
+<hr class="docutils" />
+<p>定義のソースコードが、全く同じトークン列であるからといって、意味も同じであるとは限らない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// ヘッダーファイル C.h</span>
+<span class="k">class</span> <span class="nc">C</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">member</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">f</span><span class="p">()</span> <span class="p">;</span><span class="c1">// fという名前の、何らかの関数を呼び出す。</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>このクラス、Cは、member()というメンバー関数で、f()という関数を呼び出している。では、このクラスを使うコードが、以下のようであれば、どうなるか。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 翻訳単位1 A.cpp</span>
+
+<span class="k">namespace</span> <span class="n">A</span>
+<span class="p">{</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{}</span> <span class="p">}</span>
+
+<span class="c1">// f()はA::f()を呼び出す</span>
+<span class="k">using</span> <span class="n">A</span><span class="o">::</span><span class="n">f</span> <span class="p">;</span>
+
+<span class="cp">#include &quot;C.h&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 翻訳単位2 B.cpp</span>
+
+<span class="k">namespace</span> <span class="n">B</span>
+<span class="p">{</span> <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">{}</span> <span class="p">}</span>
+
+<span class="c1">// f()はB::f()を呼び出す</span>
+<span class="k">using</span> <span class="n">B</span><span class="o">::</span><span class="n">f</span> <span class="p">;</span>
+
+<span class="cp">#include &quot;C.h&quot;</span>
+</pre></div>
+</div>
+<p>ヘッダーファイルによって、クラスCのソースコードのトークン列は、全く同じなのに、この例では、呼び出す関数が翻訳単位ごとに変わってしまう。このようなコードはエラーである。プログラム中の同じ定義は、必ず同じ意味でなければならない。</p>
+</div>
+<div class="section" id="scope">
+<h2>スコープ（Scope）<a class="headerlink" href="#scope" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="declarative-regions-and-scopes">
+<h3>宣言領域とスコープ（Declarative regions and scopes）<a class="headerlink" href="#declarative-regions-and-scopes" title="Permalink to this headline">¶</a></h3>
+<p>宣言された名前には、その名前が有効に使える範囲が存在する。これを、宣言範囲（declarative region）、スコープ（scope）という。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span>
+
+    <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">z</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="c1">// ここではもう、zは使えない。</span>
+<span class="p">}</span>
+<span class="c1">// ここではもう、yは使えない。</span>
+
+<span class="c1">// xは、ここでも使える。</span>
+</pre></div>
+</div>
+<p>ある名前は、スコープの中ならば、必ず同じ意味であるとは限らない。名前は上書きされる場合がある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span><span class="c1">// ブロック1</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// #1</span>
+    <span class="p">{</span><span class="c1">// ブロック2</span>
+        <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">//#2</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// #2が使われる。</span>
+    <span class="p">}</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// #1が使われる。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、ブロック1で宣言されたxは、ブロック2では、別の変数を指し示すxに、隠されている。</p>
+<p>このように、スコープがネストする場合、外側のスコープの名前が、内側のスコープの名前に隠されてしまうことがある。</p>
+</div>
+<div class="section" id="point-of-declaration">
+<h3>宣言場所（Point of declaration）<a class="headerlink" href="#point-of-declaration" title="Permalink to this headline">¶</a></h3>
+<p>スコープには、いくつもの種類がある。これを詳しく説明する前に、まず、宣言された名前は、どこから有効なのかということを、明らかにしておかなければならない。この、名前が有効になる始まりの場所を、宣言場所（Point of declaration）という。名前は、宣言のすぐ直後から有効になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="p">;</span><span class="c1">// 宣言場所</span>
+<span class="c1">// ここから、xが使える。</span>
+</pre></div>
+</div>
+<p>宣言場所は、初期化子よりも、前である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="cm">/*ここから名前xは有効*/</span> <span class="o">=</span> <span class="n">x</span>  <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、xという変数を宣言して、その変数の値で初期化している。このコードに実用的な意味はない。初期化子の中から、宣言された名前は使えるということを示すためだけの例である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// エラー</span>
+<span class="kt">int</span> <span class="n">x</span><span class="p">[</span><span class="n">x</span><span class="cm">/*ここでは、まだxは未定義*/</span><span class="p">]</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例は、エラーである。なぜなら、配列の要素数を指定する場所では、xは、まだ定義されていないからだ。これらの例は、通常は気にすることはない、些細な詳細である。一般に、宣言文のすぐ後から使えると考えておけばいい。</p>
+</div>
+<div class="section" id="block-scope">
+<h3>ブロックスコープ（Block scope）<a class="headerlink" href="#block-scope" title="Permalink to this headline">¶</a></h3>
+<p>&lt;a href=&#8221;#stmt.block&#8221;&gt;ブロック&lt;/a&gt;のスコープは、そのブロックの中である。これを、ブロックスコープと呼ぶ。よく、ローカル変数と呼んでいるものは、ブロックスコープの中で宣言された変数のことである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span><span class="c1">// ブロック1</span>
+<span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="p">{</span><span class="c1">// ブロック2</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="p">;</span>
+        <span class="p">{</span><span class="c1">// ブロック3</span>
+        <span class="kt">int</span> <span class="n">z</span> <span class="p">;</span>
+        <span class="c1">// x, y, zが使える</span>
+        <span class="p">}</span>
+    <span class="c1">// x, yが使える。</span>
+    <span class="p">}</span>
+<span class="c1">// xが使える。</span>
+<span class="p">}</span>
+
+<span class="c1">// ここで使える変数名はない。</span>
+</pre></div>
+</div>
+<p>ブロックはネストできるので、ネストされたブロックの中で、外側のスコープと同じ名前の変数を使いたい場合は、注意が必要である。</p>
+<div class="highlight-c++"><pre>void f()
+{
+    int x ;
+    {
+        int x ;　// 外側のスコープのxは隠される。
+    }
+}</pre>
+</div>
+<p>関数の仮引数名は、関数本体の一番上のブロックスコープの終わりまで、有効である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">)</span>
+<span class="p">{</span>
+
+<span class="c1">//xはここまで有効</span>
+<span class="p">}</span>
+<span class="c1">// これ以降、xは使えない。</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="function-prototype-scope">
+<h3>関数プロトタイプのスコープ（Function prototype scope）<a class="headerlink" href="#function-prototype-scope" title="Permalink to this headline">¶</a></h3>
+<p>関数のプロトタイプ宣言にも、スコープがある。関数のプロトタイプ宣言のスコープは、その宣言の終わりまでである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">auto</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">decltype</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、仮引数の名前が、decltypeに使われている。</p>
+</div>
+<div class="section" id="function-scope">
+<h3>関数のスコープ（Function scope）<a class="headerlink" href="#function-scope" title="Permalink to this headline">¶</a></h3>
+<p>ブロックスコープではなく、関数自体にも、関数のスコープが存在する。これは、ある関数全体のスコープである。ただし、この関数のスコープが適用されるのは、ラベル名だけである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="p">{</span>
+        <span class="n">label</span> <span class="o">:</span> <span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">goto</span> <span class="n">label</span> <span class="p">;</span><span class="c1">// labelは、ここでも有効</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このように、ラベル名には、関数のスコープが適用される。</p>
+</div>
+<div class="section" id="namespace-scope">
+<h3>名前空間のスコープ（Namespace scope）<a class="headerlink" href="#namespace-scope" title="Permalink to this headline">¶</a></h3>
+<p>名前空間のスコープというのは、少しややこしい。まず、名前空間の本体は、もちろんスコープである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="c1">// xが使える。</span>
+<span class="p">}</span>
+<span class="c1">// ここでは、xは使えない。</span>
+</pre></div>
+</div>
+<p>この、名前空間の中の名前（上の例では、x）を、名前空間のメンバー名という。メンバー名のスコープは、名前空間の終わりまでである。</p>
+<p>ところが、名前空間の本体の定義は、複数書くことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="c1">// xが使える。</span>
+<span class="p">}</span>
+<span class="c1">// ここでは、xは使えない。</span>
+
+
+<span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="c1">// ここでも、xが使える。</span>
+    <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>メンバー名は、その宣言された場所から、後続するすべての同名の名前空間の中で使うことができる。この例の場合、二つめの名前空間NSの定義の中でも、一つめの名前空間NSの定義で宣言されたメンバー名である、xを使うことができる。</p>
+<p>名前空間のメンバーは、スコープ解決演算子、::を使って、参照することもできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 名前空間NSの、typeという名前を参照している。</span>
+<span class="n">NS</span><span class="o">::</span><span class="n">type</span> <span class="n">x</span> <span class="p">;</span>
+</pre></div>
+</div>
+<div class="section" id="global-namespace">
+<h4>グローバル名前空間（Global namespace）<a class="headerlink" href="#global-namespace" title="Permalink to this headline">¶</a></h4>
+<p>翻訳単位の、一番上の、namespaceで囲まれていない場所も、一種の名前空間として扱われる。これは、グローバル名前空間と呼ばれている。グローバル名前空間で定義された名前は、グローバル名前空間のスコープに入る。これは、グローバルスコープとも呼ばれている。グローバル名前空間のスコープは、翻訳単位の終わりまでである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// グローバル名前空間</span>
+<span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+
+<span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span><span class="c1">// 名前空間、NS</span>
+
+<span class="p">}</span>
+
+<span class="c1">// ここは、グローバル名前空間</span>
+
+<span class="k">namespace</span>
+<span class="p">{</span><span class="c1">// 無名名前空間</span>
+
+<span class="p">}</span>
+
+<span class="c1">// ここも、グローバル名前空間</span>
+
+<span class="c1">// xの範囲は、翻訳単位の終わりまで続く。</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="class-scope">
+<h3>クラスのスコープ（Class scope）<a class="headerlink" href="#class-scope" title="Permalink to this headline">¶</a></h3>
+<p>&lt;p class=&#8221;editorial-note&#8221;&gt;
+TODO: rewrite.</p>
+<p>クラスのスコープは、少し変わっている。ブロックスコープなどは、名前の有効な範囲は、名前を宣言した場所から、スコープの終わりまでである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="c1">// ここでは、xは使えない。</span>
+
+<span class="kt">int</span> <span class="n">x</span> <span class="p">;</span><span class="c1">// xを宣言</span>
+
+<span class="c1">// ここでは、xを使える。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスでは、これが変わっている。</p>
+<p>先に、名前が宣言されていなくても、クラス内の関数からは、その名前を使うことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">C</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+    <span class="p">{</span><span class="c1">// 関数の中で、名前を使うことができる。</span>
+        <span class="n">type</span> <span class="n">x</span> <span class="p">;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">type</span> <span class="n">y</span> <span class="p">;</span>    <span class="c1">// エラー。typeは宣言されていない。</span>
+
+    <span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">;</span>  <span class="c1">// typeの宣言場所</span>
+
+    <span class="n">type</span> <span class="n">z</span> <span class="p">;</span> <span class="c1">// OK</span>
+
+    <span class="kt">int</span> <span class="n">value</span> <span class="p">;</span>         <span class="c1">// valueの宣言場所</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>また、クラスのメンバー関数を、クラスの外部で定義する場合でも、その関数の中から、クラス内で宣言された名前を使うことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">C</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="n">C</span><span class="o">::</span><span class="n">f</span><span class="p">()</span>
+<span class="p">{</span><span class="c1">// クラス外部で定義されたメンバー関数の中で、クラス内で宣言された名前を使える。</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>その他にも、クラス内の名前を、クラス外で使うことができる場合が存在する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">C</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="n">C</span> <span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">c</span> <span class="p">;</span>
+    <span class="c1">// クラスのメンバーアクセス演算子の後に続けて、名前を使える。</span>
+    <span class="n">c</span><span class="p">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">p</span><span class="o">-&gt;</span><span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+
+    <span class="c1">// スコープ解決演算子の後に続けて、名前を使える。</span>
+    <span class="n">C</span><span class="o">::</span><span class="n">type</span> <span class="n">value</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このように、クラススコープの名前は、宣言した場所から、ある区間まで有効というルールではない。このため、クラスのスコープには特別なルールがある。</p>
+<ul class="simple">
+<li>クラスのメンバーの宣言が全てわかったあとに、クラス宣言を再評価して、プログラムの意味が変わるとエラー</li>
+<li>クラス内のメンバーの宣言の順番を変えた際に、プログラムの意味が変わると、エラー</li>
+</ul>
+<p>これは、例をあげて説明したほうが分かりやすい。今仮に、このルールがないものとする。とすると、以下のようなコードが書けてしまう。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// コード1</span>
+<span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">;</span><span class="c1">// #1</span>
+
+<span class="k">class</span> <span class="nc">C</span>
+<span class="p">{</span>
+    <span class="n">type</span> <span class="n">x</span> <span class="p">;</span><span class="c1">// このtypeは、#1の::type</span>
+    <span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">float</span> <span class="p">;</span><span class="c1">// #2</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>クラスCの宣言の順番を変えると、以下のコードになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// コード2</span>
+<span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">;</span><span class="c1">// #1</span>
+
+<span class="k">class</span> <span class="nc">C</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">float</span> <span class="p">;</span><span class="c1">// #2</span>
+    <span class="n">type</span> <span class="n">x</span> <span class="p">;</span><span class="c1">// このtypeは、#2の、C::type</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>このように、メンバーの宣言の順番を変えることによって、プログラムの意味が変わってしまうと、意図せぬバグを生む原因となる。そのため、このようなコードは、エラーである。</p>
+</div>
+<div class="section" id="enum-enumeration-scope">
+<h3>enumのスコープ（Enumeration scope）<a class="headerlink" href="#enum-enumeration-scope" title="Permalink to this headline">¶</a></h3>
+<p>scoped enumは、enumスコープ（enumeration scope）を持つ。このスコープの範囲は、enumの宣言内だけである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">enum</span> <span class="k">class</span> <span class="nc">E</span> <span class="p">{</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">//ここで、x, y, zは使えない。</span>
+<span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="n">E</span><span class="o">::</span><span class="n">x</span> <span class="p">;</span><span class="c1">// OK</span>
+</pre></div>
+</div>
+<p>この理由は、scoped enumは、強い型付けを持つenumだからだ。詳しくは、&lt;a href=&#8221;#dcl.enum&#8221;&gt;enum&lt;/a&gt;を参照のこと。</p>
+</div>
+<div class="section" id="template-parameter-scope">
+<h3>テンプレート仮引数のスコープ（Template Parameter Scope）<a class="headerlink" href="#template-parameter-scope" title="Permalink to this headline">¶</a></h3>
+<p>テンプレート仮引数にも、スコープがある。テンプレート仮引数のスコープは、それほど意識する必要はない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span>
+<span class="k">typename</span> <span class="n">T</span><span class="p">,</span> <span class="c1">// これ以降、Tを使える。</span>
+<span class="k">typename</span> <span class="n">U</span> <span class="o">=</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">C</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span><span class="c1">// テンプレート仮引数のスコープ、ここまで</span>
+</pre></div>
+</div>
+<p>ただし、テンプレート仮引数名は、基本的に、隠すことができない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">C</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="n">T</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">;</span> <span class="c1">// エラー</span>
+
+    <span class="c1">// エラー</span>
+    <span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>「基本的に」というのは、隠すことができる場合も存在するからだ。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span><span class="p">{</span> <span class="k">using</span> <span class="n">T</span> <span class="o">=</span> <span class="n">type</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="n">T</span> <span class="n">x</span> <span class="p">;</span><span class="c1">// Base::Tが使われる。テンプレート仮引数ではない。</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>といっても、これはよほど特殊な例であり、通常は、テンプレート仮引数名は、隠せないと考えても、問題はない。</p>
+</div>
+<div class="section" id="name-hiding">
+<h3>名前隠し（Name hiding）<a class="headerlink" href="#name-hiding" title="Permalink to this headline">¶</a></h3>
+<p>ネストされたスコープの内側で、同じ名前が宣言されると、外側の名前は、隠される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span><span class="c1">// 外側のスコープ</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="p">{</span><span class="c1">// 内側のスコープ</span>
+        <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span><span class="c1">// 外側のスコープのxを隠す。</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 内側のx</span>
+    <span class="p">}</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 外側のx</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>派生クラスでは、基本クラスの名前は隠される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">char</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span>
+<span class="p">{</span>
+    <span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">;</span>
+
+    <span class="n">type</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// int</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>クラスやenumの名前は、変数やデータメンバーの名前によって、隠される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ClassName</span> <span class="p">{}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">ClassName</span> <span class="n">ClassName</span> <span class="p">;</span> <span class="c1">// OK、ClassName型の変数、ClassName</span>
+
+    <span class="n">ClassName</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー、ClassNameは、ここでは変数名を指す。</span>
+
+    <span class="k">class</span> <span class="nc">ClassName</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// OK、明示的にクラス名であると指定している。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このように、クラス名と変数名を同じにするのは、非常に分かりにくい問題を引き起こすので、あまりおすすめできない。</p>
+</div>
+</div>
+<div class="section" id="name-lookup">
+<h2>名前探索（Name lookup）<a class="headerlink" href="#name-lookup" title="Permalink to this headline">¶</a></h2>
+<p>あるスコープにおいて、ある名前が使われているとき、その名前が何を意味するのかということを決定するのを、名前探索（Name lookup）と呼ぶ。これは一見簡単そうに思える。しかし、この名前を決定するというルールは、非常に難しい。</p>
+<p>Name lookupには、大きく分けて、三種類ある。Qualified name lookup、Unqualified name lookup、Argument-dependent name lookupだ。</p>
+<div class="section" id="qualified-qualified-name-lookup">
+<h3>Qualified 名前探索（Qualified name lookup）<a class="headerlink" href="#qualified-qualified-name-lookup" title="Permalink to this headline">¶</a></h3>
+<p>Qualified nameとは、qualified（修飾）という名前通り、スコープ解決演算子（::）を使った名前のことである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">g</span> <span class="p">;</span>
+
+<span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">C</span> <span class="p">{</span> <span class="k">static</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;}</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="n">C</span><span class="o">::</span><span class="n">x</span> <span class="p">;</span>
+
+<span class="k">enum</span> <span class="k">struct</span> <span class="n">E</span> <span class="p">{</span> <span class="n">e</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// これらはQualified name lookup</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// NSという名前空間のx</span>
+    <span class="n">C</span><span class="o">::</span><span class="n">x</span> <span class="p">;</span>  <span class="c1">// Cというクラスのx</span>
+    <span class="n">E</span><span class="o">::</span><span class="n">e</span> <span class="p">;</span> <span class="c1">// Eというenumのメンバー、e</span>
+    <span class="o">::</span><span class="n">g</span> <span class="p">;</span>   <span class="c1">// グローバル名前空間のg</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このような名前に対する名前探索を、Qualified name lookupという。</p>
+<p>スコープ解決演算子（::）の左側には、クラス名か、名前空間名か、enum名を書くことができる。左側に何も書かない場合、グローバル名前空間が使われる。Qualified name lookupでは、名前は、スコープ解決演算子で指定された、クラスや名前空間、enum内の名前から、探索される。</p>
+<p>スコープ解決演算子は、ネストできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">N1</span> <span class="p">{</span> <span class="k">namespace</span> <span class="n">N2</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">}</span>
+
+<span class="n">N1</span><span class="o">::</span><span class="n">N2</span><span class="o">::</span><span class="n">x</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="unqualified-unqualified-name-lookup">
+<h3>Unqualified 名前探索（Unqualified name lookup）<a class="headerlink" href="#unqualified-unqualified-name-lookup" title="Permalink to this headline">¶</a></h3>
+<p>Unqualified（非修飾） name lookupは、Qualified name lookup以外を指す。これはつまり、スコープ解決演算子を使わない名前に対する、名前探索である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">g</span> <span class="p">;</span>
+
+<span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">g</span> <span class="p">;</span><span class="c1">// グローバル変数のg</span>
+
+    <span class="kt">int</span> <span class="n">g</span> <span class="p">;</span>
+    <span class="n">g</span> <span class="p">;</span><span class="c1">// ローカル変数のg</span>
+
+    <span class="p">{</span>
+        <span class="k">using</span> <span class="k">namespace</span> <span class="n">NS</span> <span class="p">;</span>
+        <span class="n">x</span> <span class="p">;</span> <span class="c1">// NS::xと同じ</span>
+    <span class="p">}</span>
+
+    <span class="p">{</span>
+        <span class="k">using</span> <span class="n">NS</span><span class="o">::</span><span class="n">x</span> <span class="p">;</span>
+        <span class="n">x</span> <span class="p">;</span> <span class="c1">// NS::xと同じ</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Unqualified nameに対する名前探索を、Unqualified name lookupという。Unqualified name lookupでは、その名前が使われている場所で、明示的に修飾しなくても、見つかる名前が探される。これは、例えばグローバル名前空間内の名前であったり、クラス内であれば、クラスのメンバーであったりする。また、using directiveや、using declarationの影響をうける。</p>
+</div>
+<div class="section" id="adl-argument-dependent-name-lookup">
+<h3>ADL（Argument-dependent name lookup）<a class="headerlink" href="#adl-argument-dependent-name-lookup" title="Permalink to this headline">¶</a></h3>
+<p>Unqualified nameに対して、関数呼び出しをする場合、特別なルールがある。このルールを、ADL(Argument-dependent name lookup)という。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">class</span> <span class="nc">C</span> <span class="p">{}</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">C</span> <span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span><span class="c1">// NS::fを呼ぶ</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このコードでは、通常は見つからないはずの、NSという名前空間内の関数であるfが、Unqualified nameなのにもかかわらず、見つかる。これを、実引数に依存する名前探索（Argument-dependent name lookup）と呼ぶ。しばしば、ADLと略される。また、Andrew Koenigさんが、名前空間の導入によって、特に演算子のオーバーロードで、ADLのような必要性を意見したため、koenig lookupとも呼ばれることがある。Andrew Koenigさんが、ADLの具体的な仕組みを考案したわけではない。誰がADLの原案を考えだしたのかは、歴史に埋もれて忘れ去られているが、そのような歴史的な経緯と誤解により、Koenig lookupと呼ばれている。</p>
+<p>このADLというルールは、一見すると、非常に奇妙なルールである。このような仕組みは、非常に厄介な問題を引き起こすのではないか。事実、ADLは時として、問題になることがある。それでもADLが存在するのは、利点があるからだ。</p>
+<p>整数を表現するクラス、Integerを考える。名前の衝突を防ぐため、このクラスは、libという名前空間の中に入れたい。また、整数として分かりやすく使うために、演算子をオーバーロードしたい。Integerクラスは、以下のように使えるものとする。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">lib</span><span class="o">::</span><span class="n">Integer</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="c1">// 演算子のオーバーロードによる、分かりやすい加算のコード。</span>
+    <span class="n">x</span> <span class="o">+</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>さっそく、このIntegerを実装してみよう。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">lib</span>
+<span class="p">{</span>
+    <span class="c1">// クラス</span>
+    <span class="k">class</span> <span class="nc">Integer</span> <span class="p">{</span><span class="cm">/*実装*/</span><span class="p">}</span> <span class="p">;</span>
+    <span class="c1">// 演算子のオーバーロード</span>
+    <span class="n">Integer</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">Integer</span> <span class="k">const</span> <span class="o">&amp;</span><span class="p">,</span> <span class="n">Integer</span> <span class="k">const</span> <span class="o">&amp;</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// 実装</span>
+        <span class="k">return</span> <span class="n">Integer</span><span class="p">()</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>もしここで、ADLがない場合、operator +()の呼び出しが、困ったことになる。なぜなら、Unqualified lookupでは、lib名前空間の中の名前を探してはくれない。つまり、operator +は、見つからないのである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">lib</span><span class="o">::</span><span class="n">Integer</span> <span class="n">x</span> <span class="p">;</span>
+<span class="c1">// エラー、operator + が見つからない。</span>
+<span class="n">x</span> <span class="o">+</span> <span class="n">x</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ではどうするか。これは、Qualified lookupを使うしかない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">lib</span><span class="o">::</span><span class="k">operator</span> <span class="o">+</span><span class="p">(</span> <span class="n">x</span><span class="p">,</span> <span class="n">x</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>このコードは動く。確かに動くが、これでは、せっかく演算子をオーバーロードした意味がない。そもそも、演算子をオーバーロードする理由とは、x + x という、分かりやすい使い慣れたコードを書くためだからだ。</p>
+<p>このため、Unqualified nameに対する、関数呼び出しには、Unqualified name lookupに加えて、ADLという仕組みで、名前が探索されるようになっている。</p>
+<div class="section" id="id2">
+<h4>関連クラスと関連名前空間<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>ADLは、その名前が示すとおり、「実引数に依存する名前解決」である。どの名前空間から、名前を探すかということは、実引数の型から決定される。また、ADLは、必ず行われるわけではない。ADLが適用される条件というものが存在する。</p>
+<p>ADLはどのように行われるか。まず、関数に対する、関連クラス（Associated class）と、関連名前空間（Associated namespace）というものが決定される。ADLは、この関連名前空間の中から、名前を探索する。</p>
+<p>関連クラスとは、関数に実引数として渡される型である。関連名前空間とは、関連クラスがメンバーとなっている名前空間である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">class</span> <span class="nc">A</span> <span class="p">{}</span> <span class="p">;</span> <span class="k">class</span> <span class="nc">B</span> <span class="p">{}</span> <span class="p">;</span> <span class="k">class</span> <span class="nc">C</span> <span class="p">{}</span> <span class="p">;</span> <span class="k">class</span> <span class="nc">D</span> <span class="p">{}</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span> <span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">A</span> <span class="n">a</span> <span class="p">;</span> <span class="n">NS</span><span class="o">::</span><span class="n">B</span> <span class="n">b</span> <span class="p">;</span> <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="n">c</span> <span class="p">;</span> <span class="n">NS</span><span class="o">::</span><span class="n">D</span> <span class="n">d</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合、fの関数呼び出しに対する関連クラスは、A、B、C、Dで、関連名前空間は、NSとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">A</span> <span class="p">{</span> <span class="k">class</span> <span class="nc">C</span> <span class="p">{}</span> <span class="p">;</span> <span class="p">}</span>
+<span class="k">namespace</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="k">class</span> <span class="nc">C</span> <span class="p">{}</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">A</span><span class="o">::</span><span class="n">C</span><span class="p">,</span> <span class="n">B</span><span class="o">::</span><span class="n">C</span> <span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">A</span><span class="o">::</span><span class="n">C</span> <span class="n">ac</span> <span class="p">;</span> <span class="n">B</span><span class="o">::</span><span class="n">C</span> <span class="n">bc</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">ac</span><span class="p">,</span> <span class="n">bc</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合、fの関数呼び出しに対する関連クラスは、A::C、B::Cで、関連名前空間は、A、Bとなる。</p>
+<p>実引数の型のクラスの、基本クラスも、関連クラスになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">class</span> <span class="nc">A</span> <span class="p">{}</span> <span class="p">;</span>
+    <span class="k">class</span> <span class="nc">B</span> <span class="o">:</span> <span class="n">A</span> <span class="p">{}</span> <span class="p">;</span>
+    <span class="k">class</span> <span class="nc">C</span> <span class="o">:</span> <span class="n">B</span> <span class="p">{}</span> <span class="p">;</span>
+
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">C</span> <span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">c</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合、関数NS::fに対する関連クラスは、A、B、Cで、関連名前空間は、NSとなる。</p>
+<p>実引数がクラステンプレートであった場合、そのクラスのテンプレート実引数も、関連クラスになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span> <span class="k">class</span> <span class="nc">C</span> <span class="p">{}</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">namespace</span> <span class="n">lib</span>
+<span class="p">{</span>
+    <span class="k">class</span> <span class="nc">type</span> <span class="p">{}</span> <span class="p">;</span>
+
+    <span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">NS</span><span class="o">::</span><span class="n">C</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">C</span><span class="o">&lt;</span> <span class="n">lib</span><span class="o">::</span><span class="n">type</span> <span class="o">&gt;</span> <span class="n">c</span> <span class="p">;</span>
+
+    <span class="c1">// 関連クラスは、NS::C&lt; lib::type &gt;と、lib::type。</span>
+    <span class="c1">// 関連名前空間は、NSと、lib。</span>
+    <span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// lib::fを呼び出す。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>テンプレート実引数も関連クラスになるというルールは、この例のような、非常に分かりにくいコードのコンパイルを通してしまう。</p>
+<p>実引数がクラス以外の場合も、ADLは適用される。</p>
+<p>実引数がenumの場合、そのenumが定義されている名前空間が、関連名前空間になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">enum</span> <span class="k">struct</span> <span class="n">E</span> <span class="p">{</span> <span class="n">value</span> <span class="p">}</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">E</span> <span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">NS</span><span class="o">::</span><span class="n">E</span><span class="o">::</span><span class="n">value</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// NS::fを呼び出す。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合、関数、NS::fの関連名前空間は、NSとなる。</p>
+</div>
+<div class="section" id="adl">
+<h4>ADLが適用される条件<a class="headerlink" href="#adl" title="Permalink to this headline">¶</a></h4>
+<p>ADLが適用されるには、条件を満たさなければならない。まず、ADLは、Unqualified nameへの関数呼び出しにしか、適用されない。変数としての使用には、ADLは使われない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">class</span> <span class="nc">C</span> <span class="p">{}</span> <span class="p">;</span>
+
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">C</span> <span class="p">)</span> <span class="p">{}</span>
+    <span class="kt">void</span> <span class="nf">g</span><span class="p">(</span> <span class="n">C</span> <span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">g</span><span class="p">(</span> <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="p">)</span> <span class="p">{}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+
+
+    <span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span>      <span class="c1">// ADLで、NS::fを呼ぶ</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span>  <span class="c1">// Qualified name lookupが行われる</span>
+
+    <span class="o">::</span><span class="n">g</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span>    <span class="c1">// Qualified name lookupが行われる</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">g</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span>  <span class="c1">// Qualified name lookupが行われる</span>
+
+
+    <span class="n">g</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span>      <span class="c1">// エラー。::g、NS::gのどちらの名前か、曖昧。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>最後の例は、Unqualified name lookupで、::gが発見され、ADLで、NS::gが発見されるので、どちらの名前を使うのか、曖昧で、エラーになる。</p>
+<p>もし、Unqualified name lookupで、関数名以外の名前が見つかった場合、ADLは行われない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+    <span class="k">class</span> <span class="nc">C</span> <span class="p">{}</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">C</span> <span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">f</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Caller</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="p">)</span> <span class="p">{}</span>
+
+    <span class="kt">void</span> <span class="n">g</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+        <span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span><span class="c1">// Caller::fが呼ばれる。ADLは行われない。</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+
+    <span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー。fはint型の変数</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ブロックスコープ関数宣言の名前が見つかった場合、ADLは行われない。ただし、using宣言や、usingディレクティブは、影響しない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+<span class="k">class</span> <span class="nc">C</span> <span class="p">{}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">C</span> <span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="k">namespace</span> <span class="n">lib</span> <span class="p">{</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="p">)</span> <span class="p">{}</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+
+    <span class="p">{</span>
+        <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="p">)</span> <span class="p">;</span><span class="c1">// ブロックスコープの関数宣言</span>
+        <span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span><span class="c1">// ::fを呼び出す。ブロックスコープの宣言が見つかったので、ADLは行われない。</span>
+    <span class="p">}</span>
+
+    <span class="p">{</span>
+        <span class="k">using</span> <span class="k">namespace</span> <span class="n">lib</span> <span class="p">;</span>
+        <span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー、ADLも行われるので、曖昧になる。</span>
+    <span class="p">}</span>
+
+    <span class="p">{</span>
+        <span class="k">using</span> <span class="n">lib</span><span class="o">::</span><span class="n">f</span> <span class="p">;</span>
+        <span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー、ADLも行われるので、曖昧になる。</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// ブロックスコープの関数宣言で参照される、グローバル名前空間のf</span>
+<span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="p">)</span> <span class="p">{}</span>
+</pre></div>
+</div>
+<p>ブロックスコープ内で関数宣言をするということは、言語上は認められているが、現実的には、あまり用いられていない。</p>
+<p>using宣言や、usingディレクティブが、ADLの適用を妨げないということは、注意を要する。これにより、不思議なコンパイルエラーになることがある。例えば、上の例の場合、NS名前空間のコードは、他人が書いたものであり、ユーザーはよく知らないとしよう。lib名前空間のコードは、ユーザーが書いたものである。ユーザーは、lib::fを使いたい。main関数内で多用するので、using宣言を使って、簡単に呼び出せるようにした。ところが、NS名前空間の中にも、同名の関数があるので、曖昧エラーになってしまう。</p>
+<p>ADLが意図せず適用された際のエラーは、非常に分かりにくい。そのため、ADLを防ぐための方法が用意されている。名前を括弧で囲めば、ADLの適用が阻害される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+<span class="k">class</span> <span class="nc">C</span> <span class="p">{}</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">C</span> <span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="p">)</span> <span class="p">{}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">NS</span><span class="o">::</span><span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+
+    <span class="n">f</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー。曖昧</span>
+
+    <span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">c</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、ADLは適用されない。::fを呼び出す。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>unqualified nameへの関数呼び出しは、通常のunqualified name lookupと、ADLとで見つかった名前の、両方が用いられる。</p>
+</div>
+</div>
+</div>
+<div class="section" id="program-and-linkage">
+<h2>プログラムとリンケージ（Program and linkage）<a class="headerlink" href="#program-and-linkage" title="Permalink to this headline">¶</a></h2>
+<p>TODO: これはそれほど詳しく説明する必要はないかも。</p>
+</div>
+<div class="section" id="start-and-termination">
+<h2>プログラムの開始と終了（Start and termination）<a class="headerlink" href="#start-and-termination" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="main-main-function">
+<h3>main関数（Main function）<a class="headerlink" href="#main-main-function" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="initialization-of-non-local-objects">
+<h3>非ローカル変数の初期化（Initialization of non-local objects）<a class="headerlink" href="#initialization-of-non-local-objects" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="termination">
+<h3>終了（Termination）<a class="headerlink" href="#termination" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="conv.html" title="標準型変換（Standard conversions）"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="lex.html" title="字句規約（Lexical conventions）"
+             >previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ezoe Ryou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

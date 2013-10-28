@@ -1,0 +1,631 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>C++11の文法と機能(C++11: Syntax and Feature) &mdash; C++11: Syntax and Feature</title>
+    
+    <link rel="stylesheet" href="_static/cpp-book.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="C++11: Syntax and Feature" href="#" />
+    <link rel="next" title="概要（General）" href="intro.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="intro.html" title="概要（General）"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="c-11-c-11-syntax-and-feature">
+<h1>C++11の文法と機能(C++11: Syntax and Feature)<a class="headerlink" href="#c-11-c-11-syntax-and-feature" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line">Copyright (C)  2013 江添亮.</div>
+<div class="line">Permission is granted to copy, distribute and/or modify this document</div>
+<div class="line">under the terms of the GNU Free Documentation License, Version 1.3</div>
+<div class="line">or any later version published by the Free Software Foundation;</div>
+<div class="line">with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.</div>
+<div class="line">A copy of the license is included in the section entitled &#8220;GNU</div>
+<div class="line">Free Documentation License&#8221;.</div>
+</div>
+<p>筆者について</p>
+<div class="line-block">
+<div class="line">名前：江添亮</div>
+<div class="line">Mail : <a class="reference external" href="mailto:boostcpp&#37;&#52;&#48;gmail&#46;com">boostcpp<span>&#64;</span>gmail<span>&#46;</span>com</a></div>
+<div class="line">Blog : <a class="reference external" href="http://cpplover.blogspot.jp/">http://cpplover.blogspot.jp/</a></div>
+<div class="line">GitHub: <a class="reference external" href="https://github.com/EzoeRyou/cpp-book">https://github.com/EzoeRyou/cpp-book</a></div>
+</div>
+</div>
+<div class="section" id="id1">
+<h1>序<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>本書はC++11のコア言語の文法と機能を、標準規格書に従って解説したものである。正式なC++規格書として発行された後の、ひとつ後のドラフト規格、 <a class="reference external" href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf">N3337</a> を参考にしている。ドラフト規格を参考にした理由は、正式なC++規格書は、個人での入手が煩わしいためである。読者に入手が困難な資料を元に記述された参考書は価値がない。そのため、読者が容易に入手できるドラフト規格のうち、正式なC++規格書とほとんどかわらないN3337を参考にした。</p>
+<p>本書の対象読者は、C++を記述するものである。C++実装者ではない。そのため、サンプルコードを増やし、冗長な解説を増やし、C++コンパイラーを実装するための詳細な定義は省いた。そもそも本書はC++規格の翻訳ではなく、C++規格の検証に使うことはできない。</p>
+<p>本書の執筆は、まだC++11がC++0xと呼ばれていた2010年から始まっている。そのため、当時のドラフト規格を参考に書かれた部分もあり、正式なC++11規格とは異なっている可能性がある。また、正式に発行されたC++11規格には不具合も多数見つかっているため、C++14では異なっている部分もある。また、ドラフトの時点であまりにも変更が激しい箇所は飛ばしたので、漏れもある。</p>
+<p>このような未完成品を公開するのは忍びないが、且は執筆資金枯渇のため、且は執筆環境消失のため、今公開することにした。</p>
+<p>本書はC++11を解説する目的で書き始めたが、C++11の正式規格には様々な不具合が見つかり、誤りを正すために、マイナーアップデートなるC++14の制定が2014年に予定されている。また、その次の2017年には、メジャーアップデートとなるC++17が控えている。C++14はアップデートとはいえ、文面的にかなり大きな変更を含むため、もともとC++0xドラフトによって書かれ、C++11規格を参考にした本書の小手先の修正では対応できない。</p>
+<p>本書の執筆は2010年から始まっているが、C++14が真剣に議論されだした2012年から、執筆が滞りがちになった。</p>
+<p>筆者は常に最新のC++ドラフトを参照しているが、本書はC++11の参考書であるし、また、まだ不安定なドラフト規格の文面を参考にすることはできない。結果として、本書の執筆には、普段参照している最新のC++ドラフトからは、はるかに遅れたC++11規格を参照しなければならず、執筆の妨げとなった。</p>
+<p>また、本書を記述するHTML/CSS/JavaScriptも、何年も前の未熟な理解により、甚だ稚拙であり、編集の妨げとなった。</p>
+<p>この問題を解決するには、フルスクラッチからの書き直しが必要になるが、それはすでに費やした労力を捨て去ることになり、やはり意味がない。</p>
+<p>あるいはこれ、伽藍とバザールの典型例かもしれず、早期に公開していれば、今とは違った結果になったかもしれない。</p>
+<p>筆者は、プログラミングの参考書は、自由であるべきだと信じており、この参考書は、自由を保証するコピーレフトなライセンスで公開する。</p>
+<div class="line-block">
+<div class="line">2013年10月26日</div>
+<div class="line">江添亮</div>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">概要（General）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#c">C++とは</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#definitions">用語（Definitions）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="intro.html#argument-parameter">実引数（argument）と、仮引数（parameter）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro.html#static-type-dynamic-type">静的な型（static type）と、動的な型（dynamic type）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro.html#signature">シグネチャー（signature）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro.html#ill-formedwell-formed">ill-formedプログラムと、well-formedプログラム</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro.html#conditionally-supported">実装可能な機能（conditionally-supported）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro.html#implementation-defined-behavior">実装定義の動作（implementation-defined behavior）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro.html#undefined-behavior">未定義の動作（undefined behavior）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="intro.html#unspecified-behavior">未規定の動作（unspecified behavior）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#syntax-notation">文法記法（Syntax notation）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#c-the-c-memory-model">C++メモリーモデル（The C++ memory model）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#c-the-c-object-model">C++オブジェクトモデル（The C++ object model）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#program-execution">プログラムの実行（Program execution）</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lex.html">字句規約（Lexical conventions）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lex.html#separate-translation">翻訳単位（Separate translation）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lex.html#phase-of-translation">ソースファイルの変換（Phase of translation）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lex.html#character-sets">文字セット（Character sets）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lex.html#id1">基本ソース文字セット</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lex.html#id2">ユニバーサル文字名</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lex.html#tokens">トークン（Tokens）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lex.html#comments">コメント（Comments）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lex.html#identifiers">識別子（Identifiers）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lex.html#id7">予約語</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lex.html#keywords">キーワード（Keywords）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lex.html#literals">リテラル（Literals）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lex.html#integer-literals">整数リテラル（Integer literals）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lex.html#floating-literals">浮動小数点数リテラル（Floating literals）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lex.html#character-literals">文字リテラル（Character literals）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lex.html#id8">エスケープシーケンス</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="lex.html#string-literals">文字列リテラル（String literals）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lex.html#id9">エンコード方式</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lex.html#id12">文字列リテラルの型の要素数</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lex.html#raw-string-literal">生文字列リテラル（Raw String Literal）</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="lex.html#bool-boolean-literals">boolリテラル（Boolean literals）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lex.html#pointer-literals">ポインターリテラル（Pointer Literals）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lex.html#user-defined-literals">ユーザー定義リテラル（User-defined literals）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="basic.html">基本事項（Basic concepts）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#declarations-and-definitions">宣言と定義（Declarations and definitions）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#declaration-definition">宣言（Declaration）と定義（Definition）の違い</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#id1">定義ではない宣言</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#odr-one-definition-rule">ODR（One definition rule）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#scope">スコープ（Scope）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#declarative-regions-and-scopes">宣言領域とスコープ（Declarative regions and scopes）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#point-of-declaration">宣言場所（Point of declaration）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#block-scope">ブロックスコープ（Block scope）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#function-prototype-scope">関数プロトタイプのスコープ（Function prototype scope）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#function-scope">関数のスコープ（Function scope）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#namespace-scope">名前空間のスコープ（Namespace scope）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="basic.html#global-namespace">グローバル名前空間（Global namespace）</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#class-scope">クラスのスコープ（Class scope）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#enum-enumeration-scope">enumのスコープ（Enumeration scope）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#template-parameter-scope">テンプレート仮引数のスコープ（Template Parameter Scope）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#name-hiding">名前隠し（Name hiding）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#name-lookup">名前探索（Name lookup）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#qualified-qualified-name-lookup">Qualified 名前探索（Qualified name lookup）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#unqualified-unqualified-name-lookup">Unqualified 名前探索（Unqualified name lookup）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#adl-argument-dependent-name-lookup">ADL（Argument-dependent name lookup）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="basic.html#id2">関連クラスと関連名前空間</a></li>
+<li class="toctree-l4"><a class="reference internal" href="basic.html#adl">ADLが適用される条件</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#program-and-linkage">プログラムとリンケージ（Program and linkage）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic.html#start-and-termination">プログラムの開始と終了（Start and termination）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#main-main-function">main関数（Main function）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#initialization-of-non-local-objects">非ローカル変数の初期化（Initialization of non-local objects）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="basic.html#termination">終了（Termination）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="conv.html">標準型変換（Standard conversions）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#lvaluervalue-lvalue-to-rvalue-conversion">lvalueからrvalueへの型変換（Lvalue-to-rvalue conversion）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#array-to-pointer-conversion">配列からポインターへの型変換（Array-to-pointer conversion）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#function-to-pointer-conversion">関数からポインターへの型変換（Function-to-pointer conversion）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#cv-qualification-conversions">CV修飾子の型変換（Qualification conversions）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#integer-conversion-rank">整数の変換順位（Integer conversion rank）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#integral-promotions">整数のプロモーション（Integral promotions）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#integral-conversions">整数の型変換（Integral conversions）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#floating-point-promotion">浮動小数点数のプロモーション（Floating point promotion）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#floating-point-conversions">浮動小数点数の型変換（Floating point conversions）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#floating-integral-conversions">浮動小数点数と整数の間の型変換（Floating-integral conversions）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#pointer-conversions">ポインターの型変換（Pointer conversions）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#pointer-to-member-conversions">メンバーへのポインターの型変換（Pointer to member conversions）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="conv.html#bool-boolean-conversions">boolの型変換（Boolean conversions）</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="expr.html">式（Expressions）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#id1">優先順位と評価順序</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#unevaluated-operand">未評価オペランド（unevaluated_operand）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#primary-expressions">一次式（Primary expressions）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#id2">:: 演算子</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#parenthesized-expression">括弧式（parenthesized expression）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#lambda-expressions">ラムダ式（Lambda expressions）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#id3">ラムダ式の基本的な使い方</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id4">変数のキャプチャー</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#id5">ラムダ式の詳細</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#closure-object">クロージャーオブジェクト（closure object）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id6">関数ポインターへの変換</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id7">ラムダ式のネスト</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#this">thisのキャプチャー</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#id8">パラメーターパックのキャプチャー</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#postfix-expressions">後置式（Postfix expressions）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#subscripting">添字（Subscripting）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#function-call">関数呼び出し（Function call）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#explicit-type-conversion-functional-notation">関数形式の明示的型変換（Explicit type conversion (functional notation)）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#pseudo-destructor-call">疑似デストラクター呼び出し（Pseudo destructor call）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#class-member-access">クラスメンバーアクセス（Class member access）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#increment-and-decrement">インクリメントとデクリメント（Increment and decrement）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#dynamic-cast-dynamic-cast">Dynamic cast（Dynamic cast）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#dynamic-cast">dynamic_castの機能</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id13">dynamic_castのその他の機能</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#type-identification">型識別（Type identification）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#static-cast-static-cast">Static cast（Static cast）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#reinterpret-cast">Reinterpret cast</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id14">ポインター型と整数型の間の型変換</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id15">異なるポインター型の間の型変換</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id20">異なるリファレンス型の間の型変換</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id21">異なるメンバーポインターの間の型変換</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id22">異なる関数ポインター型の間の型変換</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id23">reinterpret_castには、できないこと</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#const-cast">Const cast</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#unary-expressions">単項式（Unary expressions）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#unary-operators">単項演算子（Unary operators）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id26">単項演算子の+と-</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id27">! 演算子</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id28">~ 演算子</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#id29">インクリメントとデクリメント（Increment and decrement）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#sizeof-sizeof">sizeof（Sizeof）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#new">new</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id30">new式の評価</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id31">配列の生成</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id32">オブジェクトの初期化</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#auto">型名としてのauto</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#placement-new">placement new</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id33">特殊なplacement new</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id38">ストレージの確保に失敗した場合のエラー処理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id39">初期化に失敗した場合のエラー処理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#id44">確保関数の選択</a></li>
+<li class="toctree-l4"><a class="reference internal" href="expr.html#cvnew">CV修飾されている型のnew</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#delete">delete</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#alignof">alignof</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#noexcept-noexcept-operator">noexcept演算子（noexcept operator）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#explicit-type-conversion-cast-notation">キャスト形式による明示的型変換（Explicit type conversion (cast notation)）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#pointer-to-member-operators">メンバーへのポインター演算子（Pointer-to-member operators）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#multiplicative-operators">乗除算の演算子（Multiplicative operators）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#additive-operators">加減算の演算子（Additive operators）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#id53">両方のオペランドが数値型の場合</a></li>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#id54">オペランドがポインター型の場合</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#shift-operators">シフト演算子（Shift operators）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#relational-operators">関係演算子（Relational operators）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#equality-operators">等価演算子（Equality operators）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#bitwise-and-operator">ビット列論理積演算子（Bitwise AND operator）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#bitwise-exclusive-or-operator">ビット列排他的論理和演算子（Bitwise exclusive OR operator）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#bitwise-inclusive-or-operator">ビット列論理和演算子（Bitwise inclusive OR operator）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#logical-and-operator">論理積演算子（Logical AND operator）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#logical-or-operator">論理和演算子（Logical OR operator）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#conditional-operator">条件演算子（Conditional operator）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#assignment-and-compound-assignment-operators">代入と複合代入演算子（Assignment and compound assignment operators）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#comma-operator">コンマ演算子（Comma operator）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="expr.html#constant-expressions">定数式（Constant expressions）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expr.html#id55">定数式ではない式</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stmt.stmt.html">文（Statements）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stmt.stmt.html#labeled-statement">ラベル文（Labeled statement）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stmt.stmt.html#expression-statement">式文（Expression statement）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stmt.stmt.html#compound-statement-or-block">複合文、ブロック（Compound statement or block）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stmt.stmt.html#selection-statements">選択文（Selection statements）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="stmt.stmt.html#id1">条件について</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stmt.stmt.html#if-the-if-statement">if文（The if statement）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stmt.stmt.html#switch-the-switch-statement">switch文（The switch statement）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="stmt.stmt.html#iteration-statements">繰り返し文（Iteration statements）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="stmt.stmt.html#while-the-while-statement">while文（The while statement）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stmt.stmt.html#do-the-do-statement">do文（The do statement）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stmt.stmt.html#for-the-for-statement">for文（The for statement）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stmt.stmt.html#range-based-for-the-range-based-for-statement">range-based for文（The range-based for statement）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="stmt.stmt.html#range-based-for">range-based forの基本</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stmt.stmt.html#id2">range-based forの詳細</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="stmt.stmt.html#jump-statements">ジャンプ文（Jump statements）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="stmt.stmt.html#break-the-break-statement">break文（The break statement）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stmt.stmt.html#continue-the-continue-statement">continue文（The continue statement）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stmt.stmt.html#return-the-return-statement">return文（The return statement）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stmt.stmt.html#goto-the-goto-statement">goto文（The goto statement）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="stmt.stmt.html#declaration-statement">宣言文（Declaration statement）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stmt.stmt.html#ambiguity-resolution">曖昧解決（Ambiguity resolution）</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dcl.dcl.html">宣言（Declarations）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dcl.dcl.html#simple-declaration">単純宣言（simple-declaration）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dcl.dcl.html#static-assert-static-assert-declaration">static_assert宣言（static_assert-declaration）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dcl.dcl.html#specifiers">指定子（Specifiers）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#storage-class-specifiers">ストレージクラス指定子（Storage class specifiers）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#register">register指定子</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#thread-local">thread_local指定子</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#static">static指定子</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#extern">extern指定子</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#mutable">mutable指定子</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#function-specifiers">関数指定子（Function specifiers）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#inline">inline指定子</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#virtual">virtual指定子</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#explicit">explicit指定子</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#typedef-the-typedef-specifier">typedef指定子（The typedef specifier）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#friend-the-friend-specifier">friend指定子（The friend specifier）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#constexpr-the-constexpr-specifier">constexpr指定子（The constexpr specifier）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#type-specifiers">型指定子（Type specifiers）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#cv-the-cv-qualifiers">CV修飾子（The cv-qualifiers）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#simple-type-specifiers">単純型指定子（Simple type specifiers）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#elaborated-type-specifiers">複雑型指定子（Elaborated type specifiers）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#auto-auto-specifier">auto指定子（auto specifier）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#decltype-decltype-specifier">decltype指定子（decltype specifier）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dcl.dcl.html#enum-enumeration-declarations">enumの宣言（Enumeration declarations）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#unscoped-enum">unscoped enum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#scoped-enum">scoped enum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#enum-enum-base">enum基底（enum-base）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#enum-opaque-enum-declaration">enum宣言（opaque-enum-declaration）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#id7">無駄な定義を省く</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#id8">型安全なデータの秘匿</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dcl.dcl.html#namespaces">名前空間（Namespaces）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#namespace-definition">名前空間の定義（Namespace definition）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#id9">inline名前空間</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#unnamed-namespaces">無名名前空間（Unnamed namespaces）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.dcl.html#namespace-member-definitions">名前空間のメンバーの定義（Namespace member definitions）</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#namespace-alias">名前空間エイリアス（Namespace alias）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#using-the-using-declaration">using宣言（The using declaration）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.dcl.html#using-using-directive">usingディレクティブ（Using directive）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dcl.dcl.html#linkage-specifications">リンケージ指定（Linkage specifications）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dcl.dcl.html#attributes">アトリビュート（Attributes）</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dcl.decl.html">宣言子（Declarators）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dcl.decl.html#type-names">型名（Type names）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dcl.decl.html#ambiguity-resolution">曖昧解決（Ambiguity resolution）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dcl.decl.html#meaning-of-declarators">宣言子の意味（Meaning of declarators）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#pointers">ポインター（Pointers）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#references">リファレンス（References）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#pointers-to-members">メンバーへのポインター（Pointers to members）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#arrays">配列（Arrays）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#functions">関数（Functions）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dcl.decl.html#id11">関数の宣言方法</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.decl.html#id14">仮引数リスト</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.decl.html#id15">関数の型</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#default-arguments">デフォルト実引数（Default arguments）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dcl.decl.html#function-definitions">関数の定義（Function definitions）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#default-explicitly-defaulted-functions">default定義（Explicitly-defaulted functions）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#delete-deleted-definitions">delete定義（Deleted definitions）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dcl.decl.html#initializers">初期化子（Initializers）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#zero-initialize">ゼロ初期化（zero-initialize）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#default-initialize">デフォルト初期化（default-initialize）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#value-initialize">値初期化（value-initialize）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#aggregates">アグリゲート（Aggregates）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#character-arrays">文字配列（Character arrays）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#id16">リファレンス（References）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dcl.decl.html#list-initialization">リスト初期化（List-initialization）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dcl.decl.html#id17">初期化リストの使える場所</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.decl.html#id18">初期化リストによる初期化の詳細</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dcl.decl.html#id19">リスト初期化の方法</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="class.html">クラス（Classes）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="class.html#trivially-copyable-class">トリビアルにコピー可能なクラス（trivially copyable class）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.html#trivial-class">トリビアルクラス（trivial class）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.html#standard-layout-class">標準レイアウトクラス（standard-layout class）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.html#pod-pod-struct">POD構造体（POD struct）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.html#class-names">クラス名（Class names）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.html#class-members">クラスのメンバー（Class members）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="class.html#layout-compatible">レイアウト互換（layout-compatible）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="class.html#member-functions">メンバー関数（Member functions）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="class.html#static-nonstatic-member-functions">非staticメンバー関数（Nonstatic member functions）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="class.html#this-the-this-pointer">thisポインター（The this pointer）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="class.html#static-static-members">staticメンバー（Static members）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="class.html#static-static-member-functions">staticメンバー関数（Static member functions）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="class.html#static-static-data-members">staticデータメンバー（Static data members）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="class.html#union-unions">union（Unions）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="class.html#union-anonymous-union">無名union（anonymous union）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="class.html#variant-member">共用メンバー（variant member）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="class.html#bit-fields">ビットフィールド（Bit-fields）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.html#nested-class-declarations">クラス宣言のネスト（Nested class declarations）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.html#local-class-declarations">ローカルクラス宣言（Local class declarations）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.html#nested-type-names">型名のネスト（Nested type names）</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="class.derived.html">派生クラス（Derived classes）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="class.derived.html#multiple-base-classes">複数の基本クラス（Multiple base classes）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.derived.html#member-name-lookup">メンバーの名前探索（Member name lookup）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.derived.html#virtual-virtual-functions">virtual関数（Virtual functions）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.derived.html#abstract-classes">アブストラクトクラス（Abstract classes）</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="class.access.html">メンバーのアクセス指定（Member access control）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="class.access.html#access-specifiers">アクセス指定子（Access specifiers）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.access.html#accessibility-of-base-classes-and-base-class-members">基本クラスと、基本クラスのメンバーへのアクセス指定（Accessibility of base classes and base class members）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.access.html#friend-friends">friend（Friends）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.access.html#protected-protected-member-access">protectedメンバーアクセス（Protected member access）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.access.html#virtual-access-to-virtual-functions">virtual関数へのアクセス（Access to virtual functions）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.access.html#multiple-access">複数のアクセス（Multiple access）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class.access.html#nested-classes">ネストされたクラス（Nested classes）</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="special.html">特別なメンバー関数（Special member functions）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="special.html#constructors">コンストラクター（Constructors）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="special.html#id1">デフォルトコンストラクター</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="special.html#temporary-objects">一時オブジェクト（Temporary objects）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="special.html#conversions">型変換（Conversions）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="special.html#conversion-by-constructor">コンストラクターによる型変換（Conversion by constructor）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="special.html#conversion-functions">型変換関数（Conversion functions）</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="special.html#destructors">デストラクター（Destructors）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="special.html#free-store">フリーストア（Free store）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="special.html#initialization">初期化（Initialization）</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="special.html#explicit-initialization">明示的な初期化（Explicit initialization）</a></li>
+<li class="toctree-l3"><a class="reference internal" href="special.html#initializing-bases-and-members">基本クラスとデータメンバーの初期化（Initializing bases and members）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="special.html#id2">コンストラクター初期化子</a></li>
+<li class="toctree-l4"><a class="reference internal" href="special.html#id3">コンストラクターのデリゲート</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="special.html#construction-and-destruction">生成と破棄（Construction and destruction）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="special.html#id4">クラスのコピーとムーブ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="special.html#inheriting-constructors">コンストラクター継承（Inheriting constructors）</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="over.html">オーバーロード(Overloading)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="over.html#overloadable-declarations">オーバーロード可能な宣言(Overloadable declarations)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="over.html#id3">オーバーロードのその他の注意事項</a></li>
+<li class="toctree-l2"><a class="reference internal" href="over.html#overload-resolution">オーバーロード解決(Overload resolution)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="over.html#candidate-functions">候補関数(Candidate functions)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="over.html#function-call-syntax">関数呼び出しの文法(Function call syntax)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="over.html#operators-in-expressions">式中の演算子(Operators in expressions)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="over.html#initialization-by-constructor">コンストラクターによる初期化(Initialization by constructor)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="over.html#copy-initialization-of-class-by-user-defined-conversion">ユーザー定義型変換によるクラスのコピー初期化(Copy-initialization of class by user-defined conversion)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="over.html#initialization-by-conversion-function">変換関数によるクラスではないオブジェクトの初期化(Initialization by conversion function)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="over.html#initialization-by-conversion-function-for-direct-reference-binding">変換関数によるリファレンスの初期化(Initialization by conversion function for direct reference binding)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="over.html#initialization-by-list-initialization">リスト初期化による初期化(Initialization by list-initialization)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="over.html#viable-functions">適切関数(Viable functions)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="over.html#best-viable-function">最適関数(Best viable function)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="over.html#implicit-conversion-sequences">暗黙の型変換の順序(Implicit conversion sequences)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="over.html#standard-conversion-sequences">標準型変換（Standard conversion sequences）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="over.html#address-of-overloaded-function">オーバーロード関数のアドレス(Address of overloaded function)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="over.html#overloaded-operators">オーバーロード演算子(Overloaded operators)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="over.html#unary-operators">単項演算子(Unary operators)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="over.html#binary-operators">二項演算子(Binary operators)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="over.html#assignment">代入(Assignment)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="over.html#function-call">関数呼び出し(Function call)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="over.html#subscripting">添字(Subscripting)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="over.html#class-member-access">クラスメンバーアクセス(Class member access)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="over.html#increment-and-decrement">インクリメントとデクリメント(Increment and decrement)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="over.html#allocation-function-and-deallocation-function">確保関数と解放関数(allocation function and deallocation function)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="over.html#id10">単数形の確保関数</a></li>
+<li class="toctree-l4"><a class="reference internal" href="over.html#nothrow">nothrow版の単数形の確保関数</a></li>
+<li class="toctree-l4"><a class="reference internal" href="over.html#id11">単数形の解放関数</a></li>
+<li class="toctree-l4"><a class="reference internal" href="over.html#id12">nothrow版の単数形の解放関数</a></li>
+<li class="toctree-l4"><a class="reference internal" href="over.html#id13">配列形の確保関数</a></li>
+<li class="toctree-l4"><a class="reference internal" href="over.html#id14">nothrow版の配列形の確保関数</a></li>
+<li class="toctree-l4"><a class="reference internal" href="over.html#id15">配列型の解放関数</a></li>
+<li class="toctree-l4"><a class="reference internal" href="over.html#id16">nothrow版の配列型の解放関数</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="over.html#id17">ユーザー定義リテラル</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="temp.html">テンプレート(Templates)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="temp.html#template-parameters-arguments">テンプレート仮引数/実引数(Template parameters/arguments)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#id1">型テンプレート仮引数/実引数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#id2">非型テンプレート仮引数/実引数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#id3">テンプレートテンプレート仮引数/実引数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#id4">デフォルトテンプレート実引数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#id5">可変テンプレート仮引数</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="temp.html#names-of-template-specializations">テンプレート特殊化の名前(Names of template specializations )</a></li>
+<li class="toctree-l2"><a class="reference internal" href="temp.html#type-equivalence">型の同一性(Type equivalence)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="temp.html#template-declarations">テンプレート宣言(Template declarations)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#class-templates">クラステンプレート(Class templates)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#member-templates">メンバーテンプレート(Member Templates)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#variadic-templates">可変引数テンプレート(Variadic Templates)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="temp.html#id8">可変引数テンプレートの使い方</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#friend">friend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#class-template-partial-specializations">クラステンプレートの部分的特殊化(Class template partial specializations)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="temp.html#matching-of-class-template-partial-specializations">クラステンプレートの部分的特殊化の一致度の比較(Matching of class template partial specializations)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="temp.html#partial-ordering-of-class-template-specializations">クラステンプレートの部分的特殊化の半順序(Partial ordering of class template specializations)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="temp.html#id13">クラステンプレートの特殊化のメンバー</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#function-templates">関数テンプレート(Function templates)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#function-template-overloading">関数テンプレートのオーバーロード(Function Template Overloading)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#partial-ordering-of-function-templates">関数テンプレートの部分的特殊化(Partial ordering of function templates)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#alias-templates">エイリアステンプレート(Alias templates)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="temp.html#name-resolution">名前解決(Name Resolution)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#dependent">依存(Dependent)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#id14">非依存名の名前解決</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#id15">依存名の名前解決</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="temp.html#template-instantiation-and-specialization">テンプレートの実体化と特殊化(Template instantiation and specialization)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#implicit-instantiation">暗黙の実体化(Implicit instantiation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#explicit-instantiation">明示的実体化(Explicit instantiation)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="temp.html#explicit-specialization">明示的特殊化(Explicit specialization)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="temp.html#function-template-specializations">関数テンプレートの特殊化(Function template specializations)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="except.html">例外(Exception handling)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="except.html#throwing-an-exception">例外を投げる(Throwing an exception)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="except.html#constructors-and-destructors">コンストラクターとデストラクター(Constructors and destructors)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="except.html#handling-an-exception">例外の捕捉(Handling an exception)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="except.html#exception-specifications">例外指定(Exception specifications)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="intro.html" title="概要（General）"
+             >next</a> |</li>
+        <li><a href="#">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ezoe Ryou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

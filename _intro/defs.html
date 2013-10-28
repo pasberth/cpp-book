@@ -1,0 +1,113 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>用語（Definitions） &mdash; C++11: Syntax and Feature</title>
+    
+    <link rel="stylesheet" href="../_static/cpp-book.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="C++11: Syntax and Feature" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="definitions">
+<h1>用語（Definitions）<a class="headerlink" href="#definitions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="argument-parameter">
+<h2>実引数（argument）と、仮引数（parameter）<a class="headerlink" href="#argument-parameter" title="Permalink to this headline">¶</a></h2>
+<p>引数には、ふたつの種類がある。実引数とは、関数やマクロ、throw文、テンプレートに、実際に渡す引数のことをいう。仮引数とは、関数宣言や関数の定義、例外ハンドラーのcatch句、マクロ、テンプレート仮引数のことをいう。たとえば、関数の場合、</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// xは仮引数</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="c1">// 0は実引数</span>
+    <span class="n">f</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span>
+<span class="c1">// argは実引数</span>
+    <span class="kt">int</span> <span class="n">arg</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">arg</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このように、関数の宣言や定義などの引数を、仮引数といい、関数の呼び出しの際に指定する引数を、実引数という。仮引数と実引数は、厳密に区別される。</p>
+</div>
+<div class="section" id="static-type-dynamic-type">
+<h2>静的な型（static type）と、動的な型（dynamic type）<a class="headerlink" href="#static-type-dynamic-type" title="Permalink to this headline">¶</a></h2>
+<p>静的な型とは、実行しなくても、その意味が分かる型のことである。動的な型は、実行しなければ、その意味が決定出来ない型のことである。</p>
+</div>
+<div class="section" id="signature">
+<h2>シグネチャー（signature）<a class="headerlink" href="#signature" title="Permalink to this headline">¶</a></h2>
+<p>シグネチャーとは、ある関数に対する、その関数の名前、引数のリストの型、戻り値の型、テンプレート仮引数のことである。また、メンバー関数の場合は、そのクラスや、CV修飾、リファレンス修飾も含まれる。また、その関数の属する名前空間も含まれる。シグネチャーは、その関数を特定するために用いられる。</p>
+</div>
+<div class="section" id="ill-formedwell-formed">
+<h2>ill-formedプログラムと、well-formedプログラム<a class="headerlink" href="#ill-formedwell-formed" title="Permalink to this headline">¶</a></h2>
+<p>well-formedプログラムとは、文法上正しいプログラムである。ill-formedプログラムとは、well-formedではないプログラム、すなわち、文法上、間違ったプログラムである。多くの実装では、ill-formedプログラムは、コンパイルエラーとなる。</p>
+</div>
+<div class="section" id="conditionally-supported">
+<h2>実装可能な機能（conditionally-supported）<a class="headerlink" href="#conditionally-supported" title="Permalink to this headline">¶</a></h2>
+<p>実装可能な機能とは、規格上、実装してなくてもよい機能や動作のことである。</p>
+</div>
+<div class="section" id="implementation-defined-behavior">
+<h2>実装定義の動作（implementation-defined behavior）<a class="headerlink" href="#implementation-defined-behavior" title="Permalink to this headline">¶</a></h2>
+<p>実装定義の動作とは、well-formedではあるが、その意味が、実装によって変わるということである。</p>
+</div>
+<div class="section" id="undefined-behavior">
+<h2>未定義の動作（undefined behavior）<a class="headerlink" href="#undefined-behavior" title="Permalink to this headline">¶</a></h2>
+<p>未定義の動作とは、そのプログラムの意味が、規格上定義されていないということである。その動作は実装によって異なり、あるいはエラーとなるかもしれないし、あるいは問題なく結果が予測できる動作となるかもしれない。一般に、エラーとなる場合が多い。未定義の動作を含むプログラムを書く場合は、そのコードの意味が、目的の実行環境で、明確に定義されているかどうかを確認するべきである。</p>
+</div>
+<div class="section" id="unspecified-behavior">
+<h2>未規定の動作（unspecified behavior）<a class="headerlink" href="#unspecified-behavior" title="Permalink to this headline">¶</a></h2>
+<p>未規定の動作も、具体的な意味が、実装によって異なると言う点で、未定義の動作と変わらない。ただし、未規定の動作は、規格上、推奨される動作が決められていることも多く、多くの実装で、エラーにならない、何らかの意味のあるコードになると言う点で、未定義の動作よりは、安全である。ただし、これも、目的の実行環境での意味がどうなるのかを、正しく把握しておく必要がある。</p>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ezoe Ryou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

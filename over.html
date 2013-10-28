@@ -1,0 +1,1663 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>オーバーロード(Overloading) &mdash; C++11: Syntax and Feature</title>
+    
+    <link rel="stylesheet" href="_static/cpp-book.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="C++11: Syntax and Feature" href="index.html" />
+    <link rel="next" title="テンプレート(Templates)" href="temp.html" />
+    <link rel="prev" title="特別なメンバー関数（Special member functions）" href="special.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="temp.html" title="テンプレート(Templates)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="special.html" title="特別なメンバー関数（Special member functions）"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="overloading">
+<h1>オーバーロード(Overloading)<a class="headerlink" href="#overloading" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overloadable-declarations">
+<h2>オーバーロード可能な宣言(Overloadable declarations)<a class="headerlink" href="#overloadable-declarations" title="Permalink to this headline">¶</a></h2>
+<p>シグネチャが異なっていれば、どのような関数、あるいは関数テンプレートでもオーバーロードできるわけではない。以下は、オーバーロードでは考慮されないシグネチャ上の違いである。</p>
+<ul>
+<li><p class="first">戻り値の型</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="kt">double</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="mf">0.0</span> <span class="p">;</span> <span class="p">}</span> <span class="c1">// エラー、オーバーロードできない</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">メンバー関数とメンバー関数テンプレートにおいて、staticと非staticの違い</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Foo</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li></li>
+</ul>
+<p>メンバー関数とメンバー関数テンプレートにおいて、リファレンス修飾子の有無が混在している場合</p>
+<p>メンバー関数の暗黙のオブジェクト仮引数のリファレンスによるオーバーロードを行いたい場合は、lvalueリファレンスでも、リファレンス修飾子を省略することはできない。</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Foo</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// リファレンス修飾子の省略、暗黙にlvalueリファレンス</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="c1">// エラー、他の宣言でリファレンス修飾子が省略されている</span>
+
+    <span class="kt">void</span> <span class="n">g</span><span class="p">()</span> <span class="o">&amp;</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="kt">void</span> <span class="n">g</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="p">;</span> <span class="c1">// OK</span>
+
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul>
+<li><p class="first">仮引数の型が、同じ型を指す異なるtypedef名の場合</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">using</span> <span class="n">Int</span> <span class="o">=</span> <span class="kt">int</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">Int</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 再宣言</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>typedef名は単なる別名であって、異なる型ではないので、シグネチャはおなじになる。</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>仮引数の型の違いが、<a href="#id1"><span class="problematic" id="id2">*</span></a>か[]である場合</p>
+<p>&lt;a href=&#8221;#dcl.fct&#8221;&gt;関数の型&lt;/a&gt;で説明したように、仮引数のポインターと配列のシグネチャは同じである。ただし、2つ目以降の配列は考慮されるので注意。</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">[]</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 再宣言、void f(int *)と同じ</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 再宣言、void f(int *)と同じ</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">[][</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// オーバーロード、シグネチャはvoid f(int(*)[2])</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li></li>
+</ul>
+<p>仮引数が関数型か、同じ関数型へのポインターである場合</p>
+<p>&lt;a href=&#8221;#dcl.fct&#8221;&gt;関数の型&lt;/a&gt;で説明したように、仮引数としての関数型は同じ関数型へのポインター型に変換される。</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">void</span><span class="p">(</span><span class="o">*</span><span class="p">)()</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">void</span> <span class="p">()</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 再宣言</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">void</span> <span class="n">g</span><span class="p">()</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 再宣言</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>これらはオーバーロードではない。</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>仮引数のトップレベルのCV修飾子の有無</p>
+<p>&lt;a href=&#8221;#dcl.fct&#8221;&gt;関数の型&lt;/a&gt;で説明したように、仮引数のトップレベルのCV修飾子は無視される。トップレベル以外のCV修飾子は別の型とみなされるので、オーバーロードとなる。</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="o">*</span> <span class="k">const</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 再宣言</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="o">*</span> <span class="k">volatile</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 再宣言</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="o">*</span> <span class="k">const</span> <span class="k">volatile</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 再宣言</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="k">const</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// オーバーロード</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="k">volatile</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// オーバーロード</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// オーバーロード</span>
+</pre></div>
+</div>
+</div></blockquote>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 再宣言</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 再宣言</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>オーバーロードのその他の注意事項<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>オーバーロード解決は、名前解決によって複数の宣言が列挙される場合に行われる。内側のスコープによって名前が隠されている場合は、オーバーロード解決は行われない。</p>
+<p>たとえば、派生クラスで基本クラスのメンバー関数名と同名のものがある場合、そのメンバー関数は基本クラスのメンバー関数の名前を隠す。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+   <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// Base::f(int)を隠す</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Derived</span> <span class="n">d</span> <span class="p">;</span>
+    <span class="n">d</span><span class="p">.</span><span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// Derived::f(double)が呼ばれる</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>似たような例に、関数のローカル宣言がある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// f(int)を呼び出す</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// f(int)を隠す</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// f(double)を呼び出す</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>オーバーロードされたメンバー関数は、それぞれ別々のアクセス指定を持つことができる。アクセス指定は名前解決には影響しないので、オーバーロード解決は行われる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">x</span><span class="p">.</span><span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー、X::f(int)はprivateメンバー</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、オーバーロード解決によって、X::f(int)が選ばれるが、これはprivateメンバーなので、Xのfriendではないmain関数からは呼び出せない。よってエラーになる。</p>
+</div>
+<div class="section" id="overload-resolution">
+<h2>オーバーロード解決(Overload resolution)<a class="headerlink" href="#overload-resolution" title="Permalink to this headline">¶</a></h2>
+<p>オーバーロードされた関数を呼び出す際に、実引数から判断して、最もふさわしい関数が選ばれる。これを、オーバーロード解決(Overload resolution)と呼ぶ。オーバーロード解決のルールは非常に複雑である。単純に実引数と仮引数の型が一致するだけならまだ話は簡単だ。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// f(int)が呼ばれる</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mf">0.0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// f(double)が呼ばれる</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この結果には、疑問はない。実引数と仮引数の型が一致しているからだ。しかし、もし、実引数の型と仮引数の型が一致していないが、暗黙の型変換によって仮引数の型に変換可能な場合、問題は非常にややこしくなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">short</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">a</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// f(int)を呼ぶ</span>
+
+    <span class="kt">float</span> <span class="n">b</span> <span class="o">=</span> <span class="mf">0.0f</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">b</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// f(double)を呼ぶ</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この結果も、妥当なものである。shortは整数型なので、doubleよりはintを優先して欲しい。floatは、浮動小数点数型なので、doubleを優先して欲しい。</p>
+<p>では、以下のような場合はどうだろうか。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">long</span> <span class="kt">long</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">long</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0l</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">a</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 曖昧</span>
+
+    <span class="kt">short</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">b</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// f(int)を呼び出す</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この結果は、少し意外だ。比べるべき型は、intとlong long intである。long型を渡すと曖昧になる。しかし、short型を渡すと、なんとint型が選ばれる。こちらは曖昧にならない。これは、short型からint型への型変換に&lt;a href=&#8221;#conv.prom&#8221;&gt;整数のプロモーション&lt;/a&gt;が使われているためである。</p>
+<p>では、ユーザー定義の型変換が関係する場合はどうだろうか。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span> <span class="p">;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// ユーザー定義の型変換</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">X</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mf">0.0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// f(int)を呼ぶ</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合、ユーザー定義の型変換より、言語側に組み込まれた、標準型変換を優先している。</p>
+<p>では、引数が複数ある場合はどうなるのか。関数テンプレートの場合はどうなるのか。疑問は尽きない。オーバーロード解決のルールは非常に複雑である。これは、できるだけオーバーロード解決の挙動を、人間にとって自然にし、詳細を知らなくても問題がないように設計した結果である。その代償として、オーバーロード解決の詳細は非常に複雑になり、実装にも手間がかかるようになった。</p>
+<p>オーバーロード解決の手順を、簡潔にまとめると、以下のようになる。</p>
+<p>0 名前探索によって見つかる同名の関数をすべて、候補関数(Candidate functions)として列挙する
+1 候補関数から、実際に呼び出すことが可能な関数を、適切関数(Viable functions)に絞る
+2 実引数から仮引数への暗黙の型変換を考慮して、最適な関数(Best viable function)を決定する</p>
+<p>例えば、以下のようなオーバーロード解決の場合、</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">g</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// オーバーロード解決が必要</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>候補関数には、f(), f(int), f(int,int), f(double)が列挙される。適切関数には、f(int), f(double)が選ばれる。これを比較すると、f(int)が型一致で最適関数となる。</p>
+<p>本書におけるオーバーロード解決の解説は、細部をかなり省略している。</p>
+<div class="section" id="candidate-functions">
+<h3>候補関数(Candidate functions)<a class="headerlink" href="#candidate-functions" title="Permalink to this headline">¶</a></h3>
+<p>候補関数(Candidate functions)は、正確に言えば、候補関数群とでも訳されるべきであろう。候補関数とは、その名前の通り、オーバーロード解決の際に呼び出しの優先順位を考慮される関数のことである。候補関数に選ばれなければ、呼び出されることはない。ある名前に対してオーバーロード解決が必要な場合に、まず最初に行われるのが、候補関数の列挙である。候補関数は、通常通りに名前探索をおこなって見つけた関数すべてである。これには、実際には呼び出すことのできない関数も含む。オーバーロード解決の際に考慮するのは、この候補関数だけである。その他の関数は考慮しない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">void</span> <span class="nf">g</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 候補関数の列挙が必要</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ここでの候補関数とは、f()とf(int)である。f()は、実際に呼び出すことができないが、候補関数として列挙される。この場合、g()は候補関数ではない。</p>
+<p>オーバーロード解決の際に使われる名前探索は、通常の名前探索と何ら変わりないということに注意しなければならない。例えば、名前が隠されている場合は、発見されない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #1 f(int)</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 再宣言、f(int)を隠す</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #2 f(double)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>#1では、f(int)が名前探索で見つかるので、オーバーロード解決によって、f(int)が最適関数に選ばれる。#2では、f(int)は隠されているので、名前探索では見つからない。そのため、f(int)は候補関数にはならない。結果として、f(double)が最適関数に選ばれる。</p>
+<p>関数のローカル宣言はまず使われないが、派生クラスのメンバー関数の宣言によって、基本クラスのメンバー関数が隠されることはよくある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">long</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// Baseクラスの名前fを隠す</span>
+    <span class="kt">void</span> <span class="n">g</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// Derived::f(double)</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、Derived::f(double)が、Baseのメンバー関数fを隠してしまうので、候補関数にはDerived::f(double)しか列挙されない。</p>
+<p>候補関数がメンバー関数である場合、コード上には現れない仮引数として、クラスのオブジェクトを取る。これを、暗黙のオブジェクト仮引数(implicit object parameter)と呼ぶ。これは、オーバーロード解決の際に考慮される。暗黙のオブジェクト仮引数は、オーバーロード解決においては、関数の第一引数だとみなされる。暗黙のオブジェクト仮引数の型は、まず、クラスの型XにCV修飾子がつき、さらに、</p>
+<p>リファレンス修飾子がない場合、あるいは、リファレンス修飾子が&amp;amp;の場合、X（場合によってCV修飾子）へのlvalueリファレンス。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="c1">// コメントは暗黙のオブジェクト仮引数の型</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="o">&amp;</span> <span class="c1">// X &amp;</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="c1">// X const &amp;</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">volatile</span> <span class="o">&amp;</span> <span class="c1">// X volatile &amp;</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">&amp;</span> <span class="c1">// X const volatile &amp;</span>
+
+    <span class="n">viod</span> <span class="n">g</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// X &amp;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>リファレンス修飾子が&amp;amp;&amp;amp;の場合、X(場合によってCV修飾子)へのrvalueリファレンス。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="c1">// コメントは暗黙のオブジェクト仮引数の型</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="c1">// X &amp;&amp;</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">const</span> <span class="o">&amp;&amp;</span> <span class="c1">// X const &amp;&amp;</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">volatile</span> <span class="o">&amp;&amp;</span> <span class="c1">// X volatile &amp;&amp;</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">&amp;&amp;</span> <span class="c1">// X const volatile &amp;&amp;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>となる。例えば、以下のようにオーバーロード解決に影響する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="o">&amp;</span> <span class="p">;</span> <span class="c1">// #1 暗黙のオブジェクト仮引数の型は、X &amp;</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">;</span> <span class="c1">// #2 暗黙のオブジェクト仮引数の型は、X const &amp;</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="p">;</span> <span class="c1">// #3 暗黙のオブジェクト仮引数の型は、X &amp;&amp;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">x</span><span class="p">.</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// #1</span>
+    <span class="n">X</span> <span class="k">const</span> <span class="n">cx</span> <span class="p">;</span>
+    <span class="n">cx</span><span class="p">.</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// #2</span>
+    <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">X</span> <span class="o">&amp;&amp;&gt;</span><span class="p">(</span><span class="n">x</span><span class="p">).</span><span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// #3</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>候補関数には、メンバー関数と非メンバー関数の両方を含むことがある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="k">const</span>
+    <span class="p">{</span> <span class="k">return</span> <span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">X</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">double</span> <span class="p">)</span>
+<span class="p">{</span> <span class="k">return</span> <span class="n">X</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">x</span> <span class="o">+</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// X::operator+(int)</span>
+    <span class="n">x</span> <span class="o">+</span> <span class="mf">0.0</span> <span class="p">;</span> <span class="c1">// operator+(X const &amp;, double)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合、候補関数には、メンバー関数であるX::operator +と、非メンバー関数であるoperator+の両方が含まれる。候補関数に列挙されるので、当然、オーバーロード解決で最適関数が決定される。</p>
+<p>テンプレートの実引数推定は、名前解決の際に行われる。そのため、候補関数として関数テンプレートのインスタンスが列挙された時点で、テンプレート実引数は決定されている。</p>
+<p>オーバーロード解決が行われる文脈には、いくつか種類がある。それによって、候補関数の選び方も違ってくる。</p>
+<div class="section" id="function-call-syntax">
+<h4>関数呼び出しの文法(Function call syntax)<a class="headerlink" href="#function-call-syntax" title="Permalink to this headline">¶</a></h4>
+<p>最も分かりやすい関数呼び出しは、関数呼び出しの文法によるものだろう。しかし、一口に関数呼び出しの文法といっても、微妙に違いがある。単なる関数名に対する関数呼び出し式の適用もあれば、暮らすのオブジェクトに.や-&amp;gt;を使った式に対する関数呼び出し、つまりメンバー関数の呼び出しや、クラスのオブジェクトに対する関数呼び出し式、つまりoperator ()のオーバーロードを呼び出すものがある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="k">operator</span> <span class="p">()</span> <span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="p">()</span> <span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">x</span><span class="p">.</span><span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// オーバーロード解決が必要</span>
+    <span class="n">x</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// オーバーロード解決が必要</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>オーバーロード解決は、関数へのポインターやリファレンスを経由した間接的な呼び出しの際には、行われない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span> <span class="n">p</span><span class="p">)(</span> <span class="kt">int</span> <span class="p">)</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">f</span> <span class="p">;</span>
+    <span class="n">p</span><span class="p">(</span> <span class="mf">0.0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// f(int)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="operators-in-expressions">
+<h4>式中の演算子(Operators in expressions)<a class="headerlink" href="#operators-in-expressions" title="Permalink to this headline">¶</a></h4>
+<p>この項は、オーバーロードされた演算子を候補関数として見つける際の詳細である。演算子のオーバーロードの宣言方法については、&lt;a href=&#8221;#over.oper&#8221;&gt;オーバーロードされた演算子&lt;/a&gt;を参照。</p>
+<p>演算子を使った場合にも、オーバーロード解決が必要になる。ただし、演算子にオーバーロード解決が行われる場合、オペランドにクラスやenumが関わっていなければならない。オペランドが基本型だけであれば、組み込みの演算子が使われる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// エラー、オペランドがすべて基本型</span>
+<span class="kt">int</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>演算子のオーバーロードは、メンバー関数としてオーバーロードする方法と、非メンバー関数としてオーバーロードする方法がある。すでに述べたように、候補関数には、どちらも列挙される。</p>
+<p>演算子のオーバーロード関数は、演算子を仮に&#64;と置くと、以下の表のように呼ばれる。</p>
+<p>代入、添字、クラスメンバーアクセスの演算子は、メンバー関数として宣言しなければならないので、非メンバー関数は存在しない。</p>
+</div>
+<div class="section" id="initialization-by-constructor">
+<h4>コンストラクターによる初期化(Initialization by constructor)<a class="headerlink" href="#initialization-by-constructor" title="Permalink to this headline">¶</a></h4>
+<p>クラスのオブジェクトの直接初期化の場合、そのクラスからコンストラクターが候補関数として列挙され、オーバーロード解決が行われる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// オーバーロード解決が行われる</span>
+    <span class="n">X</span> <span class="n">b</span><span class="p">(</span> <span class="mf">0.0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// オーバーロード解決が行われる</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="copy-initialization-of-class-by-user-defined-conversion">
+<h4>ユーザー定義型変換によるクラスのコピー初期化(Copy-initialization of class by user-defined conversion)<a class="headerlink" href="#copy-initialization-of-class-by-user-defined-conversion" title="Permalink to this headline">¶</a></h4>
+<p>クラスのコピー初期化におけるユーザー定義型変換には、オーバーロード解決が行われる。ユーザー定義型変換には、変換コンストラクターと変換関数がある。これは、両方とも、候補関数として列挙される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Destination</span> <span class="p">;</span>
+<span class="k">extern</span> <span class="n">Destination</span> <span class="n">obj</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Source</span>
+<span class="p">{</span>
+    <span class="k">operator</span> <span class="n">Destination</span> <span class="o">&amp;</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">obj</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="k">struct</span> <span class="n">Destination</span>
+<span class="p">{</span>
+    <span class="n">Destination</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">Destination</span><span class="p">(</span> <span class="n">Source</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="n">Destination</span> <span class="n">obj</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Source</span> <span class="n">s</span> <span class="p">;</span>
+    <span class="n">Destination</span> <span class="n">d</span> <span class="p">;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">s</span> <span class="p">;</span> <span class="c1">// オーバーロード解決、Source::operator Destination &amp;()</span>
+    <span class="n">Source</span> <span class="n">cs</span> <span class="p">;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">cs</span> <span class="p">;</span> <span class="c1">// オーバーロード解決、Destination::Destination( Source const &amp; )</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、変換コンストラクターと変換関数の両方が候補関数として列挙される。この例で、もし変換コンストラクターの仮引数が、Source &amp;amp;ならば、オーバーロード解決は曖昧になる。</p>
+<p>ただし、explicit変換コンストラクターとexplicit変換関数は、直接初期化か、明示的なキャストが使われた際にしか候補関数にならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">explicit</span> <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">explicit</span> <span class="k">operator</span> <span class="kt">int</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">a</span><span class="p">(</span> <span class="n">x</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー</span>
+
+    <span class="n">X</span> <span class="n">c</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="n">X</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合の実引数リストには、初期化式が使われる。変換コンストラクターの場合は、第一仮引数と比較され、変換関数の場合は、クラスの隠しオブジェクト仮引数と比較される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 変換コンストラクターの例</span>
+<span class="k">struct</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="c1">// 候補関数</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">A</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">A</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">A</span> <span class="n">a</span> <span class="p">;</span>
+    <span class="n">X</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// オーバーロード解決、A::A(A&amp;)</span>
+    <span class="n">A</span> <span class="k">const</span> <span class="n">ca</span> <span class="p">;</span>
+    <span class="n">X</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">ca</span> <span class="p">;</span> <span class="c1">// オーバーロード解決、A::A(A const &amp;)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、実引数としてaやcaが使われ、クラスXの変換コンストラクターの第一仮引数と比較される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 変換関数の例</span>
+<span class="k">struct</span> <span class="n">A</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="c1">// 候補関数</span>
+    <span class="k">operator</span> <span class="n">A</span><span class="p">()</span> <span class="o">&amp;</span> <span class="p">{</span> <span class="k">return</span> <span class="n">A</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="k">operator</span> <span class="n">A</span><span class="p">()</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">{</span> <span class="k">return</span> <span class="n">A</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="k">operator</span> <span class="n">A</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="p">{</span> <span class="k">return</span> <span class="n">A</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+<span class="c1">// オーバーロード解決、X::operator A() &amp;</span>
+<span class="c1">// 実引数はlvalueのX、</span>
+    <span class="n">A</span> <span class="n">a1</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">X</span> <span class="k">const</span> <span class="n">cx</span> <span class="p">;</span>
+<span class="c1">// オーバーロード解決、X::operator A() const &amp;</span>
+<span class="c1">// 実引数はconstなlvalue</span>
+    <span class="n">A</span> <span class="n">a2</span> <span class="o">=</span> <span class="n">cx</span> <span class="p">;</span>
+<span class="c1">// オーバーロード解決、X::operator A() &amp;&amp;</span>
+<span class="c1">// 実引数はxvalue</span>
+    <span class="n">A</span> <span class="n">a3</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">X</span> <span class="o">&amp;&amp;&gt;</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、クラスXのオブジェクトが実引数として、変換関数のクラスの隠しオブジェクト仮引数として比較される。たとえば、A a1 = x ; の場合、実引数は非constなlvalueなので、オーバーロード解決により、X::operator A() &amp;amp;が選ばれる。</p>
+<p>その他の変換コンストラクターと変換関数に対しても、オーバーロード解決で比較する実引数と仮引数はこれに同じ。</p>
+</div>
+<div class="section" id="initialization-by-conversion-function">
+<h4>変換関数によるクラスではないオブジェクトの初期化(Initialization by conversion function)<a class="headerlink" href="#initialization-by-conversion-function" title="Permalink to this headline">¶</a></h4>
+<p>クラスではないオブジェクトを、クラスのオブジェクトの初期化式で初期化する際、クラスの変換関数が候補関数として列挙され、オーバーロード解決が行われる。実引数リストには、初期化式がひとつの実引数として渡される</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">operator</span> <span class="kt">int</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="k">operator</span> <span class="kt">long</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0L</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="k">operator</span> <span class="kt">double</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mf">0.0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// オーバーロード解決が行われる</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、候補関数に、X::operator int、X::operator long、X::operator doubleが列挙され、オーバーロード解決によってX::operator intが選ばれる。</p>
+</div>
+<div class="section" id="initialization-by-conversion-function-for-direct-reference-binding">
+<h4>変換関数によるリファレンスの初期化(Initialization by conversion function for direct reference binding)<a class="headerlink" href="#initialization-by-conversion-function-for-direct-reference-binding" title="Permalink to this headline">¶</a></h4>
+<p>リファレンスを初期化するとき、初期化式に変換関数を適用して、その結果を束縛できる。このとき、クラスの変換関数が候補関数として列挙され、オーバーロード解決が行われる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">operator</span> <span class="kt">int</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="k">operator</span> <span class="kt">short</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="o">&amp;&amp;</span> <span class="n">ref</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// オーバーロード解決、X::operator int()</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="initialization-by-list-initialization">
+<h4>リスト初期化による初期化(Initialization by list-initialization)<a class="headerlink" href="#initialization-by-list-initialization" title="Permalink to this headline">¶</a></h4>
+<p>&lt;a href=&#8221;#dcl.init.aggr&#8221;&gt;アグリゲート&lt;/a&gt;ではないクラスがリスト初期化によって初期化されるとき、オーバーロード解決によってコンストラクターが選択される。</p>
+<p>この際の候補関数の列挙は、二段階に分かれている。</p>
+<p>まず一段階に、クラスの初期化リストコンストラクターが候補関数として列挙され、オーバーロード解決が行われる。実引数リストには、初期化リストが唯一の実引数として、std::initializer_list&amp;lt;T&amp;gt;の形で、与えられる</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="c1">// 初期化リストコンストラクター</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+    <span class="c1">// その他のコンストラクター</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">double</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// オーバーロード解決、X::X( std::initializer_list&lt;int&gt; )</span>
+    <span class="n">X</span> <span class="n">b</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// オーバーロード解決、X::X( std::initializer_list&lt;double&gt; )</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合、候補関数には、初期化リストコンストラクターしか列挙されない。</p>
+<p>もし、一段階目の名前解決で、&lt;a href=&#8221;#over.match.viable&#8221;&gt;適切&lt;/a&gt;な初期化リストコンストラクターが見つからなかった場合、二段階の候補関数として、再びオーバーロード解決が行われる。今度は、クラスのすべてのコンストラクターが候補関数として列挙される。実引数は、初期化リストの中の要素が、それぞれ別の実引数として渡される</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="c1">// 適切な初期化リストコンストラクターなし</span>
+
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">double</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// オーバーロード解決、X::X( int, int, int )</span>
+    <span class="n">X</span> <span class="n">b</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// オーバーロード解決、X::X( double, double, double )</span>
+    <span class="n">X</span> <span class="n">c</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// オーバーロード解決、X::X( int, double, int )</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>「適切」という用語に注意すること。もし、&lt;a href=&#8221;#dcl.init.list&#8221;&gt;縮小変換&lt;/a&gt;が必要となれば、適切関数かどうかを判定する前にエラーとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">double</span><span class="p">,</span> <span class="kt">double</span><span class="p">,</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">b</span> <span class="o">=</span> <span class="p">{</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// エラー、縮小変換が必要</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>デフォルトコンストラクターを持つクラスに空の初期化リストが渡された場合、一段階目のオーバーロード解決は行われず、デフォルトコンストラクターが呼ばれる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="p">(</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="o">=</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// デフォルトコンストラクターが呼ばれる</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>コピーリスト初期化では、explicitコンストラクターが選ばれた場合、エラーとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">explicit</span> <span class="n">X</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">0</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// エラー、コピーリスト初期化でexplicitコンストラクター</span>
+    <span class="n">X</span> <span class="n">b</span><span class="p">{</span> <span class="mi">0</span> <span class="p">}</span> <span class="p">;</span> <span class="c1">// OK、直接初期化</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="viable-functions">
+<h2>適切関数(Viable functions)<a class="headerlink" href="#viable-functions" title="Permalink to this headline">¶</a></h2>
+<p>候補関数は、単に名前探索の結果であり、実際には呼び出すことができない関数も含まれている。このため、候補関数を列挙した後、呼び出すことが出来る関数、すなわち適切関数(Viable functions)を列挙する。</p>
+<p>適切関数とは、与えられた実引数で、実際に呼び出すことが出来る関数である。これには、大きく二つの要素がある。仮引数の数と型である。</p>
+<p>適切関数となるためにはまず、与えられた実引数の個数に対して、仮引数の個数が対応していなければならない。そのための条件は、以下のいずれかを満たしていればよい。</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>実引数の個数と、候補関数の仮引数の個数が一致する関数</p>
+<p>これは簡単だ。実引数と同じ個数だけの仮引数があればよい。可変長テンプレートのインスタンス化による関数もこのうちに入る。</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li></li>
+</ul>
+<p>候補関数の仮引数の個数が、実引数の個数より少ないが、仮引数リストにエリプシス(...)がある場合。</p>
+<p>これは、C言語でお馴染みの...のことだ。可変長テンプレートは、このうちには入らない。</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="p">...</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 適切関数</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 適切関数</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 適切関数</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li></li>
+</ul>
+<p>候補関数の仮引数の個数は、実引数より多いが、実引数より多い仮引数にはすべて、デフォルト実引数が指定されていること。</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 関数</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 適切関数</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 適切関数</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>さらに、対応する実引数から仮引数に対して、後述する暗黙の型変換により、妥当な変換が存在しなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、完全一致</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0L</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、整数変換</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mf">0.0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、整数と浮動小数点数間の変換</span>
+    <span class="n">f</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">f</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>適切関数であるからといって、実際に呼び出せるとは限らない。たとえば、宣言されているが未定義であったり、アクセス指定による制限を受けたり、あるいはその他実装依存の理由など、現実には呼び出すことができない理由は多数存在する。</p>
+</div>
+<div class="section" id="best-viable-function">
+<h2>最適関数(Best viable function)<a class="headerlink" href="#best-viable-function" title="Permalink to this headline">¶</a></h2>
+<p>適切関数が複数ある場合、定められた方法で関数を比較することによって、ひとつの最も適切(best viable)な関数を選択する。この関数を最適関数と呼ぶ。オーバーロード解決の結果は、この最適関数となる。もし、最も適切な関数をひとつに決定できない場合、オーバーロード解決は曖昧であり、エラーとなる。</p>
+<p>最適関数の決定は、主に、後述する暗黙の型変換の優先順位によって決定される。</p>
+<p>まず大前提として、ある関数が、別の関数よりも、より適切であると判断されるには、ある関数のすべて仮引数に対する実引数からの暗黙の型変換の優先順位が劣っておらず、かつ、ひとつ以上の優れている型変換が存在しなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// #1</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">long</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// #2</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">,</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー、オーバーロード解決が曖昧</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、どの関数も、仮引数への型変換の優先順位が、他の関数より劣っている。したがってオーバーロード解決は曖昧となる。一見すると、#2の方が、どちらも整数型であるので、よりよい候補なのではないかと思うかもしれない。しかし、#1の第一仮引数の型はintなので、longよりも優れている。一方、第二引数では、#2の方が優れている。このため、曖昧となる。最適関数となるためには、全ての仮引数の型が、他の候補より劣っていてはならないのだ。</p>
+<p>ユーザー定義型変換による初期化の場合、ユーザー定義型変換の結果の型から、目的の型へ、標準型変換により変換する際、より優先順位の高いものが選ばれる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">operator</span> <span class="kt">int</span><span class="p">()</span> <span class="p">;</span>
+    <span class="k">operator</span> <span class="nf">double</span><span class="p">()</span> <span class="p">;</span>
+
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// operator intが最適関数</span>
+    <span class="kt">float</span> <span class="n">f</span> <span class="o">=</span> <span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー、曖昧</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>一見すると、doubleからfloatへの変換は、intからの変換より優先順位が高いのではないかと思うかもしれないが、後述する標準型変換の優先順位のルールにより、同じ優先順位なので、曖昧となる。</p>
+<p>非テンプレート関数と関数テンプレートの特殊化では、非テンプレート関数の特殊化が優先される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">T</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 非テンプレート関数を優先</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>もちろん、これは大前提の、すべての仮引数に対し劣った型変換がないということが成り立つ上での話である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">T</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">long</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 関数テンプレートの特殊化f&lt;int&gt;を優先</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合は、テンプレートの特殊化である仮引数int型の方が、実引数int型に対して、より優れた型変換なので、優先される。</p>
+<p>テンプレートの実引数推定のルールは複雑なので、一見して、非テンプレート関数が優先されると思われるコードで、関数テンプレートの実体化の方が優先される場合がある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// #1</span>
+<span class="c1">// 非テンプレート関数</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+
+
+<span class="c1">// #2</span>
+<span class="c1">// 関数テンプレート</span>
+<span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">T</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// xは非constなlvalue</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">x</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #2を呼ぶ</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>これは、#2の実体化の結果が、f&amp;lt;int &amp;amp;&amp;gt;( int &amp;amp; )になるからだ。xは非constなlvalueであるので、非constなlvalueリファレンス型の仮引数と取る#2の方が優先される。</p>
+<p>ふたつの関数が両方ともテンプレートの特殊化の場合、&lt;a href=&#8221;#temp.func.order&#8221;&gt;半順序&lt;/a&gt;によって、より特殊化されていると判断される方が、優先される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">T</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #1</span>
+<span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">T</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #2</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">ptr</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 半順序により#2を優先</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>#1と#2の特殊化による仮引数の型は、どちらも int <a href="#id4"><span class="problematic" id="id5">*</span></a>であるが、#2のテンプレートの特殊化の方が、半順序のルールによって、より特殊化されているとみなされるため、#2が優先される。</p>
+<div class="section" id="implicit-conversion-sequences">
+<h3>暗黙の型変換の順序(Implicit conversion sequences)<a class="headerlink" href="#implicit-conversion-sequences" title="Permalink to this headline">¶</a></h3>
+<p>暗黙の型変換には、いくつかの種類と、多数の例外ルールがあり、それぞれ優先順位を比較することができる。残念ながら、この詳細は非常に冗長であり、本書では概略の説明に留める。</p>
+<p>まず、暗黙の型変換には、大別して三種類ある。&lt;a href=&#8221;#conv&#8221;&gt;標準型変換&lt;/a&gt;、&lt;a href=&#8221;#class.conv&#8221;&gt;ユーザー定義型変換&lt;/a&gt;、エリプシス変換である。優先順位もこの並びである。標準型変換が一番優先され、次にユーザー定義型変換、最後にエリプシス変換となる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="n">X</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #1</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="n">X</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #2</span>
+
+<span class="kt">void</span> <span class="nf">g</span><span class="p">(</span> <span class="n">X</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #3</span>
+<span class="kt">void</span> <span class="nf">g</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #4</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #1、標準型変換がユーザー定義型変換に優先される</span>
+    <span class="n">g</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #3、ユーザー定義型変換がエリプシス変換に優先される</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>さらに、標準型変換とユーザー定義変換同士の間での優先順位がある。</p>
+<p>エリプシスに基本型以外を渡して呼び出した場合の挙動は未定義だが、オーバーロード解決には影響しない。</p>
+<div class="section" id="standard-conversion-sequences">
+<h4>標準型変換（Standard conversion sequences）<a class="headerlink" href="#standard-conversion-sequences" title="Permalink to this headline">¶</a></h4>
+<p>オーバーロード解決における標準型変換の間の優先順位は、非常に複雑で、単に、ランクA＞ランクBのような単純な比較ができない。ここでは、とくに問題になりそうな部分のみ取り上げる。</p>
+<p>まず、型変換の必要のない、完全一致が最も優先される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// f(int)</span>
+    <span class="n">f</span><span class="p">(</span> <span class="mf">0.0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// f(double)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この完全一致には、&lt;a href=&#8221;#conv.lval&#8221;&gt;lvalueからrvalueへの型変換&lt;/a&gt;、&lt;a href=&#8221;#conv.array&#8221;&gt;配列からポインターへの型変換&lt;/a&gt;、&lt;a href=&#8221;#conv.func&#8221;&gt;関数からポインターへの型変換&lt;/a&gt;が含まれる。</p>
+<p>void f( int ) ;</p>
+<p>int main()
+{</p>
+<blockquote>
+<div>int x = 0 ;
+f( x ) ; // lvalueからrvalueへの変換</div></blockquote>
+<p>}</p>
+<p>配列や関数からポインターへの変換は、完全一致とみなされることに注意。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">g</span><span class="p">(</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)()</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// ポインター</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">void</span> <span class="p">(</span><span class="o">&amp;</span><span class="p">)()</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// リファレンス</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">g</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー、オーバーロード解決が曖昧、候補関数はすべて完全一致</span>
+    <span class="n">f</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">g</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// OK、f( void (*)() )</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>完全一致は、ポインターやリファレンスに&lt;a href=&#8221;#conv.qual&#8221;&gt;CV修飾子を付け加える型変換&lt;/a&gt;より優先される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #1</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #2</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">x</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// #1、完全一致</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>整数と浮動小数点数のプロモーションは、その他の整数と浮動小数点数への変換より優先される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">long</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">short</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="n">f</span><span class="p">(</span> <span class="n">x</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// f(int)、プロモーション</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="address-of-overloaded-function">
+<h2>オーバーロード関数のアドレス(Address of overloaded function)<a class="headerlink" href="#address-of-overloaded-function" title="Permalink to this headline">¶</a></h2>
+<p>ある関数の名前に対して、複数の候補関数がある場合でも、名前から関数のアドレスを取得できる。どの候補関数を選ぶかは、文脈が期待する型の完全一致で決定される。初期化や代入、関数呼び出しの実引数や明示的なキャストの他に、関数の戻り値も、文脈により決定される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">long</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">g</span><span class="p">(</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="kt">int</span><span class="p">)</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">h</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// 初期化</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">p</span><span class="p">)(</span><span class="kt">int</span><span class="p">)</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">f</span> <span class="p">;</span> <span class="c1">// void f(int)のアドレス</span>
+    <span class="c1">// 代入</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">f</span> <span class="p">;</span> <span class="c1">// void f(int)のアドレス</span>
+    <span class="c1">// 関数呼び出しの実引数</span>
+    <span class="n">g</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">f</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="c1">// 明示的なキャスト</span>
+    <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="kt">int</span><span class="p">)</span><span class="o">&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">f</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// void f(int)のアドレス</span>
+<span class="p">}</span>
+
+<span class="c1">// 関数の戻り値</span>
+<span class="k">auto</span> <span class="nf">i</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)(</span><span class="kt">int</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">f</span> <span class="p">;</span> <span class="c1">// void f(int)のアドレス</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>これらの文脈では、ある具体的な完全一致の型を期待しているので、オーバーロードされた関数名から、適切な関数を決定できる。</p>
+<p>完全一致の型ではない場合や、型を決定できない場合はエラーである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">long</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">g</span><span class="p">(</span> <span class="n">T</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">g</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">f</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="overloaded-operators">
+<h2>オーバーロード演算子(Overloaded operators)<a class="headerlink" href="#overloaded-operators" title="Permalink to this headline">¶</a></h2>
+<p>特別な識別子を使っている関数宣言は、演算子関数(operator function)として認識される。この識別子は以下のようになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">operato</span>
+</pre></div>
+</div>
+<p>オーバーロード可能な演算子は以下の通りである。</p>
+<div class="highlight-c++"><pre>new     delete  new[]   delete[]
++   -   *   /   %   ˆ   &amp;   |   ~
+!   =   &lt;   &gt;   +=  -=  *=  /=  %=
+ˆ=  &amp;=  |=  &lt;&lt;  &gt;&gt;  &gt;&gt;= &lt;&lt;= ==  !=
+&lt;=  &gt;=  &amp;&amp;  ||  ++  --  ,   -&gt;* -&gt;
+( ) [ ]</pre>
+</div>
+<p>以下の演算子は、単項、二項の両方でオーバーロードできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="o">+</span>   <span class="o">-</span>   <span class="o">*</span>   <span class="o">&amp;</span>
+</pre></div>
+</div>
+<p>以下の演算子は、関数呼び出しと添え字である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="p">(</span> <span class="p">)</span> <span class="p">[</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>以下の演算子は、オーバーロードできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="p">.</span>   <span class="p">.</span><span class="o">*</span>  <span class="o">::</span>  <span class="o">?:</span>
+</pre></div>
+</div>
+<p>&lt;p class=&#8221;todo&#8221;&gt;
+allocation functionとdeallocation functionへのリンク</p>
+<p>演算子関数は、非staticメンバー関数か、非メンバー関数でなければならない。非staticメンバー関数の場合、暗黙のオブジェクト仮引数が、第一オペランドになる。これが*thisである。
+非メンバー関数の場合、仮引数のひとつは、クラスか、クラスへのリファレンス、enumかenumへのリファレンスでなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="c1">// 非staticメンバー関数による演算子関数</span>
+    <span class="n">X</span> <span class="k">operator</span> <span class="o">+</span><span class="p">()</span> <span class="k">const</span> <span class="p">;</span> <span class="c1">// 暗黙のオブジェクト仮引数 X const &amp;</span>
+    <span class="n">X</span> <span class="k">operator</span> <span class="o">+</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="k">const</span> <span class="p">;</span> <span class="c1">// 暗黙のオブジェクト仮引数 X const &amp;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 非メンバー関数による演算子関数</span>
+<span class="n">X</span> <span class="k">operator</span> <span class="o">-</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+<span class="n">X</span> <span class="k">operator</span> <span class="o">-</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="n">X</span> <span class="k">operator</span> <span class="o">-</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>以下の例はエラーである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// エラー、組み込みの演算子をオーバーロードできない</span>
+<span class="kt">int</span> <span class="k">operator</span> <span class="o">+</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">// エラー、組み込みの演算子をオーバーロードできない</span>
+<span class="n">X</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ただし、代入演算子や添字演算子のように、非staticメンバー関数として実装しなければならない例外的な演算子もある。</p>
+<p>演算子関数は、必ず元の演算子と同じ数の仮引数を取らなければならない。</p>
+<div class="highlight-c++"><pre>struct X　{　} ;
+
+X operator / ( X &amp; ) ; // エラー、仮引数が少ない
+X operator / ( X &amp;, X &amp;, X &amp; ) ; // エラー、仮引数が多い</pre>
+</div>
+<p>ただし、これも関数呼び出し演算子のように、例外的な演算子がある。</p>
+<p>演算子関数は、組み込みの演算子と同じ挙動を守らなくてもよい。例えば、戻り値の型は自由であるし、オーバーロードされた演算子関数が、基本型にその単項演算子を適用した場合に期待される挙動をしなくてもかまわない。例えば、オーバーロードした演算子関数では、&#8221;++a&#8221;、と、&#8221;a += 1&#8221;というふたつの式を評価した際の挙動や結果が同じにならなくてもよい。また、組み込み演算子ならば非constなlvalueを渡す演算子で、constなlvalueやrvalueを受け取っても構わない</p>
+<div class="highlight-c++"><pre>struct X　{　} ;
+
+void operator + ( X &amp; ) ; // OK、戻り値の型は自由
+void operator ++ ( X const &amp; ) ; // OK、constなlvalueリファレンスでもよい</pre>
+</div>
+<p>演算子関数は、通常通り演算子を使うことによって呼び出すことができる。その際、演算子の優先順位は、組み込みの演算子と変わらない。また、識別子を指定することによって、通常の関数呼び出し式の文法で、明示的に呼び出すこともできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="k">operator</span> <span class="o">+</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="k">const</span> <span class="p">;</span>
+    <span class="n">X</span> <span class="k">operator</span> <span class="o">*</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="k">const</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">a</span> <span class="p">;</span> <span class="n">X</span> <span class="n">b</span> <span class="p">;</span> <span class="n">X</span> <span class="n">c</span> <span class="p">;</span>
+    <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="p">;</span> <span class="c1">// 演算子を使うことによる呼び出し</span>
+    <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">c</span> <span class="p">;</span> <span class="c1">// 優先順位は、(a + (b * c))</span>
+
+    <span class="n">a</span><span class="p">.</span><span class="k">operator</span> <span class="o">+</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// 明示的な関数呼び出し</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>代入演算子=や、単項演算子の&amp;amp;や、カンマ演算子は、オーバーロードしなくてもすべての型に対してあらかじめ定義された挙動がある。この挙動はオーバーロードして変えることもできる。</p>
+<div class="section" id="unary-operators">
+<h3>単項演算子(Unary operators)<a class="headerlink" href="#unary-operators" title="Permalink to this headline">¶</a></h3>
+<p>オーバーロード可能な単項演算子は、以下の通りである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="o">+</span> <span class="o">-</span> <span class="o">*</span> <span class="o">&amp;</span> <span class="o">~</span> <span class="o">!</span>
+</pre></div>
+</div>
+<p>ここでは、<a href="#id6"><span class="problematic" id="id7">*</span></a>と&amp;amp;は単項演算子であることに注意。&lt;a href=&#8221;#over.binary&#8221;&gt;二項演算子&lt;/a&gt;の項も参照。</p>
+<p>インクリメント演算子とデクリメント演算子については、&lt;a href=&#8221;#over.inc&#8221;&gt;インクリメントとデクリメント&lt;/a&gt;を参照。</p>
+<p>単項演算子は、演算子を&#64;とおくと、&#64;xという式は、非staticメンバー関数の場合、x.operator &#64;()、非メンバー関数の場合、operator &#64;(x)として呼び出される。単項演算子では、非staticメンバー関数と非メンバー関数は、機能的に違いはない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">-</span><span class="p">(</span> <span class="n">X</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="o">+</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// x.operator + ()</span>
+    <span class="o">-</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// operator + (x)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>非staticメンバー関数の場合、明示的に仮引数をとらない。暗黙のオブジェクトが仮引数として渡される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">()</span> <span class="o">&amp;</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">()</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">()</span> <span class="k">volatile</span> <span class="o">&amp;</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">()</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">&amp;</span> <span class="p">;</span>
+
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">()</span> <span class="k">const</span> <span class="o">&amp;&amp;</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">()</span> <span class="k">volatile</span> <span class="o">&amp;&amp;</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">()</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">&amp;&amp;</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="o">+</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// void operator + () &amp;</span>
+    <span class="o">+</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">X</span> <span class="o">&amp;&amp;&gt;</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// void operator + () &amp;&amp;</span>
+
+    <span class="n">X</span> <span class="k">const</span> <span class="n">cx</span> <span class="p">;</span>
+    <span class="o">+</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// void operator + () const &amp;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>同様のコードを、非メンバー関数として書くと、以下のようになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">volatile</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">volatile</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="o">+</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// void operator + ( X &amp; )</span>
+    <span class="o">+</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">X</span> <span class="o">&amp;&amp;&gt;</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// void operator + ( X &amp;&amp; )</span>
+
+    <span class="n">X</span> <span class="k">const</span> <span class="n">cx</span> <span class="p">;</span>
+    <span class="o">+</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// void operator + ( X const &amp; )</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>また、非メンバー関数の場合は、クラス型を引数に取ることができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>operator &amp;amp;には、注意を要する。これは、組み込みの演算子、すなわち、オペランドのアドレスを得る演算子として、すべての型にあらかじめ定義されている。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// operator &amp;のオーバーロードなし</span>
+<span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">X</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// 組み込みのoperator &amp;の呼び出し</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この演算子をオーバーロードすると、組み込みのoperator &amp;amp;が働かなくなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="o">*</span> <span class="k">operator</span> <span class="o">&amp;</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">nullptr</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">X</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// 常にnullポインターになる。</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>もちろん、戻り値の型は自由だから、なにか別のことをさせるのも可能だ。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">int_wrapper</span>
+<span class="p">{</span>
+<span class="k">private</span> <span class="o">:</span>
+    <span class="kt">int</span> <span class="n">obj</span> <span class="p">;</span>
+<span class="k">public</span> <span class="o">:</span>
+    <span class="kt">int</span> <span class="o">*</span> <span class="k">operator</span> <span class="o">&amp;</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="o">&amp;</span><span class="n">obj</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">int_wrapper</span> <span class="n">wrap</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">wrap</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ただし、クラスのユーザーが、オブジェクトのアドレスを得たい場合、組み込みの演算子を呼び出すのは簡単ではない。そのため、標準ライブラリヘッダー&amp;lt;memory&amp;gt;には、std::addressofという関数テンプレートが定義されている。これを使えば、operator &amp;amp;がオーバーロードされているクラスでも、クラスのオブジェクトのアドレスを得ることができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">&amp;</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">X</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// エラー、operator &amp;amp;の戻り値の型はvoid</span>
+    <span class="n">X</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">addressof</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="binary-operators">
+<h3>二項演算子(Binary operators)<a class="headerlink" href="#binary-operators" title="Permalink to this headline">¶</a></h3>
+<p>オーバーロード可能な二項演算子は以下の通りである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="o">+</span>   <span class="o">-</span>   <span class="o">*</span>   <span class="o">/</span>   <span class="o">%</span>   <span class="o">^</span>   <span class="o">&amp;</span>   <span class="o">|</span>   <span class="o">~</span>
+<span class="o">!</span>   <span class="o">&lt;</span>   <span class="o">&gt;</span>   <span class="o">+=</span>  <span class="o">-=</span>  <span class="o">*=</span>  <span class="o">/=</span>  <span class="o">%=</span>
+<span class="o">^=</span>  <span class="o">&amp;=</span>  <span class="o">|=</span>  <span class="o">&lt;&lt;</span>  <span class="o">&gt;&gt;</span>  <span class="o">&gt;&gt;=</span> <span class="o">&lt;&lt;=</span> <span class="o">==</span>  <span class="o">!=</span>
+<span class="o">&lt;=</span>  <span class="o">&gt;=</span>  <span class="o">&amp;&amp;</span>  <span class="o">||</span>  <span class="p">,</span>
+</pre></div>
+</div>
+<p>代入演算子は特別な扱いを受ける。詳しくは、&lt;a href=&#8221;#over.ass&#8221;&gt;代入演算子&lt;/a&gt;を参照。複合代入演算子は、二項演算子に含まれる。</p>
+<p>二項演算子は、演算子を&#64;とおくと、x&#64;yという式に対して、非staticメンバー関数の場合、x.operator &#64;(y)、非メンバー関数の場合、operator &#64;(x,y)のように呼び出される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="k">const</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">-</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">;</span> <span class="c1">// x.operator +(1)</span>
+    <span class="n">x</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">;</span> <span class="c1">// operator -(1)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>非staticメンバー関数の場合、第一オペランドが暗黙のオブジェクト仮引数に、第二オペランドが実引数に渡される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="k">volatile</span> <span class="o">&amp;</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">&amp;</span> <span class="p">;</span>
+
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="k">const</span> <span class="o">&amp;&amp;</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="k">volatile</span> <span class="o">&amp;&amp;</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">&amp;&amp;</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">;</span> <span class="c1">// X::operator + (int) &amp;</span>
+    <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">X</span> <span class="o">&amp;&amp;&gt;</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">;</span> <span class="c1">// X::operator + (int) &amp;&amp;</span>
+    <span class="n">X</span> <span class="k">const</span> <span class="n">cx</span> <span class="p">;</span>
+    <span class="n">cx</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">;</span> <span class="c1">// X::operator + (int) const &amp;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>同様のコードを、非メンバー関数で書くと以下のようになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">volatile</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="o">&amp;&amp;</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;&amp;</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">volatile</span> <span class="o">&amp;&amp;</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">&amp;&amp;</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">;</span> <span class="c1">// operator + ( X &amp;, int)</span>
+    <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">X</span> <span class="o">&amp;&amp;&gt;</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">;</span> <span class="c1">// operator + ( X &amp;&amp;, int)</span>
+    <span class="n">X</span> <span class="k">const</span> <span class="n">cx</span> <span class="p">;</span>
+    <span class="n">cx</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">;</span> <span class="c1">// operator + ( X const &amp;, int)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>非メンバー関数の場合は、クラス型を仮引数に取ることができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="n">X</span><span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>第二オペランドにクラスやenum型、あるいはそのリファレンス型を取りたい場合は、非メンバー関数しか使えない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">+</span> <span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="n">X</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="mi">1</span> <span class="o">+</span> <span class="n">x</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>メンバー関数によるオーバーロードでは、必ず第一オペランドのメンバーとして演算子関数がよばれるので、これはできない。</p>
+<p>カンマ演算子、operator ,には、あらかじめ定義された組み込みの演算子が存在する。オーバロードにより、この挙動を変えることもできる。ただし、operator ,の挙動を変えるのは、ユーザーを混乱させるので、慎むべきである。もし、単に任意個の引数を取りたいというのであれば、可変長テンプレートや初期化リストなどの便利な機能が他にもある。</p>
+</div>
+<div class="section" id="assignment">
+<h3>代入(Assignment)<a class="headerlink" href="#assignment" title="Permalink to this headline">¶</a></h3>
+<p>代入演算子のオーバーロードは、仮引数をひとつとる非staticメンバー関数として実装する。非メンバー関数として実装することはできない。複合代入演算子は、代入演算子ではなく、二項演算子である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="c1">// コピー代入演算子</span>
+    <span class="n">X</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="c1">// ムーブ代入演算子</span>
+    <span class="n">X</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span> <span class="n">X</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">;</span>
+
+    <span class="c1">// intからの代入演算子</span>
+    <span class="n">X</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// エラー、非メンバー関数として宣言することはできない</span>
+<span class="n">X</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span> <span class="n">X</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="c1">// OK、複合代入演算子は二項演算子</span>
+<span class="n">X</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">+=</span> <span class="p">(</span> <span class="n">X</span> <span class="o">&amp;</span><span class="p">,</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>もちろん、戻り値の型は自由である。ただし、慣例として、暗黙に定義される代入演算子は、<a href="#id8"><span class="problematic" id="id9">*</span></a>thisを返すようになっている。詳しくは、&lt;a href=&#8221;#class.copy&#8221;&gt;クラスオブジェクトのコピーとムーブ&lt;/a&gt;を参照。</p>
+</div>
+<div class="section" id="function-call">
+<h3>関数呼び出し(Function call)<a class="headerlink" href="#function-call" title="Permalink to this headline">¶</a></h3>
+<p>関数呼び出し演算子の識別子は、operator ()である。関数呼び出し演算子のオーバーロードは、任意個の仮引数を持つ非staticメンバー関数として宣言する。非メンバー関数として宣言することはできない。デフォルト実引数も使うことができる。</p>
+<p>関数呼び出し演算子は、x(arg1, ...)とおくと、x.operator()(arg1, ...)のように呼び出される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="p">()</span> <span class="p">(</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">operator</span> <span class="p">()</span> <span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">operator</span> <span class="p">()</span> <span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">int</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">x</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// x.operator () ( )</span>
+    <span class="n">x</span><span class="p">(</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// x.operator () ( 0 )</span>
+    <span class="n">x</span><span class="p">(</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// x.operator() ( 1, 2 )</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="subscripting">
+<h3>添字(Subscripting)<a class="headerlink" href="#subscripting" title="Permalink to this headline">¶</a></h3>
+<p>添字演算子の識別子は、operator []である。添字演算子のオーバーロードは、ひとつの仮引数を持つ非staticメンバー関数として宣言する。非メンバー関数として宣言することはできない。</p>
+<p>添字演算子は、x[y]とおくと、x.operator [] (y)のように呼び出される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="p">[]</span> <span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">;</span> <span class="c1">// x.operator [] (1)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>添字演算子に複数の実引数を渡すことはできない。ただし、初期化リストならば渡すことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="p">[]</span> <span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">initializer_list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">list</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">x</span><span class="p">[</span> <span class="p">{</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">]</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="class-member-access">
+<h3>クラスメンバーアクセス(Class member access)<a class="headerlink" href="#class-member-access" title="Permalink to this headline">¶</a></h3>
+<p>クラスメンバーアクセス演算子の識別子は、operator -&amp;gt;である。クラスメンバーアクセス演算子は仮引数を取らない非staticメンバー関数として宣言する。非メンバー関数にすることはできない。クラスメンバーアクセス演算子は、後述するように、少し変わった特徴がある。</p>
+<p>クラスメンバーアクセス演算子は、x-&amp;gt;mとおくと、(x.operator-&amp;gt;())-&amp;gt;mのように呼び出される。つまり、もし、x.operator-&amp;gt;()の戻り値の型がクラスへのポインターであれば、そのまま組み込みのクラスメンバーアクセス演算子が使われる。それ以外の場合は、戻り値に対してクラスメンバーアクセス演算子を適用しているために、さらに戻り値のクラスメンバーアクセス演算子が、もし存在すれば、呼び出される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">B</span>
+<span class="p">{</span>
+    <span class="n">A</span> <span class="n">a</span> <span class="p">;</span>
+    <span class="n">A</span> <span class="o">*</span> <span class="k">operator</span> <span class="o">-&gt;</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="o">&amp;</span><span class="n">a</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="n">B</span> <span class="n">b</span> <span class="p">;</span>
+    <span class="n">B</span> <span class="o">&amp;</span> <span class="k">operator</span> <span class="o">-&gt;</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">b</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">B</span> <span class="n">b</span> <span class="p">;</span>
+    <span class="n">b</span><span class="o">-&gt;</span><span class="n">member</span> <span class="p">;</span> <span class="c1">// (b.operator -&gt;())-&gt;member</span>
+
+    <span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+<span class="c1">// (c.operator -&gt;())-&gt;member</span>
+<span class="c1">// すなわちこの場合、以下のように展開される。</span>
+<span class="c1">// ((c.operator -&gt;()).operator -&gt;())-&gt;member</span>
+    <span class="n">c</span><span class="o">-&gt;</span><span class="n">member</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>クラスBは、</p>
+<p>クラスCのoperator -&amp;gt;がB &amp;amp;型を返していることに注目。lvalueのBにクラスメンバーアクセス演算子である-&amp;gt;が使われるため、クラスBのクラスメンバーアクセス演算子が呼ばれる。</p>
+<p>クラスメンバーアクセス演算子の評価の結果に対するクラスメンバーアクセス演算子の呼び出しは、際限なく行われる。このループを断ち切るには、最終的にクラスへのポインターを返し、組み込みのクラスメンバーアクセス演算子を使わなければならない。</p>
+<p>もちろん、これは演算子として使用した場合であって、明示的に関数を呼び出す場合には、通常通り、その関数だけが呼ばれる。もちろん、戻り値の型をvoid型にすることもできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">-&gt;</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">nullptr</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">x</span><span class="p">.</span><span class="k">operator</span> <span class="o">-&gt;</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="increment-and-decrement">
+<h3>インクリメントとデクリメント(Increment and decrement)<a class="headerlink" href="#increment-and-decrement" title="Permalink to this headline">¶</a></h3>
+<p>インクリメント演算子の識別子はoperator ++、デクリメント演算子の識別子はoperator &#8211;である。インクリメント演算子とデクリメントの演算子は非staticメンバー関数と、非メンバー関数の両方で宣言できる。インクリメント演算子とデクリメント演算子は、識別子の違いを除けば、同じように動く。ここでのサンプルコードは、インクリメント演算子の識別子を使う。</p>
+<p>インクリメントとデクリメントには、前置と後置の違いがある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="o">++</span><span class="n">a</span> <span class="p">;</span> <span class="c1">// 前置</span>
+<span class="n">a</span><span class="o">++</span> <span class="p">;</span> <span class="c1">// 後置</span>
+</pre></div>
+</div>
+<p>前置演算子は、非staticメンバー関数の場合、仮引数を取らない。非メンバー関数の場合は、ひとつの仮引数を取る。</p>
+<p>前置演算子は、++xという式に対して、非staticメンバー関数の場合、x.operator ++ ()、非メンバー関数の場合、operator ++　( x )のように呼び出される。。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span><span class="c1">// 非staticメンバー関数の例</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">++</span> <span class="p">()</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Y</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">// 非メンバー関数の例</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">++</span> <span class="p">(</span> <span class="n">Y</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="o">++</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// x.operator ++()</span>
+
+    <span class="n">Y</span> <span class="n">y</span> <span class="p">;</span>
+    <span class="o">++</span><span class="n">y</span> <span class="p">;</span> <span class="c1">// operator ++(y)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>後置演算子は、非staticメンバー関数の場合、int型の引数を取る。非メンバー関数の場合は、二つの仮引数を取る。第二仮引数の型はintでなければならない。int型の仮引数は、単に前置と後置を別の宣言にするためのタグであり、それ以上の意味はない。式としてインクリメントとデクリメントを使うと、実引数には0が渡される。</p>
+<p>後置演算子は、x++という式に対して、非staticメンバー関数の場合、x.operator ++( 0 ), 非メンバー関数の場合、operator ++ ( x, 0 )のように呼び出される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span> <span class="c1">// 非staticメンバー関数の例</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="o">++</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Y</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="c1">// 非メンバー関数の例</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="o">++</span> <span class="p">(</span> <span class="n">Y</span> <span class="o">&amp;</span> <span class="p">,</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="n">x</span><span class="o">++</span> <span class="p">;</span> <span class="c1">// x.operator ++( 0 )</span>
+
+    <span class="n">Y</span> <span class="n">y</span> <span class="p">;</span>
+    <span class="n">y</span><span class="o">++</span> <span class="p">;</span> <span class="c1">// operator ++( y, 0 )</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>intをタグとして使うこの仕様はすこし汚いが、例外的な文法を使わなくてもよいという利点があるので採用された。もし明示的に呼び出した場合は、int型の仮引数に対し、0以外の実引数を与えることもできる。</p>
+</div>
+<div class="section" id="allocation-function-and-deallocation-function">
+<h3>確保関数と解放関数(allocation function and deallocation function)<a class="headerlink" href="#allocation-function-and-deallocation-function" title="Permalink to this headline">¶</a></h3>
+<p>&lt;p class=&#8221;todo&#8221;&gt;
+Basic Conceptの該当項目の記述とリンク</p>
+<p>注意：本来、これはコア言語ではなくライブラリで規定されていることなので、本書の範疇ではないのだが、ここでは読者の便宜のため、宣言方法と、デフォルトの挙動のリファレンス実装を提示する。また、サンプルコードは分割して掲載しているが、確保関数と解放関数はそれぞれ関係しており、すべて一つのソースファイルに含まれることを想定している。そのため、ヘッダーファイルのincludeは最初のサンプルコードにしか書いていない。</p>
+<p>確保関数の識別子はoperator newである。解放関数の識別子はoperator deleteである。この関数は、動的ストレージの確保と解放を行う。確保関数と解放関数が行うのは、生の動的ストレージの確保と解放である。よく誤解があるが、コンストラクターやデストラクターの呼び出しの責任は持たない。</p>
+<p>確保関数と解放関数のオーバーロードは、グローバル名前空間か、クラスのメンバー関数として宣言する。グローバル名前空間以外の名前空間で宣言するとエラーとなる。確保関数と解放感数がユーザー定義されない場合、実装によってデフォルトの挙動を行う確保関数と開放感数が自動的に定義される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// グローバル名前空間</span>
+<span class="kt">void</span><span class="o">*</span> <span class="k">operator</span> <span class="nf">new</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK</span>
+
+<span class="k">namespace</span> <span class="n">NS</span>
+<span class="p">{</span>
+<span class="kt">void</span><span class="o">*</span> <span class="k">operator</span> <span class="k">new</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">);</span> <span class="c1">// エラー、グローバル名前空間ではない</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">void</span><span class="o">*</span> <span class="k">operator</span> <span class="k">new</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>グローバル名前空間の宣言は、デフォルトの確保関数と解放関数の生成を妨げる。クラスのメンバー関数は、そのクラスと派生クラスの確保と解放に使われる。</p>
+<p>確保関数には、効果(effect)と必須の挙動(required behavior)とデフォルトの挙動(default behavior)が規定されている。解放関数には、効果ととデフォルトの挙動が規定されている。効果とは、その関数がどのようなことに使われるのかという規定である。必須の挙動とは、たとえユーザー定義の関数であっても必ず守らなければならない挙動のことである。デフォルトの挙動とは、関数がユーザー定義されていない場合、実装によって用意される定義の挙動である。</p>
+<p>C++11ではスレッドの概念が入ったので、確保関数と解放関数は、データ競合を引き起こしてはならない。この保証は、ユーザー定義の確保関数と開放感数にも要求される。</p>
+<p>C++11ではアライメントの概念が入ったので、確保関数の確保するストレージは、要求されたサイズ以下の大きさのオブジェクトを配置できるよう、適切にアラインされていなければならない。</p>
+<div class="section" id="id10">
+<h4>単数形の確保関数<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span><span class="o">*</span> <span class="k">operator</span> <span class="nf">new</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>効果</p>
+<p>必須の挙動</p>
+<p>デフォルトの挙動</p>
+</div>
+<div class="section" id="nothrow">
+<h4>nothrow版の単数形の確保関数<a class="headerlink" href="#nothrow" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="o">*</span> <span class="k">operator</span> <span class="k">new</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">nothrow_t</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="n">noexcept</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>効果</p>
+<p>必須の挙動</p>
+<p>デフォルトの挙動</p>
+</div>
+<div class="section" id="id11">
+<h4>単数形の解放関数<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="k">operator</span> <span class="k">delete</span><span class="p">(</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">ptr</span> <span class="p">)</span> <span class="n">noexcept</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>効果</p>
+<p>デフォルトの挙動</p>
+</div>
+<div class="section" id="id12">
+<h4>nothrow版の単数形の解放関数<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="k">operator</span> <span class="k">delete</span><span class="p">(</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">ptr</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">nothrow_t</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="n">noexcept</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>効果</p>
+<p>デフォルトの挙動</p>
+</div>
+<div class="section" id="id13">
+<h4>配列形の確保関数<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><pre>void　* operator new[](　std::size_t size　)　;</pre>
+</div>
+<p>効果</p>
+<p>必須の挙動</p>
+<p>デフォルトの挙動</p>
+</div>
+<div class="section" id="id14">
+<h4>nothrow版の配列形の確保関数<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="o">*</span> <span class="k">operator</span> <span class="k">new</span><span class="p">[](</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">nothrow_t</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="n">noexcept</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>効果</p>
+<p>必須の挙動</p>
+<p>デフォルトの挙動</p>
+</div>
+<div class="section" id="id15">
+<h4>配列型の解放関数<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="k">operator</span> <span class="k">delete</span><span class="p">[](</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">ptr</span><span class="p">)</span> <span class="n">noexcept</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>効果</p>
+<p>デフォルトの挙動</p>
+</div>
+<div class="section" id="id16">
+<h4>nothrow版の配列型の解放関数<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="k">operator</span> <span class="k">delete</span><span class="p">[](</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">ptr</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="kt">nothrow_t</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="n">noexcept</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>効果</p>
+<p>デフォルトの挙動</p>
+</div>
+</div>
+<div class="section" id="id17">
+<h3>ユーザー定義リテラル<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<p>&lt;p class=&#8221;todo&#8221;&gt;
+Basic Conceptsの該当項目へのリンク</p>
+<p>以下の形のオーバーロード演算子は、ユーザー定義リテラル演算子のオーバーロードである。</p>
+<div class="highlight-c++"><pre>operator "" 識別子</pre>
+</div>
+<p>&#8220;&#8221;と識別子の間には、必ずひとつ以上の空白文字を入れなければならない。また、識別子の先頭文字は、必ずアンダースコアひとつから始まらなければならない。ただし、通常の識別子では、アンダースコアから始まる名前は予約されているので注意すること。これは、ユーザー定義リテラル演算子のみの特別な条件である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// OK</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="s">&quot;&quot;</span> <span class="cm">/* 空白文字が必要 */</span> <span class="n">_x</span><span class="p">(</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="c1">// エラー、&quot;&quot;と_yの間に空白文字がない</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="s">&quot;&quot;</span><span class="n">_y</span><span class="p">(</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="c1">// エラー、識別子がアンダースコアから始まっていない</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="s">&quot;&quot;</span> <span class="n">z</span><span class="p">(</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="c1">// エラー、&quot;&quot;の間に空白文字がある</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="s">&quot; &quot;</span> <span class="n">_z</span><span class="p">(</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>リテラル演算子の仮引数リストは、以下のいずれかでなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">const</span> <span class="kt">char</span><span class="o">*</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span>
+<span class="kt">long</span> <span class="kt">double</span>
+<span class="kt">char</span>
+<span class="kt">wchar_t</span>
+<span class="kt">char16_t</span>
+<span class="kt">char32_t</span>
+<span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span>
+<span class="k">const</span> <span class="kt">wchar_t</span><span class="o">*</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span>
+<span class="k">const</span> <span class="kt">char16_t</span><span class="o">*</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span>
+<span class="k">const</span> <span class="kt">char32_t</span><span class="o">*</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span>
+</pre></div>
+</div>
+<p>上記以外の仮引数リストを指定すると、エラーとなる。</p>
+<p>リテラル演算子テンプレートは、仮引数リストが空で、テンプレート仮引数は、char型の非型テンプレート仮引数の仮引数パックでなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="kt">char</span> <span class="p">...</span> <span class="n">Chars</span> <span class="o">&gt;</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="s">&quot;&quot;</span> <span class="n">_x</span> <span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>これ以外のテンプレート仮引数を取るリテラル演算子テンプレートはエラーとなる。</p>
+<p>リテラル演算子は、Cリンケージを持つことができない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// エラー</span>
+<span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="kt">void</span> <span class="k">operator</span> <span class="s">&quot;&quot;</span> <span class="n">_x</span><span class="p">(</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="c1">// OK</span>
+<span class="k">extern</span> <span class="s">&quot;C++&quot;</span> <span class="kt">void</span> <span class="k">operator</span> <span class="s">&quot;&quot;</span> <span class="n">_x</span><span class="p">(</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>リテラル演算子は、名前空間スコープで宣言しなければならない。つまり、クラススコープで宣言することはできない。ただし、friend関数になることはできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// グローバル名前空間スコープ</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="s">&quot;&quot;</span> <span class="n">_x</span><span class="p">(</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="k">namespace</span> <span class="n">ns</span> <span class="p">{</span>
+<span class="c1">// ns名前空間スコープ</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="s">&quot;&quot;</span> <span class="n">_x</span><span class="p">(</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">X</span>
+<span class="p">{</span>
+    <span class="c1">// OK、friend宣言できる</span>
+    <span class="k">friend</span> <span class="kt">void</span> <span class="k">operator</span> <span class="s">&quot;&quot;</span> <span class="n">_x</span><span class="p">(</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+
+    <span class="c1">// エラー、クラススコープでは宣言できない</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="k">operator</span> <span class="s">&quot;&quot;</span> <span class="n">_y</span><span class="p">(</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ただし、名前空間スコープで宣言したリテラル演算子を、ユーザー定義リテラルとして使うには、using宣言かusingディレクティブが必要となる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">ns</span> <span class="p">{</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="s">&quot;&quot;</span> <span class="n">_x</span><span class="p">(</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="mi">1</span><span class="n">_x</span> <span class="p">;</span> <span class="c1">// エラー、operator &quot;&quot; _xは見つからない</span>
+
+    <span class="p">{</span>
+        <span class="k">using</span> <span class="k">namespace</span> <span class="n">ns</span> <span class="p">;</span>
+        <span class="mi">1</span><span class="n">_x</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="p">}</span>
+
+    <span class="p">{</span>
+        <span class="k">using</span> <span class="n">ns</span><span class="o">::</span><span class="k">operator</span> <span class="s">&quot;&quot;</span> <span class="n">_x</span> <span class="p">;</span>
+        <span class="mi">1</span><span class="n">_x</span> <span class="p">;</span> <span class="c1">// OK</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>これ以外は、通常の関数と何ら変りない。例えば、明示的に呼び出すこともできるし、その際には通常のオーバーロード解決に従う。inlineやconstexpr関数として宣言することもできる。内部リンケージでも外部リンケージのどちらでも持てる。アドレスも取得できる。等々。</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="temp.html" title="テンプレート(Templates)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="special.html" title="特別なメンバー関数（Special member functions）"
+             >previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ezoe Ryou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

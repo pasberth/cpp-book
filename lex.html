@@ -1,0 +1,669 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>字句規約（Lexical conventions） &mdash; C++11: Syntax and Feature</title>
+    
+    <link rel="stylesheet" href="_static/cpp-book.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="C++11: Syntax and Feature" href="index.html" />
+    <link rel="next" title="基本事項（Basic concepts）" href="basic.html" />
+    <link rel="prev" title="概要（General）" href="intro.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="basic.html" title="基本事項（Basic concepts）"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="概要（General）"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="lexical-conventions">
+<h1>字句規約（Lexical conventions）<a class="headerlink" href="#lexical-conventions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="separate-translation">
+<h2>翻訳単位（Separate translation）<a class="headerlink" href="#separate-translation" title="Permalink to this headline">¶</a></h2>
+<p>プログラムは、ソースファイルという単位に分割される。ソースファイルとは、プリプロセッサが実行された後のソースコードである。</p>
+</div>
+<div class="section" id="phase-of-translation">
+<h2>ソースファイルの変換（Phase of translation）<a class="headerlink" href="#phase-of-translation" title="Permalink to this headline">¶</a></h2>
+<p>ソースファイルは、コンパイルにかけられる前に、変換される。この変換の詳しい定義は略すが、特に知っておくべき変換が、いくつかある。</p>
+<p>基本ソース文字セットではない文字は、UCNに変換される。</p>
+<p>変換前</p>
+<div class="highlight-c++"><pre>あ</pre>
+</div>
+<p>変換後</p>
+<div class="highlight-c++"><pre>\u3042</pre>
+</div>
+<p>TODO:行末バックスラッシュを説明するのはやめようかと思う。</p>
+<p>行末の（バックスラッシュ）と、それに続く改行は、取り除かれる。</p>
+<p>変換前</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> \
+<span class="n">value</span> \
+<span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>変換後</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この改行の除去のルールは、注意を要する。例えば、</p>
+<p>変換前</p>
+<div class="highlight-c++"><pre>/\
+/\
+これはコメント
+int va\
+lue = 0 ;</pre>
+</div>
+<p>変換後</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">//これはコメント</span>
+<span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>連続する文字列リテラルのトークンは、連結される。</p>
+<p>変換前</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="s">&quot;aaa&quot;</span>
+<span class="s">&quot;bbb&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>変換後</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="s">&quot;aaabbb&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="character-sets">
+<h2>文字セット（Character sets）<a class="headerlink" href="#character-sets" title="Permalink to this headline">¶</a></h2>
+<p>C++は、ソースファイルの文字コードを定めていない。ソースファイル内の文字は、環境依存の文字コードで表現される。</p>
+<div class="section" id="id1">
+<h3>基本ソース文字セット<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>基本ソース文字セット（basic source character set）とは、ソースファイルで使うことができる文字のことである。印字可能な文字は、以下の通り。</p>
+<div class="highlight-c++"><pre>a b c d e f g h i j k l m n o p q r s t u v w x y z
+A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+0 1 2 3 4 5 6 7 8 9
+_ { } [ ] # ( ) &lt; &gt; % : ; . ? * + - / ^ &amp; | ! = , \ " '</pre>
+</div>
+<p>上記に加えて、スペース、水平タブ、垂直タブ、フォームフィード、改行も使うことができる。</p>
+<p>たとえば、ASCIIでいえば、&#64;（アットマーク）や`（グレイヴ・アクセント）のような文字は、使われていない。</p>
+</div>
+<div class="section" id="id2">
+<h3>ユニバーサル文字名<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>ユニバーサル文字名（UCN：universal character name）とは、ISO/IEC 10646で定義されている文字コードのことである。この文字コードは、ユニバーサル文字セットと呼ばれている。また、厳密には同じではないが、俗に、Unicodeと呼ばれることもある。UnicodeはUnicodeで、別の規格があるのだが、実用上、どちらもコードポイントやエンコード方式に、差がないため、よく混同される。本書では、ユニバーサル文字セットや、UTFエンコードに関する解説は行わない。</p>
+<p>Nを16進数の一文字とすると、uNNNNは、UCSにおけるコードポイント、0000NNNNで表される文字という意味になり、UNNNNNNNNは、NNNNNNNNで表される文字と同じ意味になる。</p>
+<p>例：</p>
+<div class="highlight-c++"><pre>\u3042      あ
+\u3043      い
+\U00003044  う</pre>
+</div>
+<p>このユニバーサル文字名は、リテラルやエスケープシーケンスではなく、もっと根本的に、文字と同等に扱われる。つまり、対応するユニバーサル文字として認識される。ユニバーサル文字名は、ソースコードのあらゆる場所で使うことができる。ソースコードのある場所に、ユニバーサル文字名を記述した場合、その場所に、対応するユニバーサル文字を記述したのと、全く同じ扱いがなされる。</p>
+<p>ただし、生文字列リテラルの中では、ユニバーサル文字名は使えない。サロゲートの範囲のコードポイント(0xD800–0xDFFF)を指定することはできない。文字列リテラルの中では、ユニバーサル文字は実装により自動的にエンコードされるので、サロゲートコードポイントを明示的に使う必要はない。もし文字としてサロゲートコードポイントを使う必要があるならば、エスケープシーケンスxが使える。文字リテラルや文字列リテラルの中以外では、コントロール文字の範囲のコードポイント(0x00–0x1F と 0x7F–0x9F)と、基本ソース文字セットに該当するコードポイントを指定することはできない。</p>
+<div class="highlight-c++"><pre>R"(\u3042)" ; // ユニバーサル文字名ではなく、文字通りに解釈されることに注意
+u8"\u00E3\u0081\u0082" ; // OK、u8"あ"と同じ
+
+u"\ud842\udfb7" ; // エラー、サロゲートコードポイントを明示的に使うことはできない
+u"\u00020bb7" ; // OK、u"𠮷"と同じ
+
+int \u0041 = 0 ; // エラー、ここで基本ソース文字セットは使えない
+int \u3042 = 0 ; // OK</pre>
+</div>
+</div>
+</div>
+<div class="section" id="tokens">
+<h2>トークン（Tokens）<a class="headerlink" href="#tokens" title="Permalink to this headline">¶</a></h2>
+<p>TODO:これは本当に必要な項目だろうか。この項目で定義されている、ホワイトスペースは、どこかで言及しておかなければならないが。むしろ、この項目を、空白とすべきか。</p>
+</div>
+<div class="section" id="comments">
+<h2>コメント（Comments）<a class="headerlink" href="#comments" title="Permalink to this headline">¶</a></h2>
+<p>コメントには、二種類ある。/* <a href="#id3"><span class="problematic" id="id4">*</span></a>/で囲まれた、複数行にわたるコメントと、//から始まり行末までの、一行コメントである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cm">/* ここからコメント開始</span>
+<span class="cm">これはコメント</span>
+<span class="cm">これもコメント</span>
+<span class="cm">ここでコメント終わり*/</span>
+
+<span class="c1">// これは一行コメント。改行までがコメントとなる。</span>
+</pre></div>
+</div>
+<p>コメントは、/<em>、で始まり、</em>/で終わる。この形式のコメントは、ネストできない。</p>
+<div class="highlight-c++"><pre>/* これはコメント*/
+
+/*ここから
+
+
+
+ここまでコメント*/
+
+/* /* これはエラー。ネストしている。*/ */</pre>
+</div>
+<p>//で始まるコメントは、行末までが、コメントとなる。これは、/<a href="#id5"><span class="problematic" id="id6">**</span></a>/形式のコメントの中にも、書くことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// これは一行コメント。行末までがコメントとなる。</span>
+
+
+<span class="cm">/*</span>
+<span class="cm">// これは正しいコード。</span>
+<span class="cm">*/</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="identifiers">
+<h2>識別子（Identifiers）<a class="headerlink" href="#identifiers" title="Permalink to this headline">¶</a></h2>
+<p>識別子には、大文字小文字のアルファベット、_（アンダースコア）、数字、ユニバーサル文字名、その他の実装依存の文字が使える。大文字と小文字は区別される。</p>
+<div class="highlight-c++"><pre>int aaa ;
+int AAA ;// aaaとは別の識別子、大文字と小文字は、区別される。
+int bbb ;
+int this_is_an_identifier ;
+int n1234567890 ;
+int \u3042 ;// ユニバーサル文字名
+int 変数 ;</pre>
+</div>
+<p>ただし、識別子の先頭は、数字から始まってはならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// エラー</span>
+<span class="kt">int</span> <span class="mi">0</span><span class="n">aaa</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>また、キーワードや予約語は、識別子として使うことができない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// エラー、templateはキーワードである。</span>
+<span class="kt">int</span> <span class="k">template</span> <span class="p">;</span>
+<span class="c1">// エラー、andは代替表現である。</span>
+<span class="kt">int</span> <span class="n">and</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>以下の識別子は、特定の文法上の場所で現れた場合に、特別な意味を持つ。これは俗に、文脈依存キーワードとも呼ばれている。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">final</span> <span class="n">override</span>
+</pre></div>
+</div>
+<p>特定の文法は、識別子が現れることがない場所なので、この文脈依存キーワードは、通常通り何の問題もなく識別子として使うことができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">final</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="kt">int</span> <span class="n">override</span> <span class="p">;</span> <span class="c1">// OK</span>
+</pre></div>
+</div>
+<p>以下のような記述も合法だ。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// OK、クラス名finalをfinalに指定</span>
+<span class="k">class</span> <span class="nc">final</span> <span class="n">final</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">base</span>
+<span class="p">{</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">override</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">derived</span> <span class="o">:</span> <span class="n">base</span>
+<span class="p">{</span>
+    <span class="c1">// OK、virtual関数名overrideにoverrideを指定</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">override</span><span class="p">()</span> <span class="n">override</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<div class="section" id="id7">
+<h3>予約語<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>予約語とは、C++の実装や標準ライブラリの実装のために予約されていて、使ってはならない名前のことである。ユーザーコードで予約語を使った場合、プログラムの動作は保証されない。</p>
+<p>以下のいずれかの条件に当てはまる名前は、あらゆる利用を予約されている。</p>
+<ul class="simple">
+<li>ひとつのアンダースコアに大文字から始まる名前</li>
+<li>アンダースコアが二つ連続している、いわゆるダブルアンダースコアを含む名前</li>
+</ul>
+<p>以下のコードは、すべて予約名を使っているので、エラーである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">_A</span> <span class="p">;</span>    <span class="c1">// アンダースコアに大文字から始まる名前は、予約されている。</span>
+<span class="kt">int</span> <span class="n">__a</span> <span class="p">;</span>   <span class="c1">// ダブルアンダースコアを含む名前は、予約されている。</span>
+<span class="kt">int</span> <span class="n">___a</span> <span class="p">;</span>  <span class="c1">// 三つの連続したアンダースコアも、ダブルアンダースコアを含むので、使えない。</span>
+<span class="kt">int</span> <span class="n">a__b</span> <span class="p">;</span>  <span class="c1">// 先頭以外でも、どこかにダブルアンダースコアが含まれている場合、使えない。</span>
+<span class="kt">int</span> <span class="n">a__</span> <span class="p">;</span> <span class="c1">// ダブルアンダースコアを含む</span>
+<span class="kt">int</span> <span class="n">__</span> <span class="p">;</span> <span class="c1">// ダブルアンダースコアを含む</span>
+</pre></div>
+</div>
+<p>ひとつのアンダースコアから始まる名前は、グローバル名前空間で、利用を予約されている。ただし、グローバル名前空間との名前の衝突が、時として、意外な結果をもたらすこともあるので、言語のルールの詳細を把握していない限り、利用はおすすめできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// エラー、グローバル名前空間</span>
+<span class="kt">int</span> <span class="n">_a</span> <span class="p">;</span>
+
+<span class="c1">// OK</span>
+<span class="k">namespace</span> <span class="n">NS</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">_a</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">_a</span> <span class="p">;</span><span class="c1">// OK</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ひとつのアンダースコアだけの名前は、予約語ではない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">_</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="kt">int</span> <span class="n">__</span> <span class="p">;</span> <span class="c1">// エラー、ダブルアンダースコア</span>
+</pre></div>
+</div>
+<p>簡単にまとめると、アンダースコアから始まる名前は、使うべきではない。ダブルアンダースコアを含む名前は、あらゆる使用を禁止されている。</p>
+<p>名前の衝突を防ぐため、しばしばC++の理解の浅い者によってアンダースコアが用いられるが、予約語と衝突した場合、コード自体の動作が保証されなくなってしまうので、名前の衝突を防ぐ目的でアンダースコアを使ってはならない。名前の衝突を防ぐためには、名前空間という言語機能がある。</p>
+</div>
+</div>
+<div class="section" id="keywords">
+<h2>キーワード（Keywords）<a class="headerlink" href="#keywords" title="Permalink to this headline">¶</a></h2>
+<p>C++では、以下のキーワードが使われている。これらのキーワードは、プログラム中で特別な意味を持つので、識別子に使うことはできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">alignof</span> <span class="n">decltype</span> <span class="k">goto</span> <span class="k">reinterpret_cast</span> <span class="n">try</span>
+<span class="k">asm</span> <span class="k">default</span> <span class="k">if</span> <span class="k">return</span> <span class="k">typedef</span>
+<span class="k">auto</span> <span class="k">delete</span> <span class="kr">inline</span> <span class="kt">short</span> <span class="k">typeid</span>
+<span class="kt">bool</span> <span class="k">do</span> <span class="kt">int</span> <span class="kt">signed</span> <span class="k">typename</span>
+<span class="k">break</span> <span class="kt">double</span> <span class="kt">long</span> <span class="k">sizeof</span> <span class="k">union</span>
+<span class="k">case</span> <span class="k">dynamic_cast</span> <span class="k">mutable</span> <span class="k">static</span> <span class="kt">unsigned</span>
+<span class="k">catch</span> <span class="k">else</span> <span class="k">namespace</span> <span class="n">static_assert</span> <span class="k">using</span>
+<span class="kt">char</span> <span class="k">enum</span> <span class="k">new</span> <span class="k">static_cast</span> <span class="k">virtual</span>
+<span class="kt">char16_t</span> <span class="k">explicit</span> <span class="n">noexcept</span> <span class="k">struct</span> <span class="kt">void</span>
+<span class="kt">char32_t</span> <span class="k">export</span> <span class="n">nullptr</span> <span class="k">switch</span> <span class="k">volatile</span>
+<span class="k">class</span> <span class="nc">extern</span> <span class="k">operator</span> <span class="k">template</span> <span class="kt">wchar_t</span>
+<span class="k">const</span> <span class="nb">false</span> <span class="k">private</span> <span class="k">this</span> <span class="k">while</span>
+<span class="n">constexpr</span> <span class="kt">float</span> <span class="k">protected</span> <span class="n">thread_local</span>
+<span class="k">const_cast</span> <span class="k">for</span> <span class="k">public</span> <span class="k">throw</span>
+<span class="k">continue</span> <span class="k">friend</span> <span class="k">register</span> <span class="nb">true</span>
+</pre></div>
+</div>
+<p>以下は、キーワードではないが、記号と同じ意味を持つので、識別子に使うことはできない。これは、代替表現（alternative representation）と呼ばれている。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">and</span> <span class="n">and_eq</span> <span class="n">bitand</span> <span class="n">bitor</span> <span class="n">compl</span> <span class="n">not</span>
+<span class="n">not_eq</span> <span class="n">or</span> <span class="n">or_eq</span> <span class="n">xor</span> <span class="n">xor_eq</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="literals">
+<h2>リテラル（Literals）<a class="headerlink" href="#literals" title="Permalink to this headline">¶</a></h2>
+<p>ここでは、リテラルについて解説している。型については、&lt;a href=&#8221;#basic.types&#8221;&gt;型（Types）&lt;/a&gt;を参照。</p>
+<div class="section" id="integer-literals">
+<h3>整数リテラル（Integer literals）<a class="headerlink" href="#integer-literals" title="Permalink to this headline">¶</a></h3>
+<p>整数リテラルには、10進数リテラル、8進数リテラル、16進数リテラルがある。C++には、2進数リテラルは存在しない。</p>
+<p>十進数リテラルには、0123456789の文字を使うことができる。</p>
+<p>8進数リテラルには、01234567の文字を使うことができる。プレフィクス、0から始まる整数リテラルは、8進数リテラルである。</p>
+<p>16進数リテラルには、0123456789, abcdef, ABCDEFの文字を使うことができる。大文字と小文字は、区別されない。プレフィクス、0xから始まる整数リテラルは、16進数リテラルである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">//10進数リテラル</span>
+<span class="mi">1234</span> <span class="p">;</span>
+
+<span class="c1">// 8進数リテラル</span>
+<span class="mo">01234</span> <span class="p">;</span><span class="c1">// 10進数では、668</span>
+
+<span class="c1">// 16進数リテラル</span>
+<span class="mh">0x1234</span> <span class="p">;</span><span class="c1">// 10進数では、4660</span>
+</pre></div>
+</div>
+<p>0xというプレフィクスが、16進数リテラルを表すのは、他のプログラミング言語でも、よくあることだ。しかし、C++では、8進数リテラルのプレフィクスが変わっている。これは、注意を要する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// if ( x == 8 ) と同じ。</span>
+<span class="k">if</span> <span class="p">(</span> <span class="n">x</span> <span class="o">==</span> <span class="mo">010</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>C++の8進数リテラルは、10進数と区別しにくいので、気をつける必要がある。</p>
+<p>整数リテラルには、後ろにサフィックスをつけることができる。このサフィックスは、大文字小文字が区別されない。</p>
+<p>サフィックス、u、Uは、整数リテラルの型が、unsignedであることを示す</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// signed int</span>
+<span class="k">auto</span> <span class="n">type1</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+
+<span class="c1">// unsigned int</span>
+<span class="k">auto</span> <span class="n">type2</span> <span class="o">=</span> <span class="mi">0u</span> <span class="p">;</span>
+<span class="k">auto</span> <span class="n">type3</span> <span class="o">=</span> <span class="mi">0U</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>サフィックス、l、Lは、型がlong intであることを示す。サフィックス、ll、LLは、型がlong long intであることを示す。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// long int</span>
+<span class="k">auto</span> <span class="n">type1</span> <span class="o">=</span> <span class="mi">0l</span> <span class="p">;</span>
+<span class="k">auto</span> <span class="n">type2</span> <span class="o">=</span> <span class="mi">0L</span> <span class="p">;</span>
+<span class="c1">// long long int</span>
+<span class="k">auto</span> <span class="n">type3</span> <span class="o">=</span> <span class="mi">0ll</span> <span class="p">;</span>
+<span class="k">auto</span> <span class="n">type4</span> <span class="o">=</span> <span class="mi">0LL</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>unsignedであることを示すサフィックスと、long int、またはlong long intであることを示すサフィックスは、組み合わせることができる。順番は、どちらでもいい。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// unsigned long int</span>
+<span class="k">auto</span> <span class="n">type1</span> <span class="o">=</span> <span class="mi">0ul</span> <span class="p">;</span>
+<span class="k">auto</span> <span class="n">type2</span> <span class="o">=</span> <span class="mi">0lu</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>整数リテラルの型の決定は、複雑である。もし、10進数の整数リテラルの値が、intの範囲で表現できない場合は、long intが使われる。long intでも表現できない場合は、long long intが使われる。8進数と16進数の整数リテラルの場合は、unsigned int, unsigned long int, unsigned long long intも、考慮に入れられる。</p>
+<p>ただし、l, Lというサフィックスが指定されている場合は、long int以降が使われる。u, Uが指定されている場合は、unsignedな整数型に限られる。</p>
+<p>いずれの型でも、整数リテラルの値を表現できない場合は、ill-formedである。</p>
+</div>
+<div class="section" id="floating-literals">
+<h3>浮動小数点数リテラル（Floating literals）<a class="headerlink" href="#floating-literals" title="Permalink to this headline">¶</a></h3>
+<p>浮動小数点数のリテラルは、10進数で記述する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="mf">1.0</span> <span class="p">;</span>
+<span class="mf">123456789.0</span> <span class="p">;</span>
+<span class="mf">3.14</span> <span class="p">;</span>
+<span class="mf">0.00000001</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>浮動小数点数リテラルには、e, Eに続けて、指数（exponent）を指定することができる。指数を指定すると、小数に、10の指数乗をかけた値になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 1 ×</span>
+</pre></div>
+</div>
+<p>浮動小数点数リテラルの型は、非常に簡単である。サフィックス、f, Fが指定されているリテラルの型は、float、サフィックスが指定されていない型は、double、サフィックス、l, Lが指定されている型は、long doubleである。このサフィックスは、大文字小文字が区別されない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// float</span>
+<span class="k">auto</span> <span class="n">f1</span> <span class="o">=</span> <span class="mf">1.0f</span> <span class="p">;</span>
+<span class="k">auto</span> <span class="n">f2</span> <span class="o">=</span> <span class="mf">1.0F</span> <span class="p">;</span>
+
+<span class="c1">// double</span>
+<span class="k">auto</span> <span class="n">d1</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="p">;</span>
+<span class="k">auto</span> <span class="n">d2</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="p">;</span>
+
+<span class="c1">// long double</span>
+<span class="k">auto</span> <span class="n">l1</span> <span class="o">=</span> <span class="mf">1.0</span><span class="n">l</span> <span class="p">;</span>
+<span class="k">auto</span> <span class="n">l2</span> <span class="o">=</span> <span class="mf">1.0</span><span class="n">L</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>もし、リテラルの値を、リテラルの型で、完全に表現できない場合は、最も近い値に丸められる。値をどのようにして丸めるかは、実装依存である。もし、リテラルの値を、リテラルの型で表現できない場合は、エラーとなる。</p>
+</div>
+<div class="section" id="character-literals">
+<h3>文字リテラル（Character literals）<a class="headerlink" href="#character-literals" title="Permalink to this headline">¶</a></h3>
+<p>文字リテラルとは、ある一文字を表すリテラルのことである。文字リテラルは、以下のように記述する。</p>
+<div class="highlight-c++"><pre>’x’     通常の文字リテラル（ordinary character literal）
+u’x’    char16_t型の文字リテラル
+U’x’    char32_t型の文字リテラル
+L’x’    wchar_t型の文字リテラル。</pre>
+</div>
+<p>プレフィクスのついていない、&#8217;x&#8217;は、通常の文字リテラル（ordinary character literal）である。型は、charである。このリテラル内に書かれている一文字の値が、そのまま、リテラルの値になる。通常の文字リテラルの具体的な値については、実装依存である。</p>
+<p>プレフィクス、Lのついている文字リテラル、L&#8217;X&#8217;は、ワイド文字リテラルである。型は、wchar_tである。このリテラル内に書かれている一文字の値が、そのまま、リテラルの値になる。ワイド文字リテラルの具体的な値については、実装依存である。</p>
+<p>プレフィクス、uのついている文字リテラル、u&#8217;x&#8217;は、char16_t型の文字リテラルである。これは、一文字のユニバーサル文字セット内の、16bitで表現できるコードポイントに当たる文字を使うことができる。このエンコード方式は、UTF-16と呼ばれている。文字リテラルは、16bitで表せる一文字しか使えないので、サロゲートペアは使えない。もちろん、文字列リテラルでは、サロゲートペアもサポートされている。</p>
+<p>プレフィクス、Uのついている文字リテラル、U&#8217;x&#8217;は、char32_t型の文字リテラルである。これは、一文字の任意のユニバーサル文字セット内の文字を使うことができる。このエンコード方式は、UTF-32と呼ばれている。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 型はchar、値は実装依存。</span>
+<span class="k">auto</span> <span class="n">ordinary_c</span> <span class="o">=</span> <span class="sc">&#39;x&#39;</span> <span class="p">;</span>
+<span class="c1">// 型はwchar_t、値は実装依存。</span>
+<span class="k">auto</span> <span class="n">wide_c</span> <span class="o">=</span> <span class="sc">L&#39;x&#39;</span> <span class="p">;</span>
+<span class="c1">// 型は、char16_t、値は、0x3042。</span>
+<span class="k">auto</span> <span class="n">u16_c</span> <span class="o">=</span> <span class="n">u</span><span class="sc">&#39;あ&#39;</span> <span class="p">;</span>
+<span class="c1">// 型は、char32_t、値は、0x00003042。</span>
+<span class="k">auto</span> <span class="n">u32_c</span> <span class="o">=</span> <span class="n">U</span><span class="sc">&#39;あ&#39;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<div class="section" id="id8">
+<h4>エスケープシーケンス<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<p>文字リテラルの中では、バックスラッシュは、特別なエスケケープシーケンスとして扱われる。そのため、バックスラッシュを直接使うことはできない。</p>
+<p>エスケープシーケンスは、以下の通り。</p>
+<div class="highlight-c++"><pre>改行 new-line NL(LF) \n
+水平タブ horizontal tab HT \t
+垂直タブ vertical tab VT \v
+バックスペース backspace BS \b
+キャリッジリターン carriage return CR \r
+フォームフィード form feed FF \f
+アラート文字、ベル文字 alert BEL \a
+バックスラッシュ backslash \ \\
+疑問符 question mark ? \?
+単一引用符 single quote ’ \’
+二重引用符 double quote " \"</pre>
+</div>
+<p>文字リテラルの中では、二重引用符と、疑問符は、そのまま使うことも出来る。</p>
+<div class="highlight-c++"><pre>'\n' ;  // 改行
+'\\' ; // バックスラッシュ
+
+// 二重引用符と疑問符は、そのまま使える。
+'"' ;   '\"' ;
+'\?' ;  '?' ;
+
+
+// エラー、バックスラッシュはエスケープシーケンスの始まりとみなされるため、使えない。
+'\' ;</pre>
+</div>
+</div>
+</div>
+<div class="section" id="string-literals">
+<h3>文字列リテラル（String literals）<a class="headerlink" href="#string-literals" title="Permalink to this headline">¶</a></h3>
+<p>文字列リテラル（String Literal）には、通常の文字列リテラル、UTF-8文字列リテラル、char16_t文字列リテラル、char32_t文字列リテラルが存在する。また、それぞれの文字列リテラルに対して、生文字列リテラル（Raw String Literal）という書き方ができる。</p>
+<p>文字列リテラルの文法は、以下の通りである。</p>
+<div class="highlight-c++"><div class="highlight"><pre>
+</pre></div>
+</div>
+<p>文字列リテラルは、&lt;i&gt;文字列&lt;/i&gt;の内容で初期化される。ただし、文字列の一番最後には、null文字が付加される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 以下の二行のコードは同じ意味である。</span>
+<span class="kt">char</span> <span class="n">s</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="sc">&#39;a&#39;</span><span class="p">,</span> <span class="sc">&#39;b&#39;</span><span class="p">,</span> <span class="sc">&#39;c&#39;</span><span class="p">,</span> <span class="sc">&#39;\0&#39;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="kt">char</span> <span class="n">s</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;abc&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>文字列リテラルでは、文字リテラルと同じ、エスケープシーケンスが使える。ただし文字リテラルと違い、二重引用符は、そのまま使うことができないので、エスケープシーケンス、&#8221;で表さなければならない。単一引用符、&#8217;は、そのまま使うことができる。それ以外は、文字リテラルのエスケープシーケンスと、違いはない。</p>
+<p>文字列リテラルの型は、要素数nの、constな文字型の配列である。要素数は、文字列リテラル内の文字型の数 + 1である。+ 1は、null文字が付加されるためである。エスケープシーケンスや、ユニバーサル文字名は、一文字として認識される。文字型の数と、文字数とは、同じではない。なぜならば、エンコード方式によっては、ひとつの文字を、複数の文字型で表現するからである。これについては、後述する。</p>
+<div class="section" id="id9">
+<h4>エンコード方式<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<p>エンコード方式には、実装依存のエンコード、UTF-8、UTF-16、UTF-32がある。</p>
+<p>&#8221;...&#8221;のように、エンコーディングプレフィクス（Encoding Prefix）の指定されていない文字列は、通常の文字列リテラル（ordinary string literal）である。これは、実装依存のエンコード方式が使われる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="s">&quot;abcdefg&quot;</span> <span class="p">;</span>
+<span class="s">&quot;hello&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>u8&#8221;...&#8221;のように、u8というプレフィクスの指定されている文字列リテラルは、UTF-8文字列リテラルである。これは、UTF-8というエンコードが使われる</p>
+<p>通常の文字列リテラルと、UTF-8文字列リテラルの型は、要素数nの、const charの配列である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// const char [4]</span>
+<span class="s">&quot;abc&quot;</span> <span class="p">;</span>
+<span class="n">u8</span><span class="s">&quot;abc&quot;</span> <span class="p">;</span>
+<span class="c1">// const char [1]</span>
+<span class="s">&quot;&quot;</span> <span class="p">;</span>
+<span class="n">u8</span><span class="s">&quot;&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>u&#8221;...&#8221;のように、小文字のuというプレフィクスの指定されている文字列リテラルは、UTF-16文字列リテラルである。これは、UTF-16というエンコードが使われる。</p>
+<p>UTF-16文字列リテラルの型は、要素数nの、const char16_tの配列である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// const char16_t [4]</span>
+<span class="n">u</span><span class="s">&quot;abc&quot;</span> <span class="p">;</span>
+<span class="c1">// const char16_t [1]</span>
+<span class="n">u</span><span class="s">&quot;&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>U&#8221;...&#8221;のように、大文字のUというプレフィクスの指定されている文字列リテラルは、UTF-32文字列リテラルである。これは、UTF-32というエンコードが使われる。</p>
+<p>UTF-32文字列リテラルの型は、要素数nの、const char32_tの配列である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// const char32_t [4]</span>
+<span class="n">U</span><span class="s">&quot;abc&quot;</span> <span class="p">;</span>
+<span class="c1">// const char32_t [1]</span>
+<span class="n">U</span><span class="s">&quot;&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>L&#8221;...&#8221;のように、Lというプレフィクスの指定されている文字列リテラルは、ワイド文字列リテラルである。これは、実装依存のエンコードが使われる。</p>
+<p>ワイド文字列リテラルの型は、要素数nの、const wchar_tの配列である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// const wchar_t [4]</span>
+<span class="s">L&quot;abc&quot;</span> <span class="p">;</span>
+<span class="c1">// const wchar_t [1]</span>
+<span class="s">L&quot;&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>文字列リテラルの型は、配列であるので、標準変換の、&lt;a href=&#8221;#conv.array&#8221;&gt;配列からポインターへの型変換&lt;/a&gt;で、ポインターへ、暗黙のうちに変換できる。しかし、C++11では、以前のC++にあった、互換性のための機能が、削られているので、注意を要する。</p>
+<div class="highlight-c++"><pre>// エラー
+char * ptr = "abc" ;
+// OK
+char const * ptr = "abc" '</pre>
+</div>
+<p>なぜか。文字列リテラルの型は、constな文字型の配列である。constは、暗黙のうちに消しさることはできない。たとえば、int型の場合、これは、従来のC++でも、エラーである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="k">const</span> <span class="n">a</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span> <span class="p">;</span>
+<span class="c1">// エラー</span>
+<span class="kt">int</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="n">a</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>今までは、互換性のためだけの理由で、文字型の配列に限り、constを暗黙のうちに消しさることが、特別に許されていた。しかし、そもそも、文字列リテラルへの変更は、未定義である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// エラー、未定義動作</span>
+<span class="s">&quot;abc&quot;</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;d&#39;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>このため、C++では、文字列リテラルは、constな文字型の配列であることが、1993年に決定された。本来、この時点で、constではない文字型へのポインターへの変換は、廃止されるべきであった。しかし、char <a href="#id10"><span class="problematic" id="id11">*</span></a>に文字列リテラルを代入している既存のコードが、あまりにも多いため、仕方なく、特別なルールを付け加えた。それが、この、文字型の配列に限り、constを消すことができるというルールである。</p>
+<p>constを暗黙のうちに消し去ることができると、C++の型システムに穴があいてしまう。いままでは、互換性の問題から、仕方なくこのルールがあったが、C++11では、とうとう、この忌々しい穴は塞がれた。もし、どうしても、既存のコードを利用したい場合は、いくつか方法がある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 既存の汚いコードの関数</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">char</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="c1">// 配列を確保して、渡す。</span>
+<span class="kt">char</span> <span class="n">temp</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;abc&quot;</span> <span class="p">;</span>
+<span class="n">f</span><span class="p">(</span> <span class="n">temp</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="c1">// const_castを使用する（非推奨）</span>
+<span class="n">f</span><span class="p">(</span> <span class="k">const_cast</span><span class="o">&lt;</span><span class="kt">char</span> <span class="o">*&gt;</span><span class="p">(</span><span class="s">&quot;abc&quot;</span><span class="p">)</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>そもそも、constではないポインターということは、そのポインターの参照先が、変更されるかもしれないということを意味している。つまり、この関数f()は、ポインターの参照先を書き換えるかもしれない。しかし、文字列リテラルの変更は、そもそも未定義である。したがって、f()には、書き換えられる配列を確保して、そのポインターを渡すのが、正しい。const_castは、f()が、既存のコードであり、今更修正できず、なおかつ、ポインターの参照先を変更しないと保証できる場合に限り、const_castを使うべきである。</p>
+<p>これから書くコードは、もちろん、constをつけるべきである。本来、変更できないオブジェクトを、非constなポインターで参照できるということが、そもそも間違っている。C++11では、このような暗黙の型変換は存在しない。</p>
+</div>
+<div class="section" id="id12">
+<h4>文字列リテラルの型の要素数<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<p>文字列リテラルの型の要素数については、注意が必要である。エスケープシーケンスや、ユニバーサル文字名は、一文字として認識される。さらに、文字数＝要素数ではない。UTF-8によるエンコードは、一文字が、1～４バイトで表される。</p>
+<p>たとえば、&#8221;abc&#8221;という文字列リテラルは、UTF-8では、以下のようにエンコードされる。二行のコードは、全く同じ意味である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">char</span> <span class="n">abc</span><span class="p">[]</span> <span class="o">=</span> <span class="n">u8</span><span class="s">&quot;abc&quot;</span> <span class="p">;</span>
+<span class="kt">char</span> <span class="n">abc</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">0x61</span><span class="p">,</span> <span class="mh">0x62</span><span class="p">,</span> <span class="mh">0x63</span><span class="p">,</span> <span class="mh">0x00</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>末尾にnull文字が付加されることを除けば、このコードは、それほど難しくもない。いずれも、一文字がひとつの文字型で表現できる。では、&#8221;あ&#8221;という文字リテラルを、UTF-8で表現するとどうなるか。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">char</span> <span class="n">str</span><span class="p">[]</span> <span class="o">=</span> <span class="n">u8</span><span class="s">&quot;あ&quot;</span> <span class="p">;</span>
+<span class="kt">char</span> <span class="n">str</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">0xe3</span><span class="p">,</span> <span class="mh">0x81</span><span class="p">,</span> <span class="mh">0x82</span><span class="p">,</span> <span class="mh">0x00</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>UTF-8というエンコード方式では、&#8221;あ&#8221;（U+3042）を表現するのに、三つの要素が必要である。文字数＝要素数ではないということは、よく覚えて置かなければならない。</p>
+<p>では、UTF-16はどうか。「あ」という文字に関しては、UTF-16は、ひとつの要素で表現できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">char16_t</span> <span class="n">str</span><span class="p">[]</span> <span class="o">=</span> <span class="n">u</span><span class="s">&quot;あ&quot;</span> <span class="p">;</span>
+<span class="kt">char16_t</span> <span class="n">str</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">0x3042</span><span class="p">,</span> <span class="mh">0x0000</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>しかし、UTF-16にも、サロゲートペアが存在する。例えば、「𠮷」(U+020bb7)という古い漢字は、以下のようにエンコードされる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">char</span> <span class="n">utf8</span><span class="p">[]</span> <span class="o">=</span> <span class="n">u8</span><span class="s">&quot;𠮷&quot;</span> <span class="p">;</span>
+<span class="kt">char</span> <span class="n">utf8</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">0xf0</span><span class="p">,</span> <span class="mh">0xa0</span><span class="p">,</span> <span class="mh">0xae</span><span class="p">,</span> <span class="mh">0xb7</span><span class="p">,</span> <span class="mh">0x00</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">char16_t</span> <span class="n">utf16</span><span class="p">[]</span> <span class="o">=</span> <span class="n">u</span><span class="s">&quot;𠮷&quot;</span> <span class="p">;</span>
+<span class="kt">char16_t</span> <span class="n">utf16</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">0xd842</span><span class="p">,</span> <span class="mh">0xdfb7</span><span class="p">,</span> <span class="mh">0x0000</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>このように、UTF-16でも、サロゲートペアが必要なコードポイントについては、二つの要素が必要である。またこの字の場合、UTF-8にいたっては、四つもの要素が必要になる。</p>
+<p>UTF-32には、このような問題はない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">char32_t</span> <span class="n">utf32</span><span class="p">[]</span> <span class="o">=</span> <span class="n">U</span><span class="s">&quot;𠮷&quot;</span> <span class="p">;</span>
+<span class="kt">char32_t</span> <span class="n">utf32</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">0x00020bb7</span><span class="p">,</span> <span class="mh">0x00000000</span> <span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ユニバーサル文字セットや、UTFのエンコード方式の詳細は、本書の範疇を超えるので、これ以上深くは解説しない。</p>
+<p>また、charとwchar_tのエンコード方式については、実装依存である。</p>
+</div>
+<div class="section" id="raw-string-literal">
+<h4>生文字列リテラル（Raw String Literal）<a class="headerlink" href="#raw-string-literal" title="Permalink to this headline">¶</a></h4>
+<p>文字列リテラルには、直接記述することができない文字が存在する。エスケープシーケンスや、ユニバーサル文字セットだ。その他、改行コードなども、直接記述することはできない。たとえば、以下の文字列を、文字列リテラルを使って書く場合、</p>
+<div class="highlight-c++"><pre>aaa
+bbb
+ccc
+\\\
+"""</pre>
+</div>
+<p>通常の文字列リテラルでは、以下のように書かなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="s">&quot;aaa</span><span class="se">\n</span><span class="s">bbb</span><span class="se">\n</span><span class="s">ccc</span><span class="se">\n\\\\\\\n\&quot;\&quot;\&quot;</span><span class="s">&quot;</span>
+</pre></div>
+</div>
+<p>これは、非常に分かりにくい。そこで、C++には、生文字列リテラル（Raw String Literal）というものがある。これは、文字列を、そのままの形で書くことができる文字列リテラルである。文法は、以下のようになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre>
+</pre></div>
+</div>
+<p>実際の例は、以下の通り。</p>
+<div class="highlight-c++"><pre>// ""と同じ
+R"()" ;
+
+// "aaa\nbbb\nccc\n\\\\\\\n\"\"\""と同じ
+R"(aaa
+bbb
+ccc
+\\\
+""")" ;</pre>
+</div>
+<p>生文字列リテラルの文字列には、バックスラッシュを含めて、あらゆる文字を書くことができる。二重引用符ですら書ける。</p>
+<p>問題は、文法の都合上、「)&#8221;」という文字列が使えないことだ。これは、デリミターを指定すれば、使えるようになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">R</span><span class="s">&quot;delimiter( )&quot;</span> <span class="p">)</span><span class="n">delimiter</span><span class="s">&quot; ;</span>
+</pre></div>
+</div>
+<p>ただし、この場合、「)delimiter&#8221;」という文字列は、使うことができない。このデリミターは、16文字以内の、基本ソース文字セット内の文字からなる文字列でなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// エラー、@という字は、基本ソース文字セットには存在しない。</span>
+<span class="n">R</span><span class="s">&quot;@()@&quot;</span> <span class="p">;</span>
+
+<span class="c1">// エラー、17文字以上書くことはできない。</span>
+<span class="n">R</span><span class="s">&quot;12345678901234567()12345678901234567&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>基本的に、デリミターは、どのような16文字以内の基本ソース文字セット内の文字列ならば、どのような組み合わせでもよいが、左右のデリミターが一致していなければならない。しかし、大抵の場合は、デリミターをわざわざ使う必要はない。</p>
+<p>生文字列リテラルは、エンコーディングプレフィクスとともに使うことが出来る。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">u8R</span><span class="s">&quot;&quot;</span> <span class="p">;</span>
+<span class="n">uR</span><span class="s">&quot;&quot;</span> <span class="p">;</span>
+<span class="n">UR</span><span class="s">&quot;&quot;</span> <span class="p">;</span>
+<span class="n">LR</span><span class="s">&quot;&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>生文字列リテラルと、文字列リテラルは、エンコードが同じである場合、連結できる。文字列リテラルのトークンの連結については、&lt;a href=&#8221;#lex.phases&#8221;&gt;ソースファイルの変換&lt;/a&gt;を参照のこと。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// &quot;1\n2\n3456&quot;</span>
+<span class="n">R</span><span class="s">&quot;(1</span>
+<span class="mi">2</span>
+<span class="mi">3</span><span class="p">)</span><span class="s">&quot;</span>
+<span class="s">&quot;456&quot;</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="bool-boolean-literals">
+<h3>boolリテラル（Boolean literals）<a class="headerlink" href="#bool-boolean-literals" title="Permalink to this headline">¶</a></h3>
+<p>boolリテラルは、bool型の真偽を表現するリテラルである。trueとfalseという、二つの値がある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">bool</span> <span class="n">t</span> <span class="o">=</span> <span class="nb">true</span> <span class="p">;</span>
+<span class="kt">bool</span> <span class="n">f</span> <span class="o">=</span> <span class="nb">false</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pointer-literals">
+<h3>ポインターリテラル（Pointer Literals）<a class="headerlink" href="#pointer-literals" title="Permalink to this headline">¶</a></h3>
+<p>C++には、nullポインターを表すリテラルが存在する。nullptrである。これは、あらゆるポインター型の、nullポインターを表す。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="o">*</span> <span class="n">pointer_to_void</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="o">*</span> <span class="n">pointer_to_int</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>従来のC++では、NULLというマクロを使ったり、0を使ったりしてきた。しかし、マクロは問題が多いし、0にも、問題がある。nullポインターは、その内部表現の、すべてのビットが0であることを意味するのではない。ポインターが、何も参照していないということを表す、概念上のものである。そこで、nullptrという、nullポインターを表すポインターリテラルが存在する。従来のNULLや、単なる0のかわりに、nullptrを使うべきである。</p>
+</div>
+<div class="section" id="user-defined-literals">
+<h3>ユーザー定義リテラル（User-defined literals）<a class="headerlink" href="#user-defined-literals" title="Permalink to this headline">¶</a></h3>
+<p>ユーザー定義リテラル（User-defined literal）とは、リテラルを、関数として定義できるようにする機能のことである。整数、浮動小数、文字、文字列に対するユーザー定義リテラルが存在する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// ユーザー定義整数リテラル</span>
+<span class="mi">123</span><span class="n">_x</span> <span class="p">;</span>
+<span class="c1">// ユーザー定義浮動小数リテラル</span>
+<span class="mf">1.23</span><span class="n">_x</span> <span class="p">;</span>
+<span class="c1">// ユーザー定義文字リテラル</span>
+<span class="sc">&#39;a&#39;</span><span class="n">_x</span> <span class="p">;</span>
+<span class="c1">// ユーザー定義文字列リテラル</span>
+<span class="s">&quot;abc&quot;</span><span class="n">_x</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>ユーザー定義リテラルは、演算子のオーバーロードとして、定義する。詳しくは、&lt;a href=&#8221;#over.literal&#8221;&gt;ユーザー定義リテラル（User-defined literals）&lt;/a&gt;を参照のこと。</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="basic.html" title="基本事項（Basic concepts）"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="intro.html" title="概要（General）"
+             >previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ezoe Ryou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

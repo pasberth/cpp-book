@@ -1,0 +1,505 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>標準型変換（Standard conversions） &mdash; C++11: Syntax and Feature</title>
+    
+    <link rel="stylesheet" href="_static/cpp-book.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="C++11: Syntax and Feature" href="index.html" />
+    <link rel="next" title="式（Expressions）" href="expr.html" />
+    <link rel="prev" title="基本事項（Basic concepts）" href="basic.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="expr.html" title="式（Expressions）"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="basic.html" title="基本事項（Basic concepts）"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="standard-conversions">
+<h1>標準型変換（Standard conversions）<a class="headerlink" href="#standard-conversions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lvaluervalue-lvalue-to-rvalue-conversion">
+<h2>lvalueからrvalueへの型変換（Lvalue-to-rvalue conversion）<a class="headerlink" href="#lvaluervalue-lvalue-to-rvalue-conversion" title="Permalink to this headline">¶</a></h2>
+<p>本書では、煩雑を避けるために省略しているが、多くの標準型変換は、ある型のprvalueの値を、別の型のprvalueの値に変換するようになっている。そのため、標準型変換の際には、必要な場合、glvalueが、自動的にprvalueに変換される。これを、lvalueからrvalueへの型変換という。変換できるglvalueは、関数と配列以外である。</p>
+<p>この変換は、通常、まず意識することがない。</p>
+</div>
+<div class="section" id="array-to-pointer-conversion">
+<h2>配列からポインターへの型変換（Array-to-pointer conversion）<a class="headerlink" href="#array-to-pointer-conversion" title="Permalink to this headline">¶</a></h2>
+<p>配列とポインターは、よく混同される。その理由の一つに、配列名が、あたかもポインターのように振舞うということがある。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="p">;</span>
+<span class="c1">// pは、aの先頭要素を指す。</span>
+<span class="kt">int</span> <span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="n">a</span> <span class="p">;</span>
+
+<span class="c1">// どちらも、配列aの先頭要素に0を代入する</span>
+<span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>これは、配列からポインターへの型変換によるものである。配列名は、配列の先頭要素へのポインターとして扱われる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">a</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">=</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// &amp;a[0]と同じ</span>
+<span class="kt">int</span> <span class="p">(</span><span class="o">*</span> <span class="n">p2</span> <span class="p">)[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span> <span class="p">;</span> <span class="c1">// int [10]へのポインター</span>
+</pre></div>
+</div>
+<p>ここで、変数aの型は、int [10]であって、int <a href="#id1"><span class="problematic" id="id2">*</span></a>ではない。ただし、int <a href="#id3"><span class="problematic" id="id4">*</span></a>に暗黙のうちに型変換されるので、あたかもポインターのように振舞う</p>
+<p>多くの人は、これを暗黙の型変換としては意識していない。配列からポインターへの型変換は、非常によく使われる変換であって、多くの式では、配列名は、自動的に、配列の先頭要素へのポインターに型変換される。</p>
+</div>
+<div class="section" id="function-to-pointer-conversion">
+<h2>関数からポインターへの型変換（Function-to-pointer conversion）<a class="headerlink" href="#function-to-pointer-conversion" title="Permalink to this headline">¶</a></h2>
+<p>関数の名前は、その関数へのポインターに型変換される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">void</span> <span class="p">)</span> <span class="p">{}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// typeは関数ポインターの型</span>
+    <span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">;</span>
+
+    <span class="c1">// 同じ意味。</span>
+    <span class="n">type</span> <span class="n">p1</span> <span class="o">=</span> <span class="n">f</span> <span class="p">;</span>
+    <span class="n">type</span> <span class="n">p2</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">f</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>fの型は、関数であって、関数ポインターではない。関数ポインターとは、&amp;amp;fである。しかし、関数は、暗黙のうちに、関数ポインターに型変換されるので、関数名fは、関数ポインターとしても使うことができる</p>
+<p>この型変換も、非常によく使われる。多くの場合は、自動的に、関数は関数ポインターに変換される。</p>
+<p>ただし、この型変換は、非staticなメンバー関数には適用されない。ただし、staticなメンバー関数は、この標準変換が適用される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+
+    <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="n">g</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// エラー</span>
+<span class="kt">void</span> <span class="p">(</span> <span class="n">C</span><span class="o">::</span> <span class="o">*</span> <span class="n">error</span> <span class="p">)(</span><span class="kt">void</span><span class="p">)</span> <span class="o">=</span> <span class="n">C</span><span class="o">::</span><span class="n">f</span> <span class="p">;</span>
+<span class="c1">// OK</span>
+<span class="kt">void</span> <span class="p">(</span> <span class="n">C</span><span class="o">::*</span> <span class="n">ok</span> <span class="p">)(</span><span class="kt">void</span><span class="p">)</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">C</span><span class="o">::</span><span class="n">f</span> <span class="p">;</span>
+
+<span class="c1">// staticなメンバー関数は、普通の関数と同じように、変換できる</span>
+<span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">ptr</span><span class="p">)(</span><span class="kt">void</span><span class="p">)</span> <span class="o">=</span> <span class="n">C</span><span class="o">::</span><span class="n">g</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">ptr2</span><span class="p">)(</span><span class="kt">void</span><span class="p">)</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">C</span><span class="o">::</span><span class="n">g</span> <span class="p">;</span> <span class="c1">// ただし、こちらの方が分かりやすい</span>
+</pre></div>
+</div>
+<p>このような暗黙の型変換があるとはいえ、通常、関数ポインターを扱う際には、明示的に&lt;a href=&#8221;#expr.unary.op&#8221;&gt;単項演算子&lt;/a&gt;である&amp;amp;演算子を使ったほうが、分かりやすい。</p>
+</div>
+<div class="section" id="cv-qualification-conversions">
+<h2>CV修飾子の型変換（Qualification conversions）<a class="headerlink" href="#cv-qualification-conversions" title="Permalink to this headline">¶</a></h2>
+<p>ある型Tへのポインターは、あるconstまたはvolatile付きの型Tへのポインターに変換できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="o">*</span> <span class="n">p</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="k">const</span> <span class="o">*</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">p</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="k">volatile</span> <span class="o">*</span> <span class="n">vp</span> <span class="o">=</span> <span class="n">p</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">*</span> <span class="n">cvp</span> <span class="o">=</span> <span class="n">p</span> <span class="p">;</span>
+
+<span class="n">cvp</span> <span class="o">=</span> <span class="n">cp</span> <span class="p">;</span>
+<span class="n">cvp</span> <span class="o">=</span> <span class="n">vp</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>これは、より少ないCV修飾子へのポインターから、より多いCV修飾子へのポインターに、暗黙のうちに型変換できるということである。</p>
+<p>ただし、ポインターのポインターの場合は、注意を要する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="o">**</span> <span class="n">p</span> <span class="p">;</span>
+
+<span class="c1">// エラー</span>
+<span class="kt">int</span> <span class="k">const</span> <span class="o">**</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">p</span> <span class="p">;</span>
+
+<span class="c1">// これはOK</span>
+<span class="kt">int</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="o">*</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">p</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>なぜか。実は、この型変換を認めてしまうと、const性に穴が空いてしまうのだ。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="k">const</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="o">*</span> <span class="n">p</span> <span class="p">;</span>
+
+    <span class="c1">// これはエラー。</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span> <span class="p">;</span>
+
+    <span class="c1">// もしこれが認められていたとする。</span>
+    <span class="c1">// 実際はエラー。</span>
+    <span class="kt">int</span> <span class="k">const</span> <span class="o">**</span> <span class="n">cpp</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">p</span> <span class="p">;</span>
+
+    <span class="c1">// cppを経由して、pを書き換えることができてしまう。</span>
+    <span class="o">*</span><span class="n">cpp</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span> <span class="p">;</span>
+
+    <span class="c1">// pは、xを参照できてしまう。</span>
+    <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このため、ある型をTとした場合、T <a href="#id5"><span class="problematic" id="id6">**</span></a>から、T const <a href="#id7"><span class="problematic" id="id8">**</span></a>への型変換は、認められていない。T <a href="#id9"><span class="problematic" id="id10">**</span></a>から、T const * const <a href="#id11"><span class="problematic" id="id12">*</span></a>への変換はできる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="k">const</span> <span class="o">*</span> <span class="k">const</span> <span class="o">*</span> <span class="n">p2</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">p</span> <span class="p">;</span> <span class="c1">// OK</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="integer-conversion-rank">
+<h2>整数の変換順位（Integer conversion rank）<a class="headerlink" href="#integer-conversion-rank" title="Permalink to this headline">¶</a></h2>
+<p>整数型には、変換順位というものが存在する。これは、標準型変換や、リスト初期化で考慮される、整数型の優先順位である。これは、それほど複雑な順位ではない。基本的には、型のサイズの大小によって決定される。もっとも、多くの場合、型のサイズというのは、実装依存なのだが。</p>
+<p>基本的な変換順位は、以下のようになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">signed</span> <span class="kt">char</span> <span class="o">&lt;</span> <span class="kt">short</span> <span class="kt">int</span> <span class="o">&lt;</span> <span class="kt">int</span> <span class="o">&lt;</span> <span class="kt">long</span> <span class="kt">int</span> <span class="o">&lt;</span> <span class="kt">long</span> <span class="kt">long</span> <span class="kt">int</span>
+</pre></div>
+</div>
+<p>unsignedな整数型の順位は、対応するsingedな型と同じである。</p>
+<p>この他にも、いくつか細かいルールがある。</p>
+<p>charとsigned charと、unsigned charは、同じ順位である。</p>
+<p>boolは、最も低い順位となる。</p>
+<p>char16_t、char32_t、wchar_tの順位は、実装が割り当てる内部的な型に依存する。従って、これらの変換順位は、実装依存である。</p>
+<p>拡張整数型、つまり、実装が独自に定義する整数型は、実装依存の順位になる。</p>
+</div>
+<div class="section" id="integral-promotions">
+<h2>整数のプロモーション（Integral promotions）<a class="headerlink" href="#integral-promotions" title="Permalink to this headline">¶</a></h2>
+<p>整数のプロモーションとは、変換順位の低い型から、高い型へ、型変換することである。ただし、単に順位が低い型から高い型への型変換なら、何でもいいというわけではない。</p>
+<p>bool, char16_t, char32_t、wchar_t以外の整数型で、intより変換順位の低い整数型、つまり、char、short、その他の実装独自の拡張整数型は、もし、int型が、その値をすべて表現できる場合、intに変換できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">short</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">s</span> <span class="p">;</span> <span class="c1">// 整数のプロモーション</span>
+<span class="kt">long</span> <span class="n">l</span> <span class="o">=</span> <span class="n">s</span> <span class="p">;</span> <span class="c1">// これは、整数の型変換</span>
+</pre></div>
+</div>
+<p>intより低い順位の整数型から、int型への変換ということに注意しなければならない。longやlong longへの変換、または、charからshortへの変換などは、プロモーションではなく、&lt;a href=&#8221;#conv.integral&#8221;&gt;整数の型変換&lt;/a&gt;に分類される。</p>
+<p>char16_t、char32_t、wchar_tは、実装の都合による内部的な整数型に変換できる。内部的な整数型というのは、int、unsigned int、long int、unsigned long int、long long int、unsigned long long intのいずれかである。もし、これらのどの型でも、すべての値を表現できないならば、実装依存の整数型に変換することができる。</p>
+<p>今、int型で、char16_tとchar32_tの取りうるすべての値が表現できるものとすると、</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">char16_t</span> <span class="n">c16</span> <span class="o">=</span> <span class="n">u</span><span class="sc">&#39;あ&#39;</span> <span class="p">;</span>
+<span class="kt">char32_t</span> <span class="n">c32</span> <span class="o">=</span> <span class="n">U</span><span class="sc">&#39;あ&#39;</span> <span class="p">;</span>
+<span class="kt">wchar_t</span> <span class="n">wc</span> <span class="o">=</span> <span class="sc">L&#39;あ&#39;</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">c16</span> <span class="p">;</span> <span class="c1">// xの値は0x3042</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">c32</span> <span class="p">;</span> <span class="c1">// xの値は0x3042</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">wc</span> <span class="p">;</span> <span class="c1">// xの値は実装依存</span>
+</pre></div>
+</div>
+<p>int型のサイズは、実装により異なるので、このコードは、実際のC++の実装では、動く保証はない。</p>
+<p>基底型が指定されていないunscoped enum型は、int、unsigned int、long int、unsigned long int、long long int、unsigned long long intのうち、enum型のすべての値を表現できる最初の型に変換できる。もし、どの標準整数型でもすべての値を表現できない場合、すべての値を表現できる実装依存の拡張整数型のうち、もっとも変換順位の低い型が選ばれる。もし、順位の同じ整数型が二つある場合。つまり、signedとunsignedとが違う場合、signedな整数型の方が選ばれる。</p>
+<p>基底型が指定されてるunscoped enum型は、指定された基底型に変換できる。その場合で、さらに整数のプロモーションが適用できる場合も、プロモーションとみなされる。例えば、</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">enum</span> <span class="n">E</span> <span class="o">:</span> <span class="kt">short</span> <span class="p">{</span> <span class="n">value</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">short</span> <span class="n">s</span> <span class="o">=</span> <span class="n">value</span> <span class="p">;</span><span class="c1">// これは整数のプロモーション</span>
+<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">value</span> <span class="p">;</span> <span class="c1">// これも整数のプロモーション</span>
+</pre></div>
+</div>
+<p>このように、enumの場合は、int型以外への変換でも、プロモーションになる。</p>
+<p>int型への代入では、enum型が、基底型であるshortに変換された後、さらにintに変換されている。これは、どちらもプロモーションである。</p>
+<p>&lt;a href=&#8221;#class.bit&#8221;&gt;ビットフィールド&lt;/a&gt;は、すべての値を表現できる場合、intに変換できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">A</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span><span class="o">:</span><span class="mi">8</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">A</span> <span class="n">a</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="p">;</span><span class="c1">// 整数のプロモーション</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>もし、ビットフィールドの値が、intより大きいが、unsigned int型で表現できる場合は、unsigned intに変換できる。値がunsigned intより大きい場合は、整数のプロモーションは行われない。整数の型変換が行われる。</p>
+<p>bool型の値は、int型に変換できる。falseは0となり、trueは1となる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="nb">true</span> <span class="p">;</span> <span class="c1">// aは1</span>
+<span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="nb">false</span> <span class="p">;</span> <span class="c1">// bは0</span>
+</pre></div>
+</div>
+<p>以上が、整数のプロモーションである。これに当てはまらない整数型同士の型変換は、すべて、次に述べる&lt;a href=&#8221;#conv.integral&#8221;&gt;整数の型変換&lt;/a&gt;である。</p>
+</div>
+<div class="section" id="integral-conversions">
+<h2>整数の型変換（Integral conversions）<a class="headerlink" href="#integral-conversions" title="Permalink to this headline">¶</a></h2>
+<p>整数型は、他の整数型に型変換できる。ほんの一例を示すと、</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">short</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">s</span> <span class="p">;</span><span class="c1">// shortからintへの変換</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">i</span> <span class="p">;</span> <span class="c1">// intからshortへの変換</span>
+
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">ui</span> <span class="o">=</span> <span class="n">i</span> <span class="p">;</span> <span class="c1">// intからunsigned intへの変換</span>
+<span class="n">i</span> <span class="o">=</span> <span class="n">ui</span> <span class="p">;</span> <span class="c1">// unsigned intからintへの変換</span>
+
+<span class="kt">long</span> <span class="n">l</span> <span class="o">=</span> <span class="n">s</span> <span class="p">;</span> <span class="c1">// shortからlongへの変換</span>
+<span class="kt">long</span> <span class="kt">long</span> <span class="n">ll</span> <span class="o">=</span> <span class="n">l</span> <span class="p">;</span> <span class="c1">// longからlong longへの変換。</span>
+</pre></div>
+</div>
+<p>&lt;a href=&#8221;#conv.prom&#8221;&gt;整数のプロモーション&lt;/a&gt;以外の整数の型変換は、すべて、整数の型変換になる。この違いは、オーバーロード解決などに影響するので、重要である。</p>
+<p>整数の型変換は、危険である。変換先の型が、変換元の値を表現できない場合がある。</p>
+<p>例えば、今、signed charは8ビットで、intは16ビットだと仮定する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;limits&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="kt">signed</span> <span class="kt">char</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">;</span>
+    <span class="kt">signed</span> <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">i</span> <span class="p">;</span><span class="c1">// どうなる？</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>signed charは、intの取りうる値をすべて表現できるわけではない。この場合、どうなってしまうのか。</p>
+<p>変換先の整数型がunsignedの場合、結果の値は、変換元の対応する下位桁の値である。</p>
+<p>具体的な例を示して説明する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// unsigned charが8ビット、unsigned intが16ビットとする</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">ui</span> <span class="o">=</span> <span class="mi">1234</span> <span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">uc</span> <span class="o">=</span> <span class="n">ui</span> <span class="p">;</span> <span class="c1">// 210</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合、unsigned int型は、16ビット、uiの値は、2進数で0000010011010010である。unsigned char型は8ビット。つまり、この場合の対応する下位桁の値は、2進数で11010010（uiの下位8ビット）である。よって、ucは、10進数で210となる。</p>
+<p>unsignedの場合、変換先の型が、変換元の値を表現できないとしても、その値がどうなるかだけは、保証されている。もっとも、値を完全に保持できないので、危険なことには変わりないのだが。</p>
+<p>変換先の整数型がsignedの場合は、非常に危険である。変換先の整数型が、変換元の値を表現できる場合、値は変わらない。表現できない場合、その値は実装依存である。</p>
+<p>今仮に、int型は、signed char型の取りうる値をすべて表現できるが、signed char型は、int型の取りうる値をすべて表現することはできないとする。また、signed charは8ビット、intは16ビットとする。signed charの最小値は-127、最大値は127。intの最小値は-32767、最大値は32767とする。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">signed</span> <span class="kt">char</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">100</span> <span class="p">;</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">c</span> <span class="p">;</span> <span class="c1">// iの値は100</span>
+
+    <span class="kt">signed</span> <span class="kt">char</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">1000</span> <span class="p">;</span> <span class="c1">// 値は実装依存</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>iの値は、100である。なぜなら、今仮定した環境では、int型は100を表現できるからである。valueの値は、実装依存であり、分からない。なぜならば、signed char型は、1000を表現できないからだ。その場合、変換先のsignedな整数型の値は、実装依存である。</p>
+</div>
+<div class="section" id="floating-point-promotion">
+<h2>浮動小数点数のプロモーション（Floating point promotion）<a class="headerlink" href="#floating-point-promotion" title="Permalink to this headline">¶</a></h2>
+<p>float型の値は、double型の値に変換できる。このとき、値は変わらない。つまり、floatからdoubleへの変換は、まったく同じ値が表現できることを意味している。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">float</span> <span class="n">f</span> <span class="o">=</span> <span class="mf">3.14</span> <span class="p">;</span>
+<span class="kt">double</span> <span class="n">d</span> <span class="o">=</span> <span class="n">f</span> <span class="p">;</span> <span class="c1">// dの値は3.14</span>
+</pre></div>
+</div>
+<p>この変換を、浮動小数点数のプロモーションという。</p>
+</div>
+<div class="section" id="floating-point-conversions">
+<h2>浮動小数点数の型変換（Floating point conversions）<a class="headerlink" href="#floating-point-conversions" title="Permalink to this headline">¶</a></h2>
+<p>浮動小数点数のプロモーション以外の、浮動小数点数同士の型変換を、浮動小数点数の型変換という。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">double</span> <span class="n">d</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="p">;</span>
+<span class="kt">float</span> <span class="n">f</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="p">;</span>
+<span class="kt">long</span> <span class="kt">double</span> <span class="n">ld</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="p">;</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">d</span> <span class="p">;</span> <span class="c1">// doubleからfloatへの型変換</span>
+<span class="n">ld</span> <span class="o">=</span> <span class="n">f</span> <span class="p">;</span> <span class="c1">// floatからlong doubleへの型変換</span>
+<span class="n">ld</span> <span class="o">=</span> <span class="n">d</span> <span class="p">;</span> <span class="c1">// doubleからlong doubleへの型変換</span>
+</pre></div>
+</div>
+<p>もし、変換先の型が、変換元の型の値を、すべて表現できるのならば、値は変わらない。値を正確に表現できない場合は、最も近い値が選ばれる。この近似値がどのように選ばれるかは、実装依存である。近似値すら表現できない場合の挙動は、未定義である。</p>
+</div>
+<div class="section" id="floating-integral-conversions">
+<h2>浮動小数点数と整数の間の型変換（Floating-integral conversions）<a class="headerlink" href="#floating-integral-conversions" title="Permalink to this headline">¶</a></h2>
+<p>浮動小数点数型は、整数型に変換できる。このとき、小数部分は切り捨てられる。小数部分を切り捨てた後の値が、変換先の整数型で表現できない場合、挙動は未定義である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mf">1.9</span> <span class="p">;</span><span class="c1">// xの値は、1</span>
+<span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="mf">1.9999</span> <span class="p">;</span> <span class="c1">// yの値は、1</span>
+<span class="kt">int</span> <span class="n">z</span> <span class="o">=</span> <span class="mf">0.9999</span> <span class="p">;</span> <span class="c1">// zの値は、0</span>
+</pre></div>
+</div>
+<p>整数型、あるいはunscoped enum型は、浮動小数点数型に変換できる。結果は、可能であれば、まったく同じ値になる。近似値で表現できる場合、実装依存の方法によって、近似値が選ばれる。値を表現できない場合の挙動は、未定義である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">float</span> <span class="n">f</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">;</span><span class="c1">// fの値は、1.0f</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="pointer-conversions">
+<h2>ポインターの型変換（Pointer conversions）<a class="headerlink" href="#pointer-conversions" title="Permalink to this headline">¶</a></h2>
+<p>nullポインター定数とは、整数型定数で、0であるものか、std::nullptr_t型である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="mi">0</span> <span class="p">;</span> <span class="c1">// nullポインター定数</span>
+<span class="mi">1</span> <span class="p">;</span> <span class="c1">// これはnullポインター定数ではない</span>
+<span class="n">nullptr</span> <span class="p">;</span> <span class="c1">// nullポインター定数。型はstd::nullptr_t</span>
+</pre></div>
+</div>
+<p>0がnullポインター定数として扱われるのは、歴史的な理由である。</p>
+<p>nullポインター定数は、どんなポインター型にでも変換できる。この値を、nullポインター値（null pointer value）という。nullポインター定数同士を比較すると、等しいと評価される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="o">*</span> <span class="n">a</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span>
+<span class="kt">char</span> <span class="o">*</span> <span class="n">c</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="o">**</span> <span class="n">pp</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span>
+
+<span class="kt">bool</span> <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">nullptr</span> <span class="o">==</span> <span class="n">nullptr</span><span class="p">)</span> <span class="p">;</span> <span class="c1">// true</span>
+</pre></div>
+</div>
+<p>nullポインター定数を、CV修飾付きの型へのポインターに変換する場合、このポインターの型変換のみが行われる。CV修飾子の型変換ではない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// ポインターの型変換のみが行われる。</span>
+<span class="c1">// CV修飾子の型変換は行われない。</span>
+<span class="kt">int</span> <span class="k">const</span> <span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>整数型定数のnullポインター定数は、std::nullptr_t型に変換できる。結果の値は、nullポインターである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">std</span><span class="o">::</span><span class="kt">nullptr_t</span> <span class="n">null</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>あるオブジェクトへのポインター型は、voidへのポインターに変換できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="o">*</span> <span class="n">int_pointer</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span> <span class="p">;</span>
+<span class="kt">void</span> <span class="o">*</span> <span class="n">void_pointer</span> <span class="o">=</span> <span class="n">int_pointer</span> <span class="p">;</span><span class="c1">// int *からvoid *に変換できる</span>
+</pre></div>
+</div>
+<p>この時、CV修飾子が付いていた場合、消すことはできない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="k">const</span> <span class="o">*</span> <span class="n">int_pointer</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="o">*</span> <span class="n">error</span> <span class="o">=</span> <span class="n">int_pointer</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="kt">void</span> <span class="k">const</span> <span class="o">*</span> <span class="n">ok</span> <span class="o">=</span> <span class="n">int_pointer</span> <span class="p">;</span> <span class="c1">// OK</span>
+</pre></div>
+</div>
+<p>void <a href="#id13"><span class="problematic" id="id14">*</span></a>に変換した場合、ポインターの値は、変換元のオブジェクトのストレージの、先頭を指し示す。値がnullポインターの場合は、変換先の型のnullポインターになる。</p>
+<p>派生クラスのポインターから、基本クラスのポインターに変換することができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="n">D</span> <span class="o">*</span> <span class="n">p</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span>
+<span class="n">Base</span> <span class="o">*</span> <span class="n">bp</span> <span class="o">=</span> <span class="n">p</span> <span class="p">;</span> <span class="c1">// OK。Derived *からBase *への変換</span>
+</pre></div>
+</div>
+<p>もし、基本クラスにアクセス出来ない場合や、曖昧な場合は、エラーとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 基本クラスにアクセス出来ない場合</span>
+<span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="k">private</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="n">Derived</span> <span class="o">*</span> <span class="n">d</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span>
+<span class="n">Base</span> <span class="o">*</span> <span class="n">b</span> <span class="o">=</span> <span class="n">d</span> <span class="p">;</span><span class="c1">// エラー。Baseにはアクセス出来ないので、変換できない</span>
+</pre></div>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 曖昧な場合</span>
+<span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Wrap1</span> <span class="o">:</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Wrap2</span> <span class="o">:</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// Derivedは、基本クラスとしてふたつのBaseを持っている。</span>
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Wrap1</span><span class="p">,</span> <span class="n">Wrap2</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="n">Derived</span> <span class="o">*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span>
+
+<span class="c1">// エラー</span>
+<span class="c1">// Wrap1::Baseと、Wrap2::Baseのどちらなのかが曖昧</span>
+<span class="n">Base</span> <span class="o">*</span> <span class="n">ambiguous_base</span> <span class="o">=</span> <span class="n">ptr</span> <span class="p">;</span>
+
+<span class="c1">// OK</span>
+<span class="c1">// Wrap1::Base</span>
+<span class="n">Base</span> <span class="o">*</span> <span class="n">Wrap1_base</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Wrap1</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>派生クラスのポインターから基本クラスポインターへの変換の結果は、派生クラスの中の、基本クラス部分を指す。これは、変換の結果、ポインターの値が変わる可能性がある。実装に依存するので、あまり具体的な例を挙げたくはないが、例えば、以下のようなコードは、多くの実装で、ポインターの値が変わる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;cstdio&gt;</span>
+
+<span class="k">struct</span> <span class="n">Base1</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Base2</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">x</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base1</span><span class="p">,</span> <span class="n">Base2</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Derived</span> <span class="n">d</span> <span class="p">;</span>
+
+    <span class="c1">// dへのポインター</span>
+    <span class="n">Derived</span> <span class="o">*</span> <span class="n">d_ptr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">d</span> <span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;d_ptr : %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">d_ptr</span><span class="p">)</span> <span class="p">;</span>
+
+    <span class="c1">// 基本クラスのポインターへ型変換</span>
+    <span class="n">Base1</span> <span class="o">*</span> <span class="n">b1_ptr</span> <span class="o">=</span> <span class="n">d_ptr</span> <span class="p">;</span>
+    <span class="n">Base2</span> <span class="o">*</span> <span class="n">b2_ptr</span> <span class="o">=</span> <span class="n">d_ptr</span> <span class="p">;</span>
+
+    <span class="c1">// 多くの実装では、</span>
+    <span class="c1">// b1_ptrとb2_ptrのどちらかが、d_ptrと同じ値ではない。</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;b1_ptr : %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">b1_ptr</span><span class="p">)</span> <span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;b2_ptr : %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">b2_ptr</span><span class="p">)</span> <span class="p">;</span>
+
+    <span class="c1">// 派生クラスへキャスト（標準型変換の逆変換）</span>
+    <span class="n">Derived</span> <span class="o">*</span> <span class="n">d_ptr_from_b1</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Derived</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">b1_ptr</span><span class="p">)</span> <span class="p">;</span>
+    <span class="n">Derived</span> <span class="o">*</span> <span class="n">d_ptr_from_b2</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">Derived</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">b2_ptr</span><span class="p">)</span> <span class="p">;</span>
+
+    <span class="c1">// 多くの実装では、</span>
+    <span class="c1">// d_ptrと同じ値になる。</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;d_ptr_from_b1 : %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">d_ptr_from_b1</span><span class="p">)</span> <span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;d_ptr_from_b2 : %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">d_ptr_from_b1</span><span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>このように、基本クラスと派生クラスの間のポインターのキャストは、ポインターの値の変わる可能性がある。このような型変換には、単に値をそのまま使う、&lt;a href=&#8221;#expr.reinterpret.cast&#8221;&gt;reinterpret_cast&lt;/a&gt;は使えない。</p>
+<p>変換元のポインターの値がnullポインターの場合は、変換先の型のnullポインターになる。</p>
+</div>
+<div class="section" id="pointer-to-member-conversions">
+<h2>メンバーへのポインターの型変換（Pointer to member conversions）<a class="headerlink" href="#pointer-to-member-conversions" title="Permalink to this headline">¶</a></h2>
+<p>nullポインター定数は、メンバーへのポインターにも変換できる。変換された結果の値を、nullメンバーポインター値（null member pointer value）という。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">data</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="n">C</span><span class="o">::*</span> <span class="n">ptr</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>nullメンバーポインター値は、他のメンバーへのポインターの値と比較できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">C</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">data</span> <span class="p">;</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="n">C</span><span class="o">::*</span> <span class="n">ptr1</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span>
+<span class="kt">int</span> <span class="n">C</span><span class="o">::*</span> <span class="n">ptr2</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">C</span><span class="o">::</span><span class="n">data</span> <span class="p">;</span>
+
+<span class="kt">bool</span> <span class="n">b</span> <span class="o">=</span> <span class="p">(</span> <span class="n">ptr1</span> <span class="o">==</span> <span class="n">ptr2</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// false</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="bool-boolean-conversions">
+<h2>boolの型変換（Boolean conversions）<a class="headerlink" href="#bool-boolean-conversions" title="Permalink to this headline">¶</a></h2>
+<p>整数、浮動小数点数、unscoped enum、ポインター、メンバーへのポインターは、boolに変換できる。ゼロ値、nullポインター値、nullメンバーポインター値は、falseに変換される。それ以外の値はすべて、trueに変換される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">bool</span> <span class="n">b1</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// false</span>
+<span class="kt">bool</span> <span class="n">b2</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">;</span> <span class="c1">// true</span>
+<span class="kt">bool</span> <span class="n">b3</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">;</span> <span class="c1">// true</span>
+
+<span class="kt">bool</span> <span class="n">b4</span> <span class="o">=</span> <span class="n">nullptr</span> <span class="p">;</span> <span class="c1">// false</span>
+
+<span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="kt">bool</span> <span class="n">b5</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span> <span class="p">;</span> <span class="c1">// true</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="expr.html" title="式（Expressions）"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="basic.html" title="基本事項（Basic concepts）"
+             >previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ezoe Ryou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

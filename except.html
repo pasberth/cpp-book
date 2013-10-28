@@ -1,0 +1,1182 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>例外(Exception handling) &mdash; C++11: Syntax and Feature</title>
+    
+    <link rel="stylesheet" href="_static/cpp-book.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="C++11: Syntax and Feature" href="index.html" />
+    <link rel="prev" title="テンプレート(Templates)" href="temp.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="temp.html" title="テンプレート(Templates)"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body">
+            
+  <div class="section" id="exception-handling">
+<h1>例外(Exception handling)<a class="headerlink" href="#exception-handling" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="throwing-an-exception">
+<h2>例外を投げる(Throwing an exception)<a class="headerlink" href="#throwing-an-exception" title="Permalink to this headline">¶</a></h2>
+<p>例外を投げる(throwing an exception)とは、日本語では他にも、送出するとかスローするなどとも書かれている。</p>
+<p>例外を投げると、処理はハンドラーに移る。例外を投げるときには、オブジェクトが渡される。オブジェクトの型によって、処理が渡されるハンドラーが決まる</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// int型</span>
+<span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+
+<span class="c1">// const char *型</span>
+<span class="k">throw</span> <span class="s">&quot;hello&quot;</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+<span class="c1">// X型</span>
+<span class="k">throw</span> <span class="n">x</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>例外が投げられると、型が一致する最も近い場所にあるハンドラーに処理が移る。「最も近い」というのは、最近に入って、まだ抜けていないtryブロックに対応するハンドラーである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 例外を投げる</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">try</span>
+        <span class="p">{</span>
+            <span class="n">try</span> <span class="p">{</span> <span class="n">f</span><span class="p">()</span> <span class="p">}</span> <span class="c1">// 関数fの中で例外を投げる</span>
+            <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// ここに処理が移る</span>
+        <span class="p">}</span>
+        <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>throw式はオペランドから一時オブジェクトを初期化する。この一時オブジェクトを例外オブジェクト(exception object)という。例外オブジェクトの型を決定するには、throw式のオペランドの型からトップレベルのCV修飾子を取り除き、T型への配列型はTへのポインター型へ、T型を返す関数型は、T型を返す関数へのポインター型に変換する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// int</span>
+
+<span class="kt">int</span> <span class="k">const</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="k">throw</span> <span class="n">a</span> <span class="p">;</span> <span class="c1">// int</span>
+
+<span class="kt">int</span> <span class="k">const</span> <span class="k">volatile</span> <span class="o">*</span> <span class="k">const</span> <span class="k">volatile</span> <span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span> <span class="p">;</span>
+<span class="k">throw</span> <span class="n">p</span> <span class="p">;</span> <span class="c1">// int const volatile *</span>
+
+<span class="kt">int</span> <span class="n">b</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="p">;</span>
+<span class="k">throw</span> <span class="n">b</span> <span class="p">;</span> <span class="c1">// int *</span>
+
+<span class="kt">int</span> <span class="nf">f</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+<span class="k">throw</span> <span class="n">f</span> <span class="p">;</span> <span class="c1">// int (*)(int)</span>
+</pre></div>
+</div>
+<p>この一時オブジェクトはlvalueであり、型が適合するハンドラーの変数の初期化に使われる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 例外オブジェクトはint型のlvalue</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="n">exception_object</span> <span class="p">)</span> <span class="c1">// 例外オブジェクトで初期化される</span>
+    <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>例外オブジェクトの型が不完全型か不完全型へのポインター型である場合は、エラーとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">incomplete_type</span> <span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// エラー、不完全型へのポインター型</span>
+    <span class="k">throw</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">incomplete_type</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">nullptr</span><span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ただし、void型はその限りではない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// OK、void *</span>
+    <span class="k">throw</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">void</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">nullptr</span><span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>いくつかの制限を除けば、throw式のオペランドは、関数への実引数やreturn文のオペランドとほぼ同じ扱いになっている。</p>
+<p>例外オブジェクトのメモリーは、未規定の方法で確保される。</p>
+<p>例外オブジェクトの寿命の決定にはふたつの条件があり、どちらか遅い方に合わせて破棄される。</p>
+<p>ひとつは例外を再び投げる以外の方法で、例外を捉えたハンドラーから抜け出すこと。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="p">...</span> <span class="p">)</span>
+    <span class="p">{</span>
+    <span class="c1">// return文やgoto文などでハンドラーの複合分の外側に移動するか</span>
+    <span class="c1">// あるいはハンドラーの複合分を最後まで処理が到達すれば、例外オブジェクトは破棄される</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>例外が再び投げられた場合は、例外オブジェクトの寿命は延長される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// 例外を投げるかもしれない関数</span>
+
+<span class="kt">void</span> <span class="nf">g</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="n">try</span> <span class="p">{</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="p">...</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="p">;</span> <span class="c1">// 例外を再び投げる</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この場合、例外オブジェクトは破棄されずに、例外処理が続行する。</p>
+<p>もうひとつの条件は、例外オブジェクトを参照する最後のstd::exception_ptrが破棄された場合。これはライブラリの話になるので、本書ではstd::exception_ptrについては解説しない。</p>
+<p>例外オブジェクトのストレージが解放される方法は未規定である。</p>
+<p>例外オブジェクトの型がクラスである場合、クラスのコピーコンストラクターかムーブコンストラクターのどちらか片方と、デストラクターにアクセス可能でなければならない。</p>
+<p>以下のようなクラスは、例外オブジェクトとして投げることができる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 例外オブジェクトとして投げられるクラス</span>
+<span class="c1">// コピーコンストラクター、ムーブコンストラクター、デストラクターにアクセス可能</span>
+<span class="k">struct</span> <span class="n">throwable1</span>
+<span class="p">{</span>
+    <span class="n">throwable1</span><span class="p">(</span> <span class="n">throwable1</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">throwable1</span><span class="p">(</span> <span class="n">throwable1</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">throwable1</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 例外オブジェクトとして投げられるクラス</span>
+<span class="c1">// コピーコンストラクター、デストラクターにアクセス可能</span>
+
+<span class="k">struct</span> <span class="n">throwable2</span>
+<span class="p">{</span>
+    <span class="n">throwable2</span><span class="p">(</span> <span class="n">throwable2</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="n">throwable2</span><span class="p">(</span> <span class="n">throwable2</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="o">=</span> <span class="k">delete</span> <span class="p">;</span>
+    <span class="o">~</span><span class="n">throwable2</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// 例外オブジェクトとして投げられるクラス</span>
+<span class="c1">//　ムーブコンストラクター、デストラクターにアクセス可能</span>
+<span class="k">struct</span> <span class="n">throwable3</span>
+<span class="p">{</span>
+    <span class="n">throwable3</span><span class="p">(</span> <span class="n">throwable3</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="o">=</span> <span class="k">delete</span> <span class="p">;</span>
+    <span class="n">throwable3</span><span class="p">(</span> <span class="n">throwable3</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">throwable3</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>例外オブジェクトとして投げられるクラスの条件を満たすには、コピーコンストラクターとムーブコンストラクターは、どちらか片方だけアクセスできればよい。デストラクターには必ずアクセス可能でなければならない。</p>
+<p>以下のようなクラスは投げることができない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 例外オブジェクトとして投げられないクラス</span>
+<span class="k">struct</span> <span class="n">unthrowable</span>
+<span class="p">{</span>
+    <span class="c1">// コピーコンストラクター、ムーブコンストラクター両方にアクセスできない</span>
+    <span class="n">unthrowable</span><span class="p">(</span> <span class="n">unthrowable</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="o">=</span> <span class="k">delete</span> <span class="p">;</span>
+    <span class="n">unthrowable</span><span class="p">(</span> <span class="n">unthrowable</span> <span class="o">&amp;&amp;</span> <span class="p">)</span> <span class="o">=</span> <span class="k">delete</span> <span class="p">;</span>
+
+    <span class="c1">// デストラクターにアクセスできない</span>
+    <span class="o">~</span><span class="n">unthrowable</span><span class="p">()</span> <span class="o">=</span> <span class="k">delete</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>たとえ、コピーやムーブが省略可能な文脈でも、コピーコンストラクターかムーブコンストラクターのどちらか片方にはアクセス可能という条件を満たしていなければ、クラスは例外オブジェクトとして投げることができない。</p>
+<p>例外は、あるハンドラーに処理が移った段階で、とらえられた(キャッチされた)とみなされる。ただし、例外がとらえられたハンドラーから再び投げられた場合は、再びとらえられていない状態に戻る。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">try</span>
+<span class="p">{</span>
+    <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span>
+<span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// 例外はとらえられた</span>
+
+    <span class="k">throw</span> <span class="p">;</span> <span class="c1">// 再びとらえられていない状態に戻る</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>例外オブジェクトとして投げられる初期化式の評価が完了した後から、例外がとらえられるまでの間に、別の例外が投げられた場合は、std::terminateが呼ばれる。</p>
+<p>これが起こるよくある状況は、スタックアンワインディングの最中にデストラクターから例外が投げられることだ.</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// デストラクターが例外を投げるクラス</span>
+<span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+    <span class="c1">// デストラクターに明示的な例外指定がない場合、この文脈では暗黙にthrow()になるため</span>
+    <span class="c1">// デストラクターの外に例外を投げるには例外指定が必要</span>
+    <span class="o">~</span><span class="n">C</span><span class="p">()</span> <span class="n">noexcept</span><span class="p">(</span> <span class="nb">false</span> <span class="p">)</span> <span class="p">{</span> <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+        <span class="c1">// C型のオブジェクトcが破棄される</span>
+        <span class="c1">// 例外中に例外が投げられたため、std::terminateが呼ばれる</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">){</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>一般的に、デストラクターから例外を投げるべきではない。</p>
+<p>初期化式の評価が完了した後という点に注意。throw式のオペランドの初期化式の評価中の例外はこの条件に当てはまらない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="c1">// OK、初期化式の評価中の例外</span>
+        <span class="c1">// 例外オブジェクトの型はint</span>
+        <span class="k">throw</span> <span class="n">X</span><span class="p">()</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="n">X</span> <span class="o">&amp;</span> <span class="n">exception</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="n">exception</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// このハンドラーでとらえられる</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例ではX型のオブジェクトを例外としてthrowする前に、初期化中にint型の例外が投げられたので、結果として投げられる例外オブジェクトの型はint型になる。</p>
+<p>ただし、初期化式の評価が完了した後という点に注意。初期化完了の後に例外が投げられた場合は、std::terminateが呼ばれる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// この例がstd::terminateを呼ぶかどうかは、C++の実装次第である。</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">(</span> <span class="n">X</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="c1">// 実装がコピーを省略しない場合、std::terminateが呼ばれる</span>
+        <span class="c1">// コピーコンストラクターの実行は評価完了後</span>
+        <span class="k">throw</span> <span class="n">X</span><span class="p">()</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この文脈では、賢いC++の実装ならば、コピーを省略できる。ただし、コピーが省略される保証はない。もし、例外オブジェクトを構築する際にコピーが行われたならば、それはthrow式のオペランドの初期化式の評価完了後なので、この条件に当てはまり、std::terminateが呼ばれる。</p>
+<p>また、現行の規格の文面にや誤りがあり、以下のコードではstd::terminateが呼ばれるよう解釈できてしまう。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 例外によって抜け出す関数</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="p">{</span> <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">C</span>
+<span class="p">{</span>
+
+    <span class="o">~</span><span class="n">C</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="c1">// 例外によって抜け出す関数を呼ぶ</span>
+        <span class="n">try</span> <span class="p">{</span> <span class="n">f</span><span class="p">()</span> <span class="p">;</span> <span class="p">}</span>
+        <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">C</span> <span class="n">c</span> <span class="p">;</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+        <span class="c1">// 例外がハンドラーにとらえられる前に、cのデストラクターが呼ばれる</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">){</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>これは規格の誤りであり、本書執筆の時点で、修正が検討されている。</p>
+<p>オペランドのないthrow式は、現在とらえられている例外を再び投げる(rethrow)。これは、最送出とかリスローなどとも呼ばれている。例外が再び有効になり、例外オブジェクトは破棄されずに再利用される。つまり、例外をふたたび投げる際に一時オブジェクトを新たに作ることはない。例外は再びとらえられているものとはみなされなくなり、std::uncaught_exception()の値も、またtrueになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">try</span>
+        <span class="p">{</span>
+            <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">catch</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">e</span> <span class="p">)</span>
+        <span class="p">{</span> <span class="c1">// 例外をとらえる</span>
+            <span class="k">throw</span> <span class="p">;</span> <span class="c1">// 一度捉えた例外を再び投げる</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="n">e</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// 再び投げられた例外をとらえる</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>例外がとらえられていない状態でオペランドのないthrow式を実行すると、std::terminateが呼ばれる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">throw</span> <span class="p">;</span> <span class="c1">// std::terminateが呼ばれる</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="constructors-and-destructors">
+<h2>コンストラクターとデストラクター(Constructors and destructors)<a class="headerlink" href="#constructors-and-destructors" title="Permalink to this headline">¶</a></h2>
+<p>処理がthrow式からハンドラーに移るにあたって、tryブロックの中で構築された自動オブジェクトのデストラクターが呼び出される。自動オブジェクトの破棄は構築の逆順に行われる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">X</span> <span class="n">a</span> <span class="p">;</span>
+        <span class="n">X</span> <span class="n">b</span> <span class="p">;</span>
+        <span class="n">X</span> <span class="n">c</span> <span class="p">;</span>
+        <span class="c1">// a, b, cの順に構築される</span>
+
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">// このハンドラーに処理が移る過程で、</span>
+    <span class="c1">// c, b, aの順に破棄される</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>オブジェクトの構築、破棄が、例外により中断された場合、完全に構築されたサブオブジェクトに対してデストラクターが実行される。オブジェクトが構築されたストレージの種類は問わない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="n">Base</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">Base</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="c1">// コンストラクターに実引数trueが渡された場合、例外を投げるクラス</span>
+<span class="k">struct</span> <span class="n">Member</span>
+<span class="p">{</span>
+    <span class="n">Member</span><span class="p">(</span> <span class="kt">bool</span> <span class="n">b</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="n">b</span> <span class="p">)</span>
+            <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="o">~</span><span class="n">Member</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="c1">// Xのサブオブジェクトは、基本クラスBaseと、非staticデータメンバー、a, b, c</span>
+<span class="k">struct</span> <span class="n">X</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="n">Member</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="p">;</span>
+
+    <span class="n">X</span><span class="p">()</span> <span class="o">:</span> <span class="n">a</span><span class="p">(</span><span class="nb">false</span><span class="p">),</span> <span class="n">b</span><span class="p">(</span><span class="nb">true</span><span class="p">),</span> <span class="n">c</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span>
+    <span class="p">{</span> <span class="p">}</span>
+    <span class="c1">// Base, aのデストラクターが実行される。</span>
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="p">}</span> <span class="p">;</span>
+
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、クラスXは、サブオブジェクトとして、Base型の基本クラスと、Member型の非staticデータメンバー、a, b, cを持つ。その初期化順序は、基本クラスBase, a, b, c, Xである。クラスMemberは、コンストラクターの実引数にtrueが渡された場合、例外を投げる。クラスXのコンストラクターは、bのコンストラクターにtrueを与えている。その結果、クラスXのオブジェクトの構築は、例外によって中断される。</p>
+<p>この時、デストラクターが実行されるのは、基本クラスBaseのオブジェクトと、Member型の非staticデータメンバーaのオブジェクトである。bは、コンストラクターを例外によって抜けだしたため、構築が完了していない。cは、まだコンストラクターが実行されていないため、構築が完了していない。そのため、b, cのオブジェクトに対してデストラクターは実行されない。</p>
+<p>ただし、union風クラスのvariantメンバーには、デストラクターは呼び出されない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Member</span>
+<span class="p">{</span>
+    <span class="n">Member</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">Member</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="k">union</span> <span class="p">{</span> <span class="n">Member</span> <span class="n">m</span> <span class="p">;</span> <span class="p">}</span>  <span class="p">;</span>
+
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span> <span class="c1">// mのデストラクターは実行されない</span>
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>あるオブジェクトの非デリゲートコンストラクターの実行が完了し、その非デリゲートコンストラクターを呼び出したデリゲートコンストラクターが例外によって抜けだした場合、そのオブジェクトに対してデストラクターが呼ばれる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="c1">// 非デリゲートコンストラクター</span>
+    <span class="n">X</span><span class="p">(</span> <span class="kt">bool</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+    <span class="c1">// デリゲートコンストラクター</span>
+    <span class="n">X</span><span class="p">()</span> <span class="o">:</span> <span class="n">X</span><span class="p">(</span> <span class="nb">true</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// Xのデストラクターが呼ばれる</span>
+    <span class="p">}</span>
+
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>これは、オブジェクトの構築完了は、非デリゲートコンストラクターの実行が完了した時点だからだ。</p>
+<p>例外によって構築が中断されたオブジェクトがnew式によって構築された場合、使われた確保関数に対応する解放関数があれば、ストレージを開放するために自動的に呼ばれる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+
+    <span class="c1">// 確保関数</span>
+    <span class="kt">void</span> <span class="o">*</span> <span class="k">operator</span> <span class="k">new</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">size</span> <span class="p">)</span> <span class="n">noexcept</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">malloc</span><span class="p">(</span> <span class="n">size</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 上記確保関数に対応する解放関数</span>
+    <span class="kt">void</span> <span class="k">operator</span> <span class="k">delete</span><span class="p">(</span> <span class="kt">void</span> <span class="o">*</span> <span class="n">ptr</span> <span class="p">)</span> <span class="n">noexcept</span>
+    <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">free</span><span class="p">(</span> <span class="n">ptr</span> <span class="p">)</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="k">new</span> <span class="n">X</span> <span class="p">;</span> <span class="c1">// 対応する解放関数が呼ばれる</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、Xを構築するためにmallocで確保されたストレージは、正しくfreeで解放される。</p>
+<p>throw式から処理を移すハンドラーまでのtryブロック内の自動ストレージ上のオブジェクトのデストラクターを自動的に呼ぶこの一連の過程は、スタックアンワインディング(stack unwinding)と呼ばれている。もし、スタックアンワインディング中に呼ばれたデストラクターが例外によって抜けだした場合、std::terminateが呼ばれる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="n">noexcept</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// std::terminateが呼ばれる</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>現行の文面を解釈すると、以下のコードもstd::terminateを呼ぶように解釈できるが、これは誤りであり、将来の規格改定で修正されるはずである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Y</span>
+<span class="p">{</span>
+    <span class="n">Y</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">Y</span><span class="p">()</span> <span class="n">noexcept</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span> <span class="p">{</span> <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="n">X</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">X</span><span class="p">()</span> <span class="n">noexcept</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">try</span> <span class="p">{</span>
+        <span class="c1">// スタックアンワインディング中に呼ばれたデストラクターが例外によって抜け出す</span>
+        <span class="c1">// 現行の規格の文面解釈ではstd::terminateが呼ばれてしまう</span>
+            <span class="n">Y</span> <span class="n">y</span> <span class="p">;</span>
+        <span class="p">}</span> <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">X</span> <span class="n">x</span> <span class="p">;</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>一般に、デストラクターを例外によって抜け出すようなコードは書くべきではない。デストラクターはスタックアンワインディングのために呼ばれるかもしれないからだ。スタックアンワインディング中かどうかを調べる、std::uncaught_exceptionのような標準ライブラリもあるにはあるが、スタックアンワインディング中かどうかを調べる必要は、通常はない。</p>
+<p>C++11からは、デストラクターはデフォルトで例外指定がつくようになり、ほとんどの場合、noexcept(true)と互換性のある例外指定になる変更がなされたのも、通常はデストラクターを例外で抜け出す必要がないし、またそうすべきではないからだ。</p>
+</div>
+<div class="section" id="handling-an-exception">
+<h2>例外の捕捉(Handling an exception)<a class="headerlink" href="#handling-an-exception" title="Permalink to this headline">¶</a></h2>
+<p>throw式によって投げられた例外は、tryブロックのハンドラーによって補足される。ハンドラーの文法は以下の通り。</p>
+<div class="highlight-c++"><pre>catch ( 例外宣言 ) 複合文</pre>
+</div>
+<div class="highlight-c++"><pre>int main()
+{
+    try
+    {
+        throw 0 ; 例外オブジェクトの型はint
+    }
+    catch( double d ) {}
+    catch( float f ) { }
+    catch( int i ) {} // このハンドラーに処理が移る
+
+}</pre>
+</div>
+<p>例外が投げられると、処理は、例外オブジェクトの型と適合(match)する例外宣言を持つハンドラーに移される。</p>
+<p>ハンドラーの例外宣言は、不完全型、抽象クラス型、rvalueリファレンス型であってはならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">incomplete</span> <span class="p">;</span> <span class="c1">// 不完全型</span>
+
+<span class="k">struct</span> <span class="n">abstract</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="n">incomplete</span> <span class="n">x</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// エラー、不完全型</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="n">abstract</span> <span class="n">a</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// エラー、抽象クラス型</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="n">abstract</span> <span class="o">*</span> <span class="n">a</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// OK、抽象クラスへのポインター型</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="n">abstract</span> <span class="o">&amp;</span> <span class="n">a</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// OK、抽象クラスへのリファレンス型</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="o">&amp;&amp;</span> <span class="n">rref</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// エラー、rvalueリファレンス型</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>また、例外宣言の型は、不完全型へのポインターやリファレンスであってはならない。ただし、void <a href="#id1"><span class="problematic" id="id2">*</span></a>, const void <a href="#id3"><span class="problematic" id="id4">*</span></a>, volatile void <a href="#id5"><span class="problematic" id="id6">*</span></a>, const volatile void <a href="#id7"><span class="problematic" id="id8">*</span></a>は、不完全型へのポインター型だが、例外的に許可されている。</p>
+<p>ハンドラーの例外宣言が「Tへの配列」の場合、「Tへのポインター」型に変換される。「Tを返す関数」型は、「Tを返す関数へのポインター」型に変換される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">catch</span> <span class="p">(</span> <span class="kt">int</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="p">)</span> <span class="c1">// int *と同じ</span>
+<span class="k">catch</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">f</span><span class="p">(</span> <span class="kt">void</span> <span class="p">)</span> <span class="p">)</span> <span class="c1">// int (*f)(void)と同じ</span>
+</pre></div>
+</div>
+<p>あるハンドラーが、例外オブジェクトの型Eと適合する条件は以下の通り</p>
+<ul class="simple">
+<li></li>
+</ul>
+<p>ハンドラーの型が cv Tもしくは cv T &amp;amp;で、EとTが同じ型である場合。</p>
+<p>cvは任意のCV修飾子(const, volatile)のことで、トップレベルのCV修飾子は無視される。</p>
+<p>たとえば、例外オブジェクトの型がintの場合、以下のようなハンドラーが適合する。</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="k">catch</span> <span class="p">(</span> <span class="kt">int</span> <span class="p">)</span>
+<span class="k">catch</span> <span class="p">(</span> <span class="k">const</span> <span class="kt">int</span> <span class="p">)</span>
+<span class="k">catch</span> <span class="p">(</span> <span class="k">volatile</span> <span class="kt">int</span> <span class="p">)</span>
+<span class="k">catch</span> <span class="p">(</span> <span class="k">const</span> <span class="k">volatile</span> <span class="kt">int</span> <span class="p">)</span>
+<span class="k">catch</span> <span class="p">(</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="p">)</span>
+<span class="k">catch</span> <span class="p">(</span> <span class="k">const</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="p">)</span>
+<span class="k">catch</span> <span class="p">(</span> <span class="k">volatile</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="p">)</span>
+<span class="k">catch</span> <span class="p">(</span> <span class="k">const</span> <span class="k">volatile</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li></li>
+</ul>
+<p>ハンドラーの型がcv Tかcv T &amp;amp;で、TはEの曖昧性のないpublicな基本クラスである場合</p>
+<p>例えば、以下のような例が適合する。</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">Derived</span> <span class="n">d</span> <span class="p">;</span>
+        <span class="k">throw</span> <span class="n">d</span> <span class="p">;</span> <span class="c1">// 例外オブジェクトの型はDerived</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="n">Base</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 適合、BaseはDerivedの曖昧性のないpublicな基本クラス</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>以下のような例は適合しない。</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Ambiguous</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="k">private</span> <span class="n">Base</span><span class="p">,</span> <span class="k">public</span> <span class="n">Ambiguous</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Sub</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Derived</span><span class="p">,</span> <span class="k">public</span> <span class="n">Ambiguous</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">Sub</span> <span class="n">sub</span> <span class="p">;</span>
+        <span class="k">throw</span> <span class="n">sub</span> <span class="p">;</span> <span class="c1">// 例外オブジェクトの型はSub</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="n">Base</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 適合しない、非public基本クラス</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="n">Ambiguous</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 適合しない、曖昧</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li></li>
+</ul>
+<p>ハンドラーの型がcv1 T* cv2で、Eがポインター型で、以下のいずれかの方法でハンドラーの型に変換可能な場合</p>
+<blockquote>
+<div><ul class="simple">
+<li></li>
+</ul>
+</div></blockquote>
+<p>標準ポインター型変換で、privateやprotectedなポインターへの変換や、曖昧なクラスへの変換を伴わないもの</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Base</span> <span class="p">{</span> <span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">Derived</span> <span class="n">d</span> <span class="p">;</span>
+        <span class="k">throw</span> <span class="o">&amp;</span><span class="n">d</span> <span class="p">;</span> <span class="c1">// 例外オブジェクトの型はDerived</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="n">Base</span> <span class="o">*</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 適合、BaseはDerivedの曖昧性のないpublicな基本クラス</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li></li>
+</ul>
+</div></blockquote>
+<p>修飾変換</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span> <span class="p">;</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+
+        <span class="k">throw</span> <span class="o">&amp;</span><span class="n">i</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="k">const</span> <span class="kt">int</span> <span class="o">*</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li></li>
+</ul>
+<p>ハンドラーの型がポインターかメンバーへのポインターで、Eがstd::nullptr_tの場合</p>
+<blockquote>
+<div><div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">X</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="n">nullptr</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">void</span> <span class="o">*</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 適合</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="o">*</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 適合</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="n">X</span> <span class="o">*</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 適合</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="n">X</span><span class="o">::*</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 適合</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>nullptrの型であるstd::nullptr_t型の例外オブジェクトは、あらゆるポインター型、メンバーへのポインター型に適合する。</p>
+<p>throw式のオペランドが定数式で0と評価される場合でも、ポインターやメンバーへのポインター型のハンドラーには適合しない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 例外オブジェクトの型はint</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="o">*</span> <span class="p">)</span> <span class="c1">// 適合しない</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>tryブロックのハンドラーは、書かれている順番に比較される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 例外オブジェクトの型はint</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 適合する。処理はこのハンドラーに移る</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="k">const</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>この例では、3つのハンドラーはどれも例外オブジェクトの型に適合するが、比較は書かれている順番に行われる。一番初めに適合したハンドラーに処理が移る。関数のオーバーロード解決のような、ハンドラー同士の型の適合の優劣の比較は行われない。</p>
+<p>ハンドラーの例外宣言に...が使われた場合、そのハンドラーはどの例外にも適合する。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// どの例外にも適合する</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>...ハンドラーを使う場合は、tryブロックのハンドラーの最後に記述しなければならない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// エラー</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>tryブロックのハンドラーのうちに、適合するハンドラーが見つからない場合、同じスレッド内で、そのtryブロックのひとつ上のtryブロックが試みられる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span> <span class="p">{</span> <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span> <span class="c1">// 例外オブジェクトの型はint</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">double</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 適合しない</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">g</span><span class="p">()</span>
+<span class="p">{</span>
+
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">f</span><span class="p">()</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span> <span class="c1">// 適合する</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span> <span class="p">{</span>
+        <span class="n">g</span><span class="p">()</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>catch句の仮引数の初期化が完了した時点で、ハンドラーはアクティブ(active)になったとみなされる。スタックはこの時点でアンワインドされている。例外を投げた結果、std::terminateやstd::unexpectedが呼ばれた場合、暗黙のハンドラーというものがアクティブになったものとみなされる。catch句から抜けだした場合、ハンドラーはアクティブではなくなる。</p>
+<p>現在、アクティブなハンドラーが存在する場合、直前に投げられた例外を、現在補足されている例外(currently handled exception)と呼ぶ。</p>
+<p>適合するハンドラーが見つからない場合、std::terminateが呼ばれる。std::terminateが呼ばれる際、スタックがアンワインドされるかどうかは実装次第である。</p>
+<p>コンストラクターとデストラクターの関数tryブロック内で、非staticデータメンバーかオブジェクトの基本クラスを参照した場合、挙動は未定義である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">member</span> <span class="p">;</span>
+
+    <span class="n">S</span><span class="p">()</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="p">...</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">member</span> <span class="p">;</span> <span class="c1">// 挙動は未定義</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>コンストラクターの関数tryブロックのハンドラーに処理が移る前に、完全に構築された基本クラスと非staticメンバーのオブジェクトは、破棄される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="n">Base</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">Base</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+
+    <span class="n">Derived</span><span class="p">()</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="p">...</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// 基本クラスBaseのオブジェクトはすでに破棄されている</span>
+        <span class="c1">// 非staticデータメンバーのオブジェクトについても同様</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>オブジェクトの非デリゲートコンストラクターの実行が完了したあとに、デリゲートコンストラクターが例外を投げた場合は、オブジェクトのデストラクターが実行されたあとに、関数tryブロックのハンドラーに処理が移る。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+
+    <span class="c1">// 非デリゲートコンストラクター</span>
+    <span class="n">S</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+
+    <span class="c1">// デリゲートコンストラクター</span>
+    <span class="n">S</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="n">try</span>
+        <span class="o">:</span> <span class="n">S</span><span class="p">()</span>
+    <span class="p">{</span> <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// デストラクターS::~Sはすでに実行されている</span>
+    <span class="p">}</span>
+
+    <span class="o">~</span><span class="n">S</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">S</span> <span class="n">s</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>非デリゲートコンストラクターの実行完了をもって、オブジェクトは構築されている。デリゲートコンストラクターが例外を投げた場合の関数tryブロックのハンドラーに処理が移る前に、オブジェクトを破棄されなければならない。そのために、ハンドラーに処理が移る前にデストラクターが呼び出されることになる。</p>
+<p>デストラクターの関数tryブロックのハンドラーに処理が移る前に、オブジェクトの基本クラスと非variantメンバーは破棄される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="n">Base</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">Base</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">Derived</span> <span class="o">:</span> <span class="n">Base</span>
+<span class="p">{</span>
+    <span class="o">~</span><span class="n">Derived</span><span class="p">()</span> <span class="n">noexcept</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span>
+    <span class="n">try</span> <span class="p">{</span> <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// 基本クラスはすでに破棄されている</span>
+        <span class="c1">// 非staticデータメンバーについても同様</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>関数のコンストラクターの仮引数のスコープと寿命は、関数tryブロックのハンドラー内まで延長される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="kt">int</span> <span class="n">param</span> <span class="p">)</span>
+<span class="n">try</span>
+<span class="p">{</span>
+    <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span>
+<span class="k">catch</span> <span class="p">(</span> <span class="p">...</span> <span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">param</span> <span class="p">;</span> <span class="c1">// OK、延長される</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>静的ストレージ上のオブジェクトのデストラクターから投げられる例外が、main関数の関数tryブロックのハンドラーで補足されることはない。threadストレージ上のオブジェクトのデストラクターから投げられる例外が、スレッドの初期関数の関数tryブロックのハンドラーで補足されることはない。</p>
+<p>コンストラクターの関数tryブロックのハンドラーの中にreturn文がある場合、エラーとなる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="n">S</span><span class="p">()</span>
+    <span class="n">try</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="p">...</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="p">;</span> <span class="c1">// エラー</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>コンストラクターとデストラクターの関数tryブロックで、処理がハンドラーの終わりに達したときは、現在ハンドルされている例外が、再びthrowされる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="n">S</span><span class="p">()</span>
+    <span class="n">try</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="kt">int</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// 例外が再びthrowされる</span>
+    <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>コンストラクターとデストラクター以外の関数の関数tryブロック、処理がハンドラーの終わりに達したときは、関数からreturnする。このreturnは、オペランドなしのreturn文と同等になる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="n">f</span><span class="p">()</span>
+<span class="n">try</span>
+<span class="p">{</span>
+    <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+<span class="p">}</span>
+<span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span>
+<span class="p">{</span>
+<span class="c1">// return ;と同等</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>もしこの場合に、関数が戻り値を返す関数の場合、挙動は未定義である。</p>
+<p>int f()
+try
+{</p>
+<blockquote>
+<div>throw 0 ;</div></blockquote>
+<p>}
+catch( ... )
+{
+// 挙動は未定義
+}</p>
+<p>例外宣言が例外の型と名前を指定する場合、例外の型のオブジェクトがその名前で、例外オブジェクトからコピー初期化される。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="mi">123</span> <span class="p">;</span> <span class="c1">// 例外オブジェクの型はint、値は123</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="n">e</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// eの型はint、値は123</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>例外宣言が、例外の型のみで名前を指定していない場合、例外の型の一時オブジェクトが生成され、例外オブジェクトからコピー初期化される</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="mi">123</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// int型の一時オブジェクトが生成され、例外オブジェクトからコピー初期化される</span>
+        <span class="c1">// 名前がないので、参照する方法はない</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>例外宣言の名前の指し示すオブジェクト、あるいは無名の一時オブジェクトの寿命は、処理がハンドラーから抜けだして、ハンドラー内で初期化された一時オブジェクトが解放された後である。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="o">*</span> <span class="n">p</span> <span class="p">;</span>
+    <span class="n">S</span><span class="p">(</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">p</span> <span class="p">)</span> <span class="o">:</span> <span class="n">p</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+    <span class="o">~</span><span class="n">S</span><span class="p">()</span> <span class="p">{</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span> <span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="mi">123</span> <span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="n">e</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">S</span> <span class="n">s</span><span class="p">(</span> <span class="o">&amp;</span><span class="n">e</span> <span class="p">)</span> <span class="p">;</span>
+
+    <span class="c1">// sが破棄された後に、eが破棄される</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>そのため、上のコードは問題なく動作する。なぜならば、eが破棄されるのはsよりも後だからだ。</p>
+<p>ハンドラーの例外宣言が、非constな型のオブジェクトの場合、ハンドラー内でそのオブジェクトに対する変更は、throw式によって生成された一時的な例外オブジェクトには影響しない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">try</span>
+        <span class="p">{</span>
+            <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="n">e</span> <span class="p">)</span>
+        <span class="p">{</span>
+            <span class="o">++</span><span class="n">e</span> <span class="p">;</span> <span class="c1">// 変更</span>
+            <span class="k">throw</span> <span class="p">;</span> <span class="c1">// 例外オブジェクトの再throw</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">e</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// eは0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>ハンドラーの例外宣言が、非constな型へのリファレンス型のオブジェクトの場合、ハンドラー内でそのオブジェクトに対する変更は、throw式によって生成された一時的な例外オブジェクトを変更する。この副作用は、ハンドラー内で再throwされたときにも効果を持つ。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="n">try</span>
+        <span class="p">{</span>
+            <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">catch</span><span class="p">(</span> <span class="kt">int</span> <span class="o">&amp;</span> <span class="n">e</span> <span class="p">)</span>
+        <span class="p">{</span>
+            <span class="o">++</span><span class="n">e</span> <span class="p">;</span> <span class="c1">// 変更</span>
+            <span class="k">throw</span> <span class="p">;</span> <span class="c1">// 例外オブジェクトの再throw</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">e</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// eは1</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="exception-specifications">
+<h2>例外指定(Exception specifications)<a class="headerlink" href="#exception-specifications" title="Permalink to this headline">¶</a></h2>
+<p>例外指定(Exception specification)とは、関数宣言で、関数が例外を投げるかどうかを指定する機能である。</p>
+<p>関数宣言における例外指定の文法は、リファレンス修飾子の後、アトリビュートの前に記述する。</p>
+<div class="highlight-c++"><pre>T D( 仮引数宣言 ) cv修飾子 リファレンス修飾子 例外指定 アトリビュート指定子
+
+例外指定:
+noexcept( 定数式 )
+noexcept</pre>
+</div>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="n">noexcept</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">noexcept</span> <span class="p">[[</span> <span class="p">]]</span> <span class="p">;</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>例外指定は、関数宣言と定義のうち、関数型、関数へのポインター型、関数型へのリファレンス、メンバー関数へのポインター型に適用できる。また、関数へのポインター型が仮引数や戻り値の型に使われる場合も指定できる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="n">noexcept</span>           <span class="p">;</span> <span class="c1">// OK</span>
+<span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">fp</span><span class="p">)()</span> <span class="n">noexcept</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">f</span>  <span class="p">;</span> <span class="c1">// OK</span>
+<span class="kt">void</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">fr</span><span class="p">)()</span> <span class="n">noexcept</span> <span class="o">=</span> <span class="n">f</span>   <span class="p">;</span> <span class="c1">// OK</span>
+
+<span class="c1">// OK、仮引数として</span>
+<span class="kt">void</span> <span class="nf">g</span><span class="p">(</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">fp</span><span class="p">)()</span> <span class="n">noexcept</span> <span class="p">)</span> <span class="p">;</span>
+<span class="c1">// OK、戻り値の型として</span>
+<span class="k">auto</span> <span class="n">h</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)()</span> <span class="n">noexcept</span> <span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">S</span>
+<span class="p">{</span>
+    <span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="n">noexcept</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>typedef宣言とエイリアス宣言には使用できない。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">typedef</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">func_ptr_type</span><span class="p">)()</span> <span class="n">noexcept</span> <span class="p">;</span> <span class="c1">// エラー</span>
+<span class="k">using</span> <span class="n">type</span> <span class="o">=</span> <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="p">)()</span> <span class="n">noexcept</span> <span class="p">;</span> <span class="c1">// エラー</span>
+</pre></div>
+</div>
+<p>例外指定のない関数宣言は、例外を許可する関数である。</p>
+<p>例外指定にnoexceptが指定された場合、その関数は例外を許可しないと指定したことになる。</p>
+<p>例外指定に、noexcept(定数式)を指定し、定数式がtrueと評価される場合、その関数は例外を許可しないと指定したことになる。定数式がfalseと評価される場合、その関数は例外を許可する関数と指定したことになる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">f1</span><span class="p">()</span> <span class="p">;</span> <span class="c1">// 例外を許可</span>
+<span class="kt">void</span> <span class="n">f2</span><span class="p">()</span> <span class="n">noexcept</span> <span class="p">;</span> <span class="c1">// 例外を許可しない</span>
+<span class="kt">void</span> <span class="nf">f3</span><span class="p">()</span> <span class="n">noexcept</span><span class="p">(</span> <span class="nb">true</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 例外を許可しない</span>
+<span class="kt">void</span> <span class="nf">f4</span><span class="p">()</span> <span class="n">noexcept</span><span class="p">(</span> <span class="nb">false</span> <span class="p">)</span> <span class="p">;</span> <span class="c1">// 例外を許可</span>
+</pre></div>
+</div>
+<p>noexcept(定数式)は、コンパイル時の条件に従って、関数の例外指定を変えることに使える。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="n">constexpr</span> <span class="kt">bool</span> <span class="n">is_nothrow</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">is_fundamental</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">value</span> <span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// テンプレート仮引数が基本型なら例外を投げない実装ができる関数</span>
+<span class="k">template</span> <span class="o">&lt;</span> <span class="k">typename</span> <span class="n">T</span> <span class="o">&gt;</span>
+<span class="kt">void</span> <span class="n">f</span><span class="p">(</span> <span class="n">T</span> <span class="n">x</span> <span class="p">)</span> <span class="n">noexcept</span><span class="p">(</span> <span class="n">is_nothrow</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">()</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>この例では、関数fは、テンプレート仮引数が基本型の場合、例外を投げない実装ができるものとする。そこで、テンプレートのインスタンス化の際に、型を調べることによって、例外を許可するかどうかをコンパイル時に切り替えることができる。</p>
+<p>もし、例外を許可しない関数が、例外のthrowによって抜け出した場合、std::terminateが呼ばれる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 例外を許可する関数</span>
+<span class="kt">void</span> <span class="nf">allow_exception</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// OK</span>
+<span class="p">}</span>
+
+<span class="c1">// 例外を許可しない関数</span>
+<span class="kt">void</span> <span class="n">disallow_exception</span><span class="p">()</span> <span class="n">noexcept</span>
+<span class="p">{</span>
+    <span class="n">try</span>
+    <span class="p">{</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// OK、例外は関数の外に抜けない</span>
+    <span class="p">}</span>
+    <span class="k">catch</span> <span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+    <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// 実行時にstd::terminateが呼ばれる</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>例外を許可しないというのは、例外によって関数から抜け出すことを禁止するものであり、関数の中で例外を使うことを禁止するものではない。</p>
+<p>例外を許可しない関数は、例外を投げる可能性があったとしても、違法ではない。C++実装は、そのようなコードを合法にするように明確に義務付けられている。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="n">f</span><span class="p">()</span> <span class="n">noexcept</span>
+<span class="p">{</span>
+    <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// OK、コンパイルが通る</span>
+    <span class="c1">// 実行時にstd::terminateが呼ばれる</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">g</span><span class="p">(</span> <span class="kt">bool</span> <span class="n">b</span> <span class="p">)</span> <span class="n">noexcept</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="n">b</span> <span class="p">)</span>
+        <span class="k">throw</span> <span class="mi">0</span> <span class="p">;</span> <span class="c1">// OK、コンパイルが通る</span>
+    <span class="c1">// 実行時にbがtrueの場合、std::terminateが呼ばれる</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>もちろん、そのような関数を呼び出して、結果として関数の外に例外が投げられた場合、std::terminateが呼ばれる。</p>
+<p>この他に、C++11では非推奨(deprecated)扱いになっている機能に、動的例外指定(dynamic-exception-specification)がある。この機能は将来廃止されるので、詳しく解説しないが、概ね以下のような機能となっている。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 例外を許可しない</span>
+<span class="kt">void</span> <span class="nf">f</span><span class="p">()</span> <span class="k">throw</span><span class="p">(</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="c1">// int型のthrowを許可する</span>
+<span class="kt">void</span> <span class="nf">g</span><span class="p">()</span> <span class="k">throw</span><span class="p">(</span> <span class="kt">int</span> <span class="p">)</span> <span class="p">;</span>
+
+<span class="c1">// int型とshort型のthrowを許可する</span>
+<span class="kt">void</span> <span class="nf">h</span><span class="p">()</span> <span class="k">throw</span><span class="p">(</span> <span class="kt">int</span><span class="p">,</span> <span class="kt">short</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>動的例外指定のある関数では、例外を関数の外にthrowすると、std::unexpectedが呼ばれる。もし、許可した型の例外をthrowした場合は、そのままハンドラーの検索が行われるが、許可しない型をthrowした場合は、std::terminateが呼ばれるとされている。</p>
+<p>少なくとも、当初のC++の設計はそうであったが、現実には、そのように実装するC++実装は出てこなかった。ほとんどの実装では、動的例外指定は、単に無視された。</p>
+<p>その後、何も例外として許可する型を指定子ない、throw()だけが、関数が例外を外に投げないものとして</p>
+<p>クラスの暗黙に宣言される特別なメンバー関数は、この動的例外指定を暗黙に指定される。その型リストは、暗黙の実装が呼び出す関数が投げる可能性のある例外のみを持つ。</p>
+<p>これは、基本クラスや非staticメンバーが、明示的に例外を許可するものでないかぎり、クラスの暗黙の特別なメンバーは、無例外指定されるということである。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">class</span> <span class="nc">S</span>
+<span class="p">{</span>
+<span class="c1">// 暗黙のコンストラクター、デストラクター、代入演算子は、</span>
+<span class="c1">// 例外指定throw()が指定される</span>
+<span class="p">}</span> <span class="p">;</span>
+</pre></div>
+</div>
+<p>解放関数の宣言に、明示的な例外指定がない場合は、noexcept(true)が指定されたものとみなされる。</p>
+<div class="highlight-c++"><div class="highlight"><pre><span class="c1">// 暗黙にnoexcept(true)が指定される</span>
+<span class="kt">void</span> <span class="k">operator</span> <span class="nf">delete</span><span class="p">(</span> <span class="kt">void</span> <span class="o">*</span> <span class="p">)</span> <span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="temp.html" title="テンプレート(Templates)"
+             >previous</a> |</li>
+        <li><a href="index.html">CPP Book</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ezoe Ryou.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
